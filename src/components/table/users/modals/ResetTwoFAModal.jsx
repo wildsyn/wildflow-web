@@ -17,34 +17,23 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 
-import i18n from 'i18next';
-import { initReactI18next } from 'react-i18next';
-import LanguageDetector from 'i18next-browser-languagedetector';
+import React from 'react';
+import { Modal } from '@douyinfe/semi-ui';
 
-import enTranslation from './locales/en.json';
-import frTranslation from './locales/fr.json';
-import zhTranslation from './locales/zh.json';
+const ResetTwoFAModal = ({ visible, onCancel, onConfirm, user, t }) => {
+  return (
+    <Modal
+      title={t('确认重置两步验证')}
+      visible={visible}
+      onCancel={onCancel}
+      onOk={onConfirm}
+      type='warning'
+    >
+      {t('此操作将禁用该用户当前的两步验证配置，下次登录将不再强制输入验证码，直到用户重新启用。')}{' '}
+      {user?.username ? t('目标用户：{{username}}', { username: user.username }) : ''}
+    </Modal>
+  );
+};
 
-i18n
-  .use(LanguageDetector)
-  .use(initReactI18next)
-  .init({
-    load: 'languageOnly',
-    resources: {
-      en: {
-        translation: enTranslation,
-      },
-      zh: {
-        translation: zhTranslation,
-      },
-      fr: {
-        translation: frTranslation,
-      },
-    },
-    fallbackLng: 'zh',
-    interpolation: {
-      escapeValue: false,
-    },
-  });
+export default ResetTwoFAModal;
 
-export default i18n;

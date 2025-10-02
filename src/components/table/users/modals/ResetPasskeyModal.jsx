@@ -17,34 +17,23 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 
-import i18n from 'i18next';
-import { initReactI18next } from 'react-i18next';
-import LanguageDetector from 'i18next-browser-languagedetector';
+import React from 'react';
+import { Modal } from '@douyinfe/semi-ui';
 
-import enTranslation from './locales/en.json';
-import frTranslation from './locales/fr.json';
-import zhTranslation from './locales/zh.json';
+const ResetPasskeyModal = ({ visible, onCancel, onConfirm, user, t }) => {
+  return (
+    <Modal
+      title={t('确认重置 Passkey')}
+      visible={visible}
+      onCancel={onCancel}
+      onOk={onConfirm}
+      type='warning'
+    >
+      {t('此操作将解绑用户当前的 Passkey，下次登录需要重新注册。')}{' '}
+      {user?.username ? t('目标用户：{{username}}', { username: user.username }) : ''}
+    </Modal>
+  );
+};
 
-i18n
-  .use(LanguageDetector)
-  .use(initReactI18next)
-  .init({
-    load: 'languageOnly',
-    resources: {
-      en: {
-        translation: enTranslation,
-      },
-      zh: {
-        translation: zhTranslation,
-      },
-      fr: {
-        translation: frTranslation,
-      },
-    },
-    fallbackLng: 'zh',
-    interpolation: {
-      escapeValue: false,
-    },
-  });
+export default ResetPasskeyModal;
 
-export default i18n;
