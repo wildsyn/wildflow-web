@@ -1,3 +1,12 @@
+# WildFlow Web 与前端开发规范
+
+本仓是 New API `web/` 的受控过滤历史，只负责野生流动官网、模型目录、控制台和 Harness 入口。
+不得加入后端、GPU 调度、渠道凭据、生产配置、用户数据或私密运营资料。必须保留 `LICENSE`、`NOTICE`、
+`UPSTREAM.md` 和用户可见的 New API 署名；上游同步必须与 `wildflow-api` 成对评审。
+
+`main` 只接收 PR。改动 TypeScript/TSX 后至少运行受影响测试、typecheck、lint、build 与
+`bash scripts/check-local.sh`。生产部署、DNS 和公开 Release 需要单独授权。
+
 # 前端开发规范
 
 本文档定义前端项目的开发规范与最佳实践，供开发与 AI 助手共同遵循。具体依赖与脚本以 `package.json` 为准。
