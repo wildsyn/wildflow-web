@@ -27,6 +27,7 @@ import {
 import { useStatus } from '@/hooks/use-status'
 import { useSystemConfig } from '@/hooks/use-system-config'
 import { cn } from '@/lib/utils'
+import { WILDFLOW_PRODUCT } from '@/config/wildflow-product'
 
 type SystemBrandProps = {
   defaultName?: string
@@ -51,7 +52,7 @@ export function SystemBrand(props: SystemBrandProps) {
   const { logo } = useSystemConfig()
 
   const variant = props.variant ?? 'sidebar'
-  const name = status?.system_name || props.defaultName || 'New API'
+  const name = status?.system_name || props.defaultName || WILDFLOW_PRODUCT.name
   const version =
     status?.version || props.defaultVersion || t('Unknown version')
 

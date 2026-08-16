@@ -25,6 +25,7 @@ import { Button } from '@/components/ui/button'
 import { useStatus } from '@/hooks/use-status'
 
 import { HeroTerminalDemo } from '../hero-terminal-demo'
+import { WILDFLOW_PRODUCT, WILDFLOW_ROUTES } from '@/config/wildflow-product'
 
 interface HeroProps {
   className?: string
@@ -49,7 +50,7 @@ export function Hero(props: HeroProps) {
   const { t } = useTranslation()
   const { status } = useStatus()
   const docsUrl =
-    (status?.docs_link as string | undefined) || 'https://docs.newapi.pro'
+    (status?.docs_link as string | undefined) || WILDFLOW_PRODUCT.docsUrl
 
   const renderDocsButton = () => {
     const isExternal = docsUrl.startsWith('http')
@@ -111,17 +112,17 @@ export function Hero(props: HeroProps) {
               <span className='absolute inline-flex h-full w-full animate-ping rounded-full bg-blue-400 opacity-75' />
               <span className='relative inline-flex size-1.5 rounded-full bg-blue-500 dark:bg-blue-400' />
             </span>
-            <span>{t('AI Application Infrastructure Foundation')}</span>
+            <span>WildFlow 1.0</span>
           </div>
 
           <h1
             className='landing-animate-fade-up text-[clamp(2.25rem,4.5vw,3.25rem)] leading-[1.15] font-bold tracking-tight'
             style={{ animationDelay: '60ms' }}
           >
-            {t('Unified API Gateway for')}
+            {t('Models that flow into real work')}
             <br />
-            <span className='bg-gradient-to-r from-blue-400 via-violet-400 to-purple-500 bg-clip-text text-transparent'>
-              {t('Vast Range of AI Models')}
+            <span className='text-primary'>
+              {t('Model services and composable Harness')}
             </span>
           </h1>
           <p
@@ -129,7 +130,7 @@ export function Hero(props: HeroProps) {
             style={{ animationDelay: '120ms' }}
           >
             {t(
-              'Access a vast selection of models via a standard, unified API protocol. Power AI applications, manage digital assets, and connect the Future.'
+              'WildFlow provides model APIs, Skills, and composable Harness capabilities for real content and delivery workflows.'
             )}
           </p>
 
@@ -141,7 +142,7 @@ export function Hero(props: HeroProps) {
               <>
                 <Button
                   className='group h-11 rounded-lg px-5 text-sm font-medium'
-                  render={<Link to='/dashboard' />}
+                  render={<Link to={WILDFLOW_ROUTES.console} />}
                 >
                   {t('Go to Dashboard')}
                   <ArrowRight className='ml-1.5 size-4 transition-transform duration-200 group-hover:translate-x-0.5' />
@@ -152,17 +153,17 @@ export function Hero(props: HeroProps) {
               <>
                 <Button
                   className='group h-11 rounded-lg px-5 text-sm font-medium'
-                  render={<Link to='/sign-up' />}
+                  render={<Link to={WILDFLOW_ROUTES.models} />}
                 >
-                  {t('Get Started')}
+                  {t('Explore Models')}
                   <ArrowRight className='ml-1.5 size-4 transition-transform duration-200 group-hover:translate-x-0.5' />
                 </Button>
                 <Button
                   variant='outline'
                   className='border-border/50 hover:border-border hover:bg-muted/50 h-11 rounded-lg px-5 text-sm font-medium'
-                  render={<Link to='/pricing' />}
+                  render={<Link to={WILDFLOW_ROUTES.harness} />}
                 >
-                  {t('View Pricing')}
+                  {t('Explore Harness')}
                 </Button>
                 {renderDocsButton()}
               </>
@@ -180,7 +181,7 @@ export function Hero(props: HeroProps) {
               </span>
               <p className='text-muted-foreground/60 text-xs leading-relaxed'>
                 {t(
-                  'Supports one-click configuration and perfectly adapts to NewAPI multi-protocol configuration.'
+                  'Connect WildFlow model services to the tools and workflows your team already uses.'
                 )}
               </p>
             </div>
