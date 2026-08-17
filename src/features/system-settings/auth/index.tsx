@@ -47,6 +47,8 @@ const defaultAuthSettings: AuthSettings = {
   'oidc.authorization_endpoint': '',
   'oidc.token_endpoint': '',
   'oidc.user_info_endpoint': '',
+  'oidc.end_session_endpoint': '',
+  'oidc.enrollment_endpoint': '',
   TelegramOAuthEnabled: false,
   TelegramBotToken: '',
   TelegramBotName: '',

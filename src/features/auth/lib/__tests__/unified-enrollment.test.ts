@@ -22,13 +22,15 @@ import { describe, test } from 'node:test'
 import {
   buildUnifiedEnrollmentPath,
   startUnifiedEnrollment,
-} from './unified-enrollment'
+} from '../unified-enrollment'
 
 describe('unified Authentik enrollment', () => {
   test('uses the API enrollment route and preserves only a valid affiliate code', () => {
     assert.equal(buildUnifiedEnrollmentPath(''), '/api/oauth/oidc/enroll')
     assert.equal(
-      buildUnifiedEnrollmentPath('?aff=partner%20code&redirect=https://attacker.example'),
+      buildUnifiedEnrollmentPath(
+        '?aff=partner%20code&redirect=https://attacker.example'
+      ),
       '/api/oauth/oidc/enroll?aff=partner+code'
     )
     assert.equal(
@@ -44,8 +46,6 @@ describe('unified Authentik enrollment', () => {
       replace: (destination) => destinations.push(destination),
     })
 
-    assert.deepEqual(destinations, [
-      '/api/oauth/oidc/enroll?aff=inviter',
-    ])
+    assert.deepEqual(destinations, ['/api/oauth/oidc/enroll?aff=inviter'])
   })
 })

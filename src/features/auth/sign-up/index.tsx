@@ -16,45 +16,50 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import { Link } from '@tanstack/react-router'
+import { Loader2 } from 'lucide-react'
+import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { useStatus } from '@/hooks/use-status'
-
 import { AuthLayout } from '../auth-layout'
-import { TermsFooter } from '../components/terms-footer'
-import { SignUpForm } from './components/sign-up-form'
+import {
+  buildUnifiedEnrollmentPath,
+  startUnifiedEnrollment,
+} from '../lib/unified-enrollment'
 
 export function SignUp() {
   const { t } = useTranslation()
-  const { status } = useStatus()
+
+  useEffect(() => {
+    startUnifiedEnrollment({
+      search: window.location.search,
+      replace: (destination) => window.location.replace(destination),
+    })
+  }, [])
+
+  const fallbackPath = buildUnifiedEnrollmentPath(
+    typeof window === 'undefined' ? '' : window.location.search
+  )
 
   return (
     <AuthLayout>
-      <div className='w-full space-y-8'>
+      <div className='w-full space-y-6 text-center'>
+        <Loader2 className='text-primary mx-auto size-8 animate-spin' />
         <div className='space-y-2'>
-          <h2 className='text-center text-2xl font-semibold tracking-tight sm:text-left'>
-            {t('Create an account')}
+          <h2 className='text-2xl font-semibold tracking-tight'>
+            {t('Redirecting to unified account registration')}
           </h2>
-          <p className='text-muted-foreground text-left text-sm sm:text-base'>
-            {t('Already have an account?')}{' '}
-            <Link
-              to='/sign-in'
-              className='hover:text-primary font-medium underline underline-offset-4'
-            >
-              {t('Sign in')}
-            </Link>
-            .
+          <p className='text-muted-foreground text-sm sm:text-base'>
+            {t(
+              'Registration and email verification are handled by WildFlow unified account.'
+            )}
           </p>
         </div>
-
-        <SignUpForm />
-
-        <TermsFooter
-          variant='sign-up'
-          status={status}
-          className='text-center'
-        />
+        <a
+          href={fallbackPath}
+          className='hover:text-primary text-sm font-medium underline underline-offset-4'
+        >
+          {t('Continue if you are not redirected automatically')}
+        </a>
       </div>
     </AuthLayout>
   )
