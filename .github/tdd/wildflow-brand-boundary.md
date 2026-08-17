@@ -7,12 +7,14 @@
   routes did not fail closed.
 - The same test then failed while the public home page still rendered the
   hard-coded `50+`/`100+` statistics block.
+- A follow-up regression failed while the default home page still rendered
+  unsupported generic claims and simulated latency, token, and cost metrics.
 - `bash scripts/check-brand-boundary.sh` first failed because the public logo
   was not the approved WildFlow asset and unverified external links remained.
 
 ## Green
 
-- `bun test src/config/wildflow-product.test.ts`: 7 passed.
+- `bun test src/config/wildflow-product.test.ts`: 8 passed.
 - `bun run typecheck`: passed.
 - `bun run build`: passed.
 - `bash scripts/check-local.sh`: passed.
