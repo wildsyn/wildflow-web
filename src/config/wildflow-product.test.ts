@@ -1,7 +1,10 @@
 import assert from 'node:assert/strict'
 import { describe, test } from 'node:test'
 
-import { parseHeaderNavModules } from '@/lib/nav-modules'
+import {
+  isSidebarModuleEnabled,
+  parseHeaderNavModules,
+} from '@/lib/nav-modules'
 import { getDefaultSidebarModules } from '@/hooks/use-sidebar-config'
 import { DEFAULT_LOGO, DEFAULT_SYSTEM_NAME } from '@/lib/constants'
 
@@ -57,5 +60,13 @@ describe('WildFlow 1.0 product shell', () => {
     assert.equal(modules.personal.topup, false)
     assert.equal(modules.admin.redemption, false)
     assert.equal(modules.admin.subscription, false)
+  })
+
+  test('fails closed for direct access to unapproved sidebar modules', () => {
+    assert.equal(isSidebarModuleEnabled('console', 'midjourney'), false)
+    assert.equal(isSidebarModuleEnabled('console', 'task'), false)
+    assert.equal(isSidebarModuleEnabled('personal', 'topup'), false)
+    assert.equal(isSidebarModuleEnabled('admin', 'redemption'), false)
+    assert.equal(isSidebarModuleEnabled('admin', 'subscription'), false)
   })
 })

@@ -35,4 +35,15 @@ grep -Fq "https://github.com/QuantumNous/new-api" src/features/about/index.tsx |
   exit 1
 }
 
+for route in \
+  src/routes/_authenticated/wallet/index.tsx \
+  src/routes/_authenticated/redemption-codes/index.tsx \
+  src/routes/_authenticated/subscriptions/index.tsx \
+  'src/routes/_authenticated/usage-logs/$section.tsx'; do
+  grep -Fq 'isSidebarModuleEnabled' "$route" || {
+    echo "$route does not enforce the WildFlow feature policy" >&2
+    exit 1
+  }
+done
+
 echo 'WildFlow public brand boundary passed'
