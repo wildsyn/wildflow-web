@@ -90,65 +90,6 @@ const API_DEMOS: ApiDemoConfig[] = [
     responseHighlights: ['<text>', '<tokens>'],
     accent: 'emerald',
   },
-  {
-    id: 'responses',
-    label: 'Responses',
-    method: 'POST',
-    endpoint: '/v1/responses',
-    headers: ['"Authorization: Bearer sk-••••"'],
-    request: ['"model": "your-model",', '"input": "..."'],
-    response: [
-      '{',
-      '  "output": [{ "type": "output_text", "text": <text> }],',
-      '  "usage": { "total_tokens": <tokens> }',
-      '}',
-    ],
-    responseHighlights: ['<text>', '<tokens>'],
-    accent: 'amber',
-  },
-  {
-    id: 'claude',
-    label: 'Claude',
-    method: 'POST',
-    endpoint: '/v1/messages',
-    headers: ['"x-api-key: sk-••••"', '"anthropic-version: 2023-06-01"'],
-    request: [
-      '"model": "your-model",',
-      '"max_tokens": 1024,',
-      '"messages": [',
-      '  { "role": "user", "content": "..." }',
-      ']',
-    ],
-    response: [
-      '{',
-      '  "content": [{ "type": "text", "text": <text> }],',
-      '  "usage": { "input_tokens": <in>, "output_tokens": <out> }',
-      '}',
-    ],
-    responseHighlights: ['<text>', '<in>', '<out>'],
-    accent: 'blue',
-  },
-  {
-    id: 'gemini',
-    label: 'Gemini',
-    method: 'POST',
-    endpoint: '/v1beta/models/{model}:generateContent',
-    headers: ['"x-goog-api-key: sk-••••"'],
-    request: [
-      '"contents": [',
-      '  { "role": "user",',
-      '    "parts": [{ "text": "..." }] }',
-      ']',
-    ],
-    response: [
-      '{',
-      '  "candidates": [{ "content": { "parts": [{ "text": <text> }] } }],',
-      '  "usageMetadata": { "totalTokenCount": <tokens> }',
-      '}',
-    ],
-    responseHighlights: ['<text>', '<tokens>'],
-    accent: 'violet',
-  },
 ]
 
 const CYCLE_INTERVAL = 4500
@@ -218,6 +159,7 @@ export function HeroTerminalDemo(props: HeroTerminalDemoProps) {
             return (
               <button
                 key={item.id}
+                type='button'
                 onClick={() => handleSelect(index)}
                 className={cn(
                   'relative -mb-px flex items-center gap-1.5 border-b-2 px-2.5 py-2.5 text-[11px] font-medium tracking-wide transition-colors sm:px-3 sm:text-xs',
@@ -231,9 +173,8 @@ export function HeroTerminalDemo(props: HeroTerminalDemoProps) {
             )
           })}
           <div className='ml-auto flex items-center gap-2 pr-2 sm:pr-3'>
-            <span className='inline-block size-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.45)]' />
             <span className='text-foreground/40 font-mono text-[10px] tracking-wider uppercase'>
-              api example
+              illustrative API
             </span>
           </div>
         </div>
@@ -283,7 +224,7 @@ export function HeroTerminalDemo(props: HeroTerminalDemoProps) {
             example response
           </span>
           <span className='text-foreground/30 font-mono text-[10px] tracking-wider uppercase'>
-            stream · sse
+            verify in docs
           </span>
         </div>
       </div>
@@ -317,8 +258,8 @@ function RequestBlock(props: { demo: ApiDemoConfig; transitioning: boolean }) {
         <CodeLine indent={2}>
           <Flag>-d</Flag> <StringText>&apos;{'{'}</StringText>
         </CodeLine>
-        {demo.request.map((line, i) => (
-          <CodeLine key={i} indent={4}>
+        {demo.request.map((line) => (
+          <CodeLine key={`${demo.id}-request-${line}`} indent={4}>
             {renderJsonLine(line)}
           </CodeLine>
         ))}
@@ -347,8 +288,10 @@ function ResponseBlock(props: { demo: ApiDemoConfig; transitioning: boolean }) {
           transitioning ? 'opacity-0' : 'opacity-100'
         )}
       >
-        {demo.response.map((line, i) => (
-          <CodeLine key={i}>{renderResponseLine(line, demo)}</CodeLine>
+        {demo.response.map((line) => (
+          <CodeLine key={`${demo.id}-response-${line}`}>
+            {renderResponseLine(line, demo)}
+          </CodeLine>
         ))}
       </div>
     </div>
@@ -380,28 +323,30 @@ function renderResponseLine(line: string, demo: ApiDemoConfig): ReactNode {
 
   if (matches.length === 0) return tokenize(line)
 
-  matches.forEach((match, idx) => {
+  matches.forEach((match) => {
     const start = match.index ?? 0
     if (start > cursor) {
       segments.push(
-        <span key={`pre-${idx}`}>{tokenize(line.slice(cursor, start))}</span>
+        <span key={`pre-${start}`}>{tokenize(line.slice(cursor, start))}</span>
       )
     }
     const placeholder = match[0]
     if (placeholder === '<text>') {
       segments.push(
-        <Accent key={`ph-${idx}`} accent={demo.accent}>
+        <Accent key={`ph-${start}`} accent={demo.accent}>
           {`"${truncateResponse(demo)}"`}
         </Accent>
       )
     } else if (placeholder === '<tokens>') {
-      segments.push(<Muted key={`ph-${idx}`}>&quot;tokens&quot;</Muted>)
+      segments.push(<Muted key={`ph-${start}`}>&quot;tokens&quot;</Muted>)
     } else if (placeholder === '<in>') {
-      segments.push(<Muted key={`ph-${idx}`}>&quot;input_tokens&quot;</Muted>)
+      segments.push(<Muted key={`ph-${start}`}>&quot;input_tokens&quot;</Muted>)
     } else if (placeholder === '<out>') {
-      segments.push(<Muted key={`ph-${idx}`}>&quot;output_tokens&quot;</Muted>)
+      segments.push(
+        <Muted key={`ph-${start}`}>&quot;output_tokens&quot;</Muted>
+      )
     } else {
-      segments.push(<Muted key={`ph-${idx}`}>{placeholder}</Muted>)
+      segments.push(<Muted key={`ph-${start}`}>{placeholder}</Muted>)
     }
     cursor = start + placeholder.length
   })
@@ -416,9 +361,6 @@ function renderResponseLine(line: string, demo: ApiDemoConfig): ReactNode {
 function truncateResponse(demo: ApiDemoConfig): string {
   const map: Record<string, string> = {
     'gpt-chat': 'Chat request routed.',
-    responses: 'Response workflow ready.',
-    claude: 'Claude message routed.',
-    gemini: 'Gemini request served.',
   }
   return map[demo.id] ?? '...'
 }
@@ -429,20 +371,20 @@ function tokenize(input: string): ReactNode {
   let cursor = 0
   const matches = [...input.matchAll(STRING_RE)]
 
-  matches.forEach((match, idx) => {
+  matches.forEach((match) => {
     const start = match.index ?? 0
     if (start > cursor) {
       segments.push(
-        <Muted key={`m-${idx}`}>{input.slice(cursor, start)}</Muted>
+        <Muted key={`m-${start}`}>{input.slice(cursor, start)}</Muted>
       )
     }
     const text = match[0]
     const after = input.slice(start + text.length).trimStart()
     const isKey = after.startsWith(':')
     if (isKey) {
-      segments.push(<Key key={`k-${idx}`}>{text}</Key>)
+      segments.push(<Key key={`k-${start}`}>{text}</Key>)
     } else {
-      segments.push(<StringText key={`s-${idx}`}>{text}</StringText>)
+      segments.push(<StringText key={`s-${start}`}>{text}</StringText>)
     }
     cursor = start + text.length
   })

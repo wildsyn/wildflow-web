@@ -212,7 +212,7 @@ export function Footer(props: FooterProps) {
             </Link>
             <p className='text-muted-foreground/60 mt-3 max-w-[240px] text-xs leading-relaxed'>
               {t(
-                'Model services, Skills, and composable Harness for content and delivery workflows.'
+                'Focused model APIs and deployment support for developers and small teams.'
               )}
             </p>
           </div>

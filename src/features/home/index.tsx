@@ -26,16 +26,15 @@ import { useTheme } from '@/context/theme-provider'
 import { isLikelyHtml } from '@/lib/content-format'
 import { useAuthStore } from '@/stores/auth-store'
 
-import { CTA, Hero, ModelCatalog } from './components'
-import { useHomePageContent, useWildFlowCatalog } from './hooks'
+import { CTA, Hero, ModelCatalog, PublicInformation } from './components'
+import { useHomePageContent } from './hooks'
 
 function DefaultHome({ isAuthenticated }: { isAuthenticated: boolean }) {
-  const { offerings, isLoaded } = useWildFlowCatalog()
-
   return (
     <>
       <Hero isAuthenticated={isAuthenticated} />
-      <ModelCatalog offerings={offerings} isLoading={!isLoaded} />
+      <ModelCatalog />
+      <PublicInformation />
       <CTA isAuthenticated={isAuthenticated} />
       <Footer />
     </>

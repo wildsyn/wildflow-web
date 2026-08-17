@@ -22,6 +22,7 @@ import { useTranslation } from 'react-i18next'
 
 import { AnimateInView } from '@/components/animate-in-view'
 import { Button } from '@/components/ui/button'
+import { WILDFLOW_PRODUCT, WILDFLOW_ROUTES } from '@/config/wildflow-product'
 
 interface CTAProps {
   className?: string
@@ -54,28 +55,37 @@ export function CTA(props: CTAProps) {
         animation='scale-in'
       >
         <h2 className='text-2xl leading-tight font-bold tracking-tight md:text-4xl'>
-          {t('Bring AI into real work')}
+          {t('Start with the model that fits')}
           <br />
-          <span className='bg-gradient-to-r from-blue-400 via-violet-400 to-purple-500 bg-clip-text text-transparent'>
-            {t('Start with models, build with Harness')}
+          <span className='text-primary'>
+            {t('then verify the integration path')}
           </span>
         </h2>
         <p className='text-muted-foreground/80 mx-auto mt-5 max-w-md text-sm leading-relaxed md:text-base'>
           {t(
-            'Explore model services, then combine Skills and Harness capabilities for your own delivery workflows.'
+            'Browse the current catalog, confirm the documented interface, and move into the console when the model is ready for your use case.'
           )}
         </p>
         <div className='mt-8 flex items-center justify-center gap-3'>
-          <Button className='group rounded-lg' render={<Link to='/sign-up' />}>
-            {t('Get Started')}
+          <Button
+            className='group rounded-lg'
+            render={<Link to={WILDFLOW_ROUTES.models} />}
+          >
+            {t('Browse Model Square')}
             <ArrowRight className='ml-1 size-3.5 transition-transform duration-200 group-hover:translate-x-0.5' />
           </Button>
           <Button
             variant='outline'
             className='border-border/50 hover:border-border hover:bg-muted/50 rounded-lg'
-            render={<Link to='/pricing' />}
+            render={
+              <a
+                href={WILDFLOW_PRODUCT.docsUrl}
+                target='_blank'
+                rel='noopener noreferrer'
+              />
+            }
           >
-            {t('View Pricing')}
+            {t('Read Docs')}
           </Button>
         </div>
       </AnimateInView>

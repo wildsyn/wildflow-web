@@ -21,8 +21,6 @@ import { after, describe, test } from 'node:test'
 
 import { Window } from 'happy-dom'
 
-import type { WildFlowOffering } from '../../types'
-
 const domWindow = new Window()
 for (const key of [
   'window',
@@ -60,68 +58,33 @@ await i18n.use(initReactI18next).init({
   resources: {
     en: {
       translation: {
-        'First-party models': 'First-party models',
-        'Two voice experiences and one image model':
-          'Two voice experiences and one image model',
-        'VoxCPM2 Standard TTS': 'VoxCPM2 Standard TTS',
-        'VoxCPM2 Wang Liqun Premium Voice': 'VoxCPM2 Wang Liqun Premium Voice',
-        'FLUX.2 [klein] 4B Image Generation':
-          'FLUX.2 [klein] 4B Image Generation',
-        'General-purpose voice design and voice cloning.':
-          'General-purpose voice design and voice cloning.',
-        'A premium Wang Liqun voice profile on the same VoxCPM2 foundation model.':
-          'A premium Wang Liqun voice profile on the same VoxCPM2 foundation model.',
-        'Open-source image generation for Chinese and English prompts.':
-          'Open-source image generation for Chinese and English prompts.',
-        Available: 'Available',
-        Unavailable: 'Unavailable',
-        TTS: 'TTS',
-        'Image Generation': 'Image Generation',
+        'Model services': 'Model services',
+        'Focused model access for practical products':
+          'Focused model access for practical products',
+        'The first model lineup is being connected across text, speech, and image. Model names and call availability are published in the Model Square.':
+          'The first model lineup is being connected across text, speech, and image. Model names and call availability are published in the Model Square.',
+        'Selected model APIs': 'Selected model APIs',
+        'A focused catalog for developers and small teams, covering text, speech, and image as each model is ready.':
+          'A focused catalog for developers and small teams, covering text, speech, and image as each model is ready.',
+        'Deployment and adaptation': 'Deployment and adaptation',
+        'Support for suitable small and medium models, from deployment evaluation to API adaptation.':
+          'Support for suitable small and medium models, from deployment evaluation to API adaptation.',
+        'Clear access boundaries': 'Clear access boundaries',
+        'Check supported endpoints, call status, and usage guidance in the Model Square and documentation before integration.':
+          'Check supported endpoints, call status, and usage guidance in the Model Square and documentation before integration.',
+        Text: 'Text',
+        Speech: 'Speech',
+        Image: 'Image',
+        'Browse Model Square': 'Browse Model Square',
       },
     },
   },
 })
 
-const offerings: WildFlowOffering[] = [
-  {
-    id: 'tts-standard',
-    display_name: 'server title',
-    kind: 'tts',
-    vendor: 'OpenBMB',
-    model_version_ref: 'openbmb/VoxCPM2',
-    profile: 'standard',
-    description: 'server description',
-    callable: true,
-    status: 'available',
-  },
-  {
-    id: 'tts-premium',
-    display_name: 'server title',
-    kind: 'tts',
-    vendor: 'OpenBMB',
-    model_version_ref: 'openbmb/VoxCPM2',
-    profile: 'wangliqun-premium',
-    description: 'server description',
-    callable: true,
-    status: 'available',
-  },
-  {
-    id: 'flux2-klein-4b',
-    display_name: 'server title',
-    kind: 'image',
-    vendor: 'Black Forest Labs',
-    model_version_ref: 'black-forest-labs/FLUX.2-klein-4B',
-    profile: 'default',
-    description: 'server description',
-    callable: false,
-    status: 'unavailable',
-  },
-]
-
-describe('WildFlow first-party model catalog', () => {
+describe('WildFlow public model overview', () => {
   after(() => domWindow.close())
 
-  test('renders two TTS offerings and one image offering without inventing a third foundation model', async () => {
+  test('describes flexible model categories without publishing hardcoded availability or model counts', async () => {
     const container = document.createElement('div')
     document.body.append(container)
     const root = createRoot(container)
@@ -129,24 +92,22 @@ describe('WildFlow first-party model catalog', () => {
     await act(async () =>
       root.render(
         <I18nextProvider i18n={i18n}>
-          <ModelCatalog offerings={offerings} />
+          <ModelCatalog />
         </I18nextProvider>
       )
     )
 
-    const cards = container.querySelectorAll('[data-model-offering]')
+    const cards = container.querySelectorAll('[data-model-capability]')
     assert.equal(cards.length, 3)
     assert.deepEqual(
-      [...cards].map((card) => card.getAttribute('data-model-offering')),
-      ['tts-standard', 'tts-premium', 'flux2-klein-4b']
+      [...cards].map((card) => card.getAttribute('data-model-capability')),
+      ['model-api', 'deployment', 'access-boundaries']
     )
-    assert.equal(container.textContent?.match(/openbmb\/VoxCPM2/g)?.length, 2)
-    assert.equal(
-      container.textContent?.includes('VoxCPM2 Wang Liqun Premium Voice'),
-      true
-    )
-    assert.equal(container.textContent?.includes('Unavailable'), true)
-    assert.equal(container.textContent?.includes('server title'), false)
+    assert.match(container.textContent ?? '', /Text/)
+    assert.match(container.textContent ?? '', /Speech/)
+    assert.match(container.textContent ?? '', /Image/)
+    assert.doesNotMatch(container.textContent ?? '', /Available|Unavailable/)
+    assert.doesNotMatch(container.textContent ?? '', /Two voice experiences/)
 
     await act(async () => root.unmount())
     container.remove()

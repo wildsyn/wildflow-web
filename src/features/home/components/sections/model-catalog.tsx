@@ -16,130 +16,92 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import { AudioLines, ImageIcon } from 'lucide-react'
+import { Boxes, CloudCog, FileCheck2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
-import type { WildFlowOffering } from '../../types'
-
-interface ModelCatalogProps {
-  offerings: WildFlowOffering[]
-  isLoading?: boolean
-}
-
-function offeringTitle(id: WildFlowOffering['id']) {
-  switch (id) {
-    case 'tts-standard':
-      return 'VoxCPM2 Standard TTS'
-    case 'tts-premium':
-      return 'VoxCPM2 Wang Liqun Premium Voice'
-    case 'flux2-klein-4b':
-      return 'FLUX.2 [klein] 4B Image Generation'
-  }
-}
-
-function offeringDescription(id: WildFlowOffering['id']) {
-  switch (id) {
-    case 'tts-standard':
-      return 'General-purpose voice design and voice cloning.'
-    case 'tts-premium':
-      return 'A premium Wang Liqun voice profile on the same VoxCPM2 foundation model.'
-    case 'flux2-klein-4b':
-      return 'Open-source image generation for Chinese and English prompts.'
-  }
-}
-
-export function ModelCatalog({ offerings, isLoading }: ModelCatalogProps) {
+export function ModelCatalog() {
   const { t } = useTranslation()
-  let catalogContent
-
-  if (isLoading) {
-    catalogContent = (
-      <div
-        className='grid gap-4 md:grid-cols-3'
-        aria-label={t('Loading...')}
-        aria-busy='true'
-      >
-        {['tts-standard', 'tts-premium', 'flux2-klein-4b'].map((id) => (
-          <div
-            key={id}
-            className='border-border bg-muted/30 h-64 animate-pulse rounded-xl border'
-          />
-        ))}
-      </div>
-    )
-  } else if (offerings.length === 0) {
-    catalogContent = (
-      <div className='border-border text-muted-foreground rounded-xl border px-6 py-10 text-sm'>
-        {t('Model catalog is temporarily unavailable')}
-      </div>
-    )
-  } else {
-    catalogContent = (
-      <div className='grid gap-4 md:grid-cols-3'>
-        {offerings.map((offering) => {
-          const isTTS = offering.kind === 'tts'
-          return (
-            <article
-              key={offering.id}
-              data-model-offering={offering.id}
-              className='border-border bg-background flex min-h-64 flex-col rounded-xl border p-6'
-            >
-              <div className='mb-6 flex items-start justify-between gap-4'>
-                <div className='bg-muted flex size-10 items-center justify-center rounded-lg'>
-                  {isTTS ? (
-                    <AudioLines className='size-5' aria-hidden='true' />
-                  ) : (
-                    <ImageIcon className='size-5' aria-hidden='true' />
-                  )}
-                </div>
-                <span
-                  className={
-                    offering.callable
-                      ? 'inline-flex rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-xs font-medium text-emerald-600 dark:text-emerald-400'
-                      : 'border-border bg-muted text-muted-foreground inline-flex rounded-full border px-2.5 py-1 text-xs font-medium'
-                  }
-                >
-                  {t(offering.callable ? 'Available' : 'Unavailable')}
-                </span>
-              </div>
-
-              <p className='text-muted-foreground mb-2 text-xs font-medium tracking-wide uppercase'>
-                {t(isTTS ? 'TTS' : 'Image Generation')}
-              </p>
-              <h3 className='mb-2 text-base font-semibold'>
-                {t(offeringTitle(offering.id))}
-              </h3>
-              <p className='text-muted-foreground mb-6 text-sm leading-relaxed'>
-                {t(offeringDescription(offering.id))}
-              </p>
-
-              <div className='border-border mt-auto border-t pt-4'>
-                <p className='text-muted-foreground text-xs'>
-                  {offering.vendor}
-                </p>
-                <code className='mt-1 block text-xs break-all'>
-                  {offering.model_version_ref}
-                </code>
-              </div>
-            </article>
-          )
-        })}
-      </div>
-    )
-  }
+  const capabilities = [
+    {
+      id: 'model-api',
+      icon: Boxes,
+      title: t('Selected model APIs'),
+      description: t(
+        'A focused catalog for developers and small teams, covering text, speech, and image as each model is ready.'
+      ),
+      tags: [t('Text'), t('Speech'), t('Image')],
+    },
+    {
+      id: 'deployment',
+      icon: CloudCog,
+      title: t('Deployment and adaptation'),
+      description: t(
+        'Support for suitable small and medium models, from deployment evaluation to API adaptation.'
+      ),
+      tags: [],
+    },
+    {
+      id: 'access-boundaries',
+      icon: FileCheck2,
+      title: t('Clear access boundaries'),
+      description: t(
+        'Check supported endpoints, call status, and usage guidance in the Model Square and documentation before integration.'
+      ),
+      tags: [],
+    },
+  ]
 
   return (
     <section id='models' className='relative z-10 px-6 py-24 md:py-32'>
       <div className='mx-auto max-w-6xl'>
         <div className='mb-12 max-w-2xl'>
           <p className='text-muted-foreground mb-3 text-xs font-medium tracking-widest uppercase'>
-            {t('First-party models')}
+            {t('Model services')}
           </p>
           <h2 className='text-2xl leading-tight font-bold tracking-tight md:text-3xl'>
-            {t('Two voice experiences and one image model')}
+            {t('Focused model access for practical products')}
           </h2>
+          <p className='text-muted-foreground mt-4 text-sm leading-relaxed'>
+            {t(
+              'The first model lineup is being connected across text, speech, and image. Model names and call availability are published in the Model Square.'
+            )}
+          </p>
         </div>
-        {catalogContent}
+
+        <div className='grid gap-4 md:grid-cols-3'>
+          {capabilities.map((capability) => {
+            const Icon = capability.icon
+            return (
+              <article
+                key={capability.id}
+                data-model-capability={capability.id}
+                className='border-border bg-background flex min-h-60 flex-col rounded-xl border p-6'
+              >
+                <div className='bg-muted mb-6 flex size-10 items-center justify-center rounded-lg'>
+                  <Icon className='size-5' aria-hidden='true' />
+                </div>
+                <h3 className='mb-2 text-base font-semibold'>
+                  {capability.title}
+                </h3>
+                <p className='text-muted-foreground text-sm leading-relaxed'>
+                  {capability.description}
+                </p>
+                {capability.tags.length > 0 ? (
+                  <div className='mt-auto flex flex-wrap gap-2 pt-6'>
+                    {capability.tags.map((tag) => (
+                      <span
+                        key={tag}
+                        className='border-border bg-muted text-muted-foreground rounded-full border px-2.5 py-1 text-xs'
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                ) : null}
+              </article>
+            )
+          })}
+        </div>
       </div>
     </section>
   )
