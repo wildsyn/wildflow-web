@@ -21,6 +21,8 @@ import { after, describe, test } from 'node:test'
 
 import { Window } from 'happy-dom'
 
+import type { WildFlowOffering } from '../../types'
+
 const domWindow = new Window()
 for (const key of [
   'window',
@@ -47,6 +49,11 @@ const { createInstance } = await import('i18next')
 const { I18nextProvider, initReactI18next } = await import('react-i18next')
 const { ModelCatalog } = await import('../sections/model-catalog')
 
+const reactTestGlobals = globalThis as typeof globalThis & {
+  IS_REACT_ACT_ENVIRONMENT?: boolean
+}
+reactTestGlobals.IS_REACT_ACT_ENVIRONMENT = true
+
 const i18n = createInstance()
 await i18n.use(initReactI18next).init({
   lng: 'en',
@@ -57,8 +64,7 @@ await i18n.use(initReactI18next).init({
         'Two voice experiences and one image model':
           'Two voice experiences and one image model',
         'VoxCPM2 Standard TTS': 'VoxCPM2 Standard TTS',
-        'VoxCPM2 Wang Liqun Premium Voice':
-          'VoxCPM2 Wang Liqun Premium Voice',
+        'VoxCPM2 Wang Liqun Premium Voice': 'VoxCPM2 Wang Liqun Premium Voice',
         'FLUX.2 [klein] 4B Image Generation':
           'FLUX.2 [klein] 4B Image Generation',
         'General-purpose voice design and voice cloning.':
@@ -76,39 +82,39 @@ await i18n.use(initReactI18next).init({
   },
 })
 
-const offerings = [
+const offerings: WildFlowOffering[] = [
   {
     id: 'tts-standard',
     display_name: 'server title',
-    kind: 'tts' as const,
+    kind: 'tts',
     vendor: 'OpenBMB',
     model_version_ref: 'openbmb/VoxCPM2',
     profile: 'standard',
     description: 'server description',
     callable: true,
-    status: 'available' as const,
+    status: 'available',
   },
   {
     id: 'tts-premium',
     display_name: 'server title',
-    kind: 'tts' as const,
+    kind: 'tts',
     vendor: 'OpenBMB',
     model_version_ref: 'openbmb/VoxCPM2',
     profile: 'wangliqun-premium',
     description: 'server description',
     callable: true,
-    status: 'available' as const,
+    status: 'available',
   },
   {
     id: 'flux2-klein-4b',
     display_name: 'server title',
-    kind: 'image' as const,
+    kind: 'image',
     vendor: 'Black Forest Labs',
     model_version_ref: 'black-forest-labs/FLUX.2-klein-4B',
     profile: 'default',
     description: 'server description',
     callable: false,
-    status: 'unavailable' as const,
+    status: 'unavailable',
   },
 ]
 
@@ -134,10 +140,7 @@ describe('WildFlow first-party model catalog', () => {
       [...cards].map((card) => card.getAttribute('data-model-offering')),
       ['tts-standard', 'tts-premium', 'flux2-klein-4b']
     )
-    assert.equal(
-      container.textContent?.match(/openbmb\/VoxCPM2/g)?.length,
-      2
-    )
+    assert.equal(container.textContent?.match(/openbmb\/VoxCPM2/g)?.length, 2)
     assert.equal(
       container.textContent?.includes('VoxCPM2 Wang Liqun Premium Voice'),
       true

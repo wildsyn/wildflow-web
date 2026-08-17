@@ -32,3 +32,13 @@ export async function getHomePageContent(): Promise<HomePageContentResponse> {
   const res = await api.get('/api/home_page_content')
   return res.data
 }
+
+export async function getWildFlowCatalog(): Promise<{
+  success: boolean
+  data?: unknown
+}> {
+  const res = await api.get('/api/wildflow/catalog', {
+    skipErrorHandler: true,
+  })
+  return res.data
+}

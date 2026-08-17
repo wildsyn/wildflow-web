@@ -37,3 +37,20 @@ export interface HomePageContentResult {
   isLoaded: boolean
   isUrl: boolean
 }
+
+export interface WildFlowOffering {
+  id: 'tts-standard' | 'tts-premium' | 'flux2-klein-4b'
+  display_name: string
+  kind: 'tts' | 'image'
+  vendor: string
+  model_version_ref: string
+  profile: string
+  description: string
+  callable: boolean
+  status: 'available' | 'unavailable'
+}
+
+export interface WildFlowCatalogResult {
+  offerings: WildFlowOffering[]
+  isLoaded: boolean
+}
