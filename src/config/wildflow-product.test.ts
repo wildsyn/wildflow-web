@@ -87,4 +87,24 @@ describe('WildFlow 1.0 product shell', () => {
     assert.doesNotMatch(homeSource, /<Stats\s*\/>/)
     assert.doesNotMatch(constantsSource, /DEFAULT_STATS/)
   })
+
+  test('keeps the default home page limited to evidence-backed content', () => {
+    const homeSource = readFileSync(
+      new URL('../features/home/index.tsx', import.meta.url),
+      'utf8'
+    )
+    const heroDemoSource = readFileSync(
+      new URL(
+        '../features/home/components/hero-terminal-demo.tsx',
+        import.meta.url
+      ),
+      'utf8'
+    )
+
+    assert.doesNotMatch(homeSource, /<Features\s*\/>/)
+    assert.doesNotMatch(homeSource, /<HowItWorks\s*\/>/)
+    assert.doesNotMatch(heroDemoSource, /latency:\s*\d+/)
+    assert.doesNotMatch(heroDemoSource, /tokens:\s*\d+/)
+    assert.doesNotMatch(heroDemoSource, />\s*200 ok\s*</i)
+  })
 })

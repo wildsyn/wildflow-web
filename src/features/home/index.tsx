@@ -26,13 +26,7 @@ import { useTheme } from '@/context/theme-provider'
 import { isLikelyHtml } from '@/lib/content-format'
 import { useAuthStore } from '@/stores/auth-store'
 
-import {
-  CTA,
-  Features,
-  Hero,
-  HowItWorks,
-  ModelCatalog,
-} from './components'
+import { CTA, Hero, ModelCatalog } from './components'
 import { useHomePageContent, useWildFlowCatalog } from './hooks'
 
 function DefaultHome({ isAuthenticated }: { isAuthenticated: boolean }) {
@@ -42,8 +36,6 @@ function DefaultHome({ isAuthenticated }: { isAuthenticated: boolean }) {
     <>
       <Hero isAuthenticated={isAuthenticated} />
       <ModelCatalog offerings={offerings} isLoading={!isLoaded} />
-      <Features />
-      <HowItWorks />
       <CTA isAuthenticated={isAuthenticated} />
       <Footer />
     </>
