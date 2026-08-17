@@ -19,7 +19,7 @@ grep -q '<title>野生流动</title>' index.html || {
   echo "index title is not WildFlow branded"; fail=1; }
 grep -q 'content="野生流动"' index.html || {
   echo "index metadata title is not WildFlow branded"; fail=1; }
-grep -q '统一的大模型服务、模型目录与开发者控制台。' index.html || {
+grep -q '野生流动是野生智能旗下的 AI 模型、API 与任务服务平台。' index.html || {
   echo "index description is not WildFlow branded"; fail=1; }
 
 bash scripts/check-wildflow-introduction.sh || fail=1
