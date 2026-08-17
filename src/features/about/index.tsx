@@ -27,6 +27,39 @@ import { DEFAULT_LOGO } from '@/lib/constants'
 
 import { getAboutContent } from './api'
 
+const NEW_API_ATTRIBUTION_NOTICE =
+  'Frontend design and development by New API contributors.'
+
+function NewApiAttribution() {
+  return (
+    <aside
+      aria-label='Open-source attribution'
+      className='border-border/40 text-muted-foreground mx-auto my-8 w-full max-w-6xl border-t px-4 pt-6 text-center text-xs'
+    >
+      <p>{NEW_API_ATTRIBUTION_NOTICE}</p>
+      <p className='mt-2 flex flex-wrap items-center justify-center gap-2'>
+        <a
+          href='https://github.com/QuantumNous/new-api'
+          target='_blank'
+          rel='noopener noreferrer'
+          className='text-foreground/70 hover:text-foreground font-medium transition-colors'
+        >
+          New API source
+        </a>
+        <span aria-hidden='true'>·</span>
+        <a
+          href='https://github.com/QuantumNous/new-api/blob/main/LICENSE'
+          target='_blank'
+          rel='noopener noreferrer'
+          className='text-foreground/70 hover:text-foreground font-medium transition-colors'
+        >
+          AGPL v3.0
+        </a>
+      </p>
+    </aside>
+  )
+}
+
 function EmptyAboutState() {
   const { t } = useTranslation()
 
@@ -59,41 +92,6 @@ function EmptyAboutState() {
             >
               wildsyn/wildflow-web
             </a>
-          </p>
-          <p className='text-muted-foreground'>
-            {t('This frontend is based on')}{' '}
-            <a
-              href='https://github.com/QuantumNous/new-api'
-              target='_blank'
-              rel='noopener noreferrer'
-              className='text-primary hover:underline'
-            >
-              {t('New API')}
-            </a>
-            {', '}
-            {t('created by')}{' '}
-            <a
-              href='https://github.com/QuantumNous'
-              target='_blank'
-              rel='noopener noreferrer'
-              className='text-primary hover:underline'
-            >
-              {t('QuantumNous')}
-            </a>
-            {', '}
-            {t('and preserves the required upstream attribution.')}
-          </p>
-          <p className='text-muted-foreground'>
-            {t('This project must be used in compliance with the')}{' '}
-            <a
-              href='https://github.com/QuantumNous/new-api/blob/main/LICENSE'
-              target='_blank'
-              rel='noopener noreferrer'
-              className='text-primary hover:underline'
-            >
-              {t('AGPL v3.0 License')}
-            </a>
-            .
           </p>
         </div>
       </div>
@@ -130,6 +128,7 @@ export function About() {
     return (
       <PublicLayout>
         <EmptyAboutState />
+        <NewApiAttribution />
       </PublicLayout>
     )
   }
@@ -143,6 +142,7 @@ export function About() {
           title={t('About')}
           sandbox='allow-forms allow-popups allow-popups-to-escape-sandbox allow-scripts'
         />
+        <NewApiAttribution />
       </PublicLayout>
     )
   }
@@ -156,6 +156,7 @@ export function About() {
           content={rawContent}
           className='prose-neutral dark:prose-invert max-w-none'
         />
+        <NewApiAttribution />
       </PublicLayout>
     )
   }
@@ -168,6 +169,7 @@ export function About() {
           content={rawContent}
           className='prose-neutral dark:prose-invert max-w-none'
         />
+        <NewApiAttribution />
       </div>
     </PublicLayout>
   )
