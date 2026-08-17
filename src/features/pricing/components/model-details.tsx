@@ -67,7 +67,11 @@ import {
   isDynamicPricingModel,
 } from '../lib/dynamic-price'
 import { parseTags } from '../lib/filters'
-import { getAvailableGroups, isTokenBasedModel } from '../lib/model-helpers'
+import {
+  getAvailableGroups,
+  hasConfiguredPricing,
+  isTokenBasedModel,
+} from '../lib/model-helpers'
 import { formatFixedPrice, formatGroupPrice } from '../lib/price'
 import type {
   ModelCapability,
@@ -497,6 +501,29 @@ function ModelBackendProviderSection(props: { model: PricingModel }) {
     )
   }
 
+  if ((model.catalog_required_parameters?.length ?? 0) > 0) {
+    cells.push(
+      <CatalogInfoCell
+        key='required-parameters'
+        label={`${t('Required')} ${t('Parameters')}`}
+      >
+        <CatalogPillList items={model.catalog_required_parameters ?? []} />
+      </CatalogInfoCell>
+    )
+  }
+
+  if ((model.catalog_voices?.length ?? 0) > 0) {
+    cells.push(
+      <CatalogInfoCell key='voices' label={t('Voice')}>
+        <CatalogPillList
+          items={(model.catalog_voices ?? []).map(
+            (voice) => `${voice.name} (${voice.id})`
+          )}
+        />
+      </CatalogInfoCell>
+    )
+  }
+
   if (cells.length === 0) return null
 
   return (
@@ -574,6 +601,30 @@ function PriceSection(props: {
   showRechargePrice: boolean
 }) {
   const { t } = useTranslation()
+
+  if (!hasConfiguredPricing(props.model)) {
+    return (
+      <section>
+        <SectionTitle>{t('Base Price')}</SectionTitle>
+        <div className='bg-muted/20 rounded-lg border p-3'>
+          <div className='text-foreground font-mono text-base font-semibold tabular-nums'>
+            {props.model.catalog_price_display}
+          </div>
+          <div
+            className={cn(
+              'text-sm font-medium',
+              props.model.catalog_callable
+                ? 'text-success'
+                : 'text-muted-foreground'
+            )}
+          >
+            {t(props.model.catalog_callable ? 'Available' : 'Unavailable')}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
   const isTokenBased = isTokenBasedModel(props.model)
   const tokenUnitLabel = props.tokenUnit === 'K' ? '1K' : '1M'
   const baseGroupKey = '_base'
@@ -1181,16 +1232,18 @@ export function ModelDetailsContent(props: ModelDetailsContentProps) {
             {isDynamic && (
               <DynamicPricingBreakdown billingExpr={props.model.billing_expr} />
             )}
-            <GroupPricingSection
-              model={props.model}
-              groupRatio={props.groupRatio}
-              usableGroup={props.usableGroup}
-              autoGroups={props.autoGroups}
-              priceRate={props.priceRate}
-              usdExchangeRate={props.usdExchangeRate}
-              tokenUnit={props.tokenUnit}
-              showRechargePrice={showRechargePrice}
-            />
+            {hasConfiguredPricing(props.model) && (
+              <GroupPricingSection
+                model={props.model}
+                groupRatio={props.groupRatio}
+                usableGroup={props.usableGroup}
+                autoGroups={props.autoGroups}
+                priceRate={props.priceRate}
+                usdExchangeRate={props.usdExchangeRate}
+                tokenUnit={props.tokenUnit}
+                showRechargePrice={showRechargePrice}
+              />
+            )}
           </section>
 
           <ModelBackendDetailsSection model={props.model} />

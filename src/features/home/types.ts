@@ -39,15 +39,30 @@ export interface HomePageContentResult {
 }
 
 export interface WildFlowOffering {
-  id: 'tts-standard' | 'tts-premium' | 'flux2-klein-4b'
+  id: 'VoxCPM2' | 'FLUX.2 [klein] 4B'
   display_name: string
   kind: 'tts' | 'image'
   vendor: string
   model_version_ref: string
-  profile: string
   description: string
+  required_parameters?: string[]
+  voices?: WildFlowVoice[]
+  pricing: WildFlowCatalogPricing
   callable: boolean
   status: 'available' | 'unavailable'
+}
+
+export interface WildFlowVoice {
+  id: string
+  name: string
+  category: 'official' | 'custom'
+}
+
+export interface WildFlowCatalogPricing {
+  currency: 'CNY'
+  amount: number
+  unit: '10k_characters' | 'image'
+  display: string
 }
 
 export interface WildFlowCatalogResult {

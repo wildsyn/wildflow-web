@@ -21,7 +21,30 @@ import { useEffect, useState } from 'react'
 import { getWildFlowCatalog } from '../api'
 import type { WildFlowCatalogResult, WildFlowOffering } from '../types'
 
-const OFFERING_IDS = ['tts-standard', 'tts-premium', 'flux2-klein-4b'] as const
+const OFFERING_IDS = ['VoxCPM2', 'FLUX.2 [klein] 4B'] as const
+
+function isPricing(value: unknown): boolean {
+  if (!value || typeof value !== 'object') return false
+  const pricing = value as Record<string, unknown>
+  return (
+    pricing.currency === 'CNY' &&
+    typeof pricing.amount === 'number' &&
+    Number.isFinite(pricing.amount) &&
+    pricing.amount > 0 &&
+    (pricing.unit === '10k_characters' || pricing.unit === 'image') &&
+    typeof pricing.display === 'string'
+  )
+}
+
+function isVoice(value: unknown): boolean {
+  if (!value || typeof value !== 'object') return false
+  const voice = value as Record<string, unknown>
+  return (
+    typeof voice.id === 'string' &&
+    typeof voice.name === 'string' &&
+    (voice.category === 'official' || voice.category === 'custom')
+  )
+}
 
 function isOffering(value: unknown): value is WildFlowOffering {
   if (!value || typeof value !== 'object') return false
@@ -32,8 +55,15 @@ function isOffering(value: unknown): value is WildFlowOffering {
     typeof item.display_name === 'string' &&
     typeof item.vendor === 'string' &&
     typeof item.model_version_ref === 'string' &&
-    typeof item.profile === 'string' &&
     typeof item.description === 'string' &&
+    (item.required_parameters === undefined ||
+      (Array.isArray(item.required_parameters) &&
+        item.required_parameters.every(
+          (parameter) => typeof parameter === 'string'
+        ))) &&
+    (item.voices === undefined ||
+      (Array.isArray(item.voices) && item.voices.every(isVoice))) &&
+    isPricing(item.pricing) &&
     typeof item.callable === 'boolean'
   )
 }

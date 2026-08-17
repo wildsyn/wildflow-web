@@ -27,6 +27,7 @@ import {
 import { GroupBadge } from '@/components/group-badge'
 import { StatusBadge } from '@/components/status-badge'
 import { getLobeIcon } from '@/lib/lobe-icon'
+import { cn } from '@/lib/utils'
 
 import { DEFAULT_TOKEN_UNIT } from '../constants'
 import {
@@ -34,7 +35,7 @@ import {
   getDynamicPricingSummary,
 } from '../lib/dynamic-price'
 import { parseTags } from '../lib/filters'
-import { isTokenBasedModel } from '../lib/model-helpers'
+import { hasConfiguredPricing, isTokenBasedModel } from '../lib/model-helpers'
 import {
   formatPrice,
   formatRequestPrice,
@@ -114,6 +115,25 @@ export function usePricingColumns(
       ),
       cell: ({ row }) => {
         const model = row.original
+        if (!hasConfiguredPricing(model)) {
+          return (
+            <div className='max-w-full min-w-0'>
+              <div className='font-mono text-sm font-semibold tabular-nums'>
+                {model.catalog_price_display}
+              </div>
+              <div
+                className={cn(
+                  'text-xs font-medium',
+                  model.catalog_callable
+                    ? 'text-success'
+                    : 'text-muted-foreground'
+                )}
+              >
+                {t(model.catalog_callable ? 'Available' : 'Unavailable')}
+              </div>
+            </div>
+          )
+        }
         const dynamicSummary = getDynamicPricingSummary(model, {
           tokenUnit,
           showRechargePrice,
