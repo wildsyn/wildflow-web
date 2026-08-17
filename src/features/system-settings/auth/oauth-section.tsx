@@ -79,6 +79,8 @@ const oauthSchema = z.object({
     authorization_endpoint: z.string(),
     token_endpoint: z.string(),
     user_info_endpoint: z.string(),
+    end_session_endpoint: z.string(),
+    enrollment_endpoint: z.string(),
   }),
   TelegramOAuthEnabled: z.boolean(),
   TelegramBotToken: z.string(),
@@ -110,6 +112,8 @@ type FlatOAuthDefaults = {
   'oidc.authorization_endpoint': string
   'oidc.token_endpoint': string
   'oidc.user_info_endpoint': string
+  'oidc.end_session_endpoint': string
+  'oidc.enrollment_endpoint': string
   TelegramOAuthEnabled: boolean
   TelegramBotToken: string
   TelegramBotName: string
@@ -193,6 +197,8 @@ const buildFormDefaults = (defaults: FlatOAuthDefaults): OAuthFormValues => ({
     authorization_endpoint: defaults['oidc.authorization_endpoint'] ?? '',
     token_endpoint: defaults['oidc.token_endpoint'] ?? '',
     user_info_endpoint: defaults['oidc.user_info_endpoint'] ?? '',
+    end_session_endpoint: defaults['oidc.end_session_endpoint'] ?? '',
+    enrollment_endpoint: defaults['oidc.enrollment_endpoint'] ?? '',
   },
   TelegramOAuthEnabled: defaults.TelegramOAuthEnabled,
   TelegramBotToken: defaults.TelegramBotToken ?? '',
@@ -222,6 +228,8 @@ const normalizeFormValues = (values: OAuthFormValues): FlatOAuthDefaults => ({
   'oidc.authorization_endpoint': values.oidc.authorization_endpoint,
   'oidc.token_endpoint': values.oidc.token_endpoint,
   'oidc.user_info_endpoint': values.oidc.user_info_endpoint,
+  'oidc.end_session_endpoint': values.oidc.end_session_endpoint,
+  'oidc.enrollment_endpoint': values.oidc.enrollment_endpoint,
   TelegramOAuthEnabled: values.TelegramOAuthEnabled,
   TelegramBotToken: values.TelegramBotToken,
   TelegramBotName: values.TelegramBotName,
@@ -307,6 +315,7 @@ export function OAuthSection(props: OAuthSectionProps) {
         const authEndpoint = res.data['authorization_endpoint'] || ''
         const tokenEndpoint = res.data['token_endpoint'] || ''
         const userInfoEndpoint = res.data['userinfo_endpoint'] || ''
+        const endSessionEndpoint = res.data['end_session_endpoint'] || ''
 
         finalValues = {
           ...values,
@@ -315,12 +324,14 @@ export function OAuthSection(props: OAuthSectionProps) {
             authorization_endpoint: authEndpoint,
             token_endpoint: tokenEndpoint,
             user_info_endpoint: userInfoEndpoint,
+            end_session_endpoint: endSessionEndpoint,
           },
         }
 
         form.setValue('oidc.authorization_endpoint', authEndpoint)
         form.setValue('oidc.token_endpoint', tokenEndpoint)
         form.setValue('oidc.user_info_endpoint', userInfoEndpoint)
+        form.setValue('oidc.end_session_endpoint', endSessionEndpoint)
 
         toast.success(t('OIDC configuration fetched successfully'))
       } catch (err) {
@@ -797,6 +808,60 @@ export function OAuthSection(props: OAuthSectionProps) {
                           ref={field.ref}
                         />
                       </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name='oidc.end_session_endpoint'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('End Session Endpoint')}</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder={t('OIDC provider logout endpoint')}
+                          autoComplete='off'
+                          value={field.value ?? ''}
+                          onChange={(event) =>
+                            field.onChange(event.target.value)
+                          }
+                          name={field.name}
+                          onBlur={field.onBlur}
+                          ref={field.ref}
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        {t('Required for unified account registration')}
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name='oidc.enrollment_endpoint'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('Enrollment Endpoint')}</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder={t('Authentik enrollment flow URL')}
+                          autoComplete='off'
+                          value={field.value ?? ''}
+                          onChange={(event) =>
+                            field.onChange(event.target.value)
+                          }
+                          name={field.name}
+                          onBlur={field.onBlur}
+                          ref={field.ref}
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        {t('Required for unified account registration')}
+                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
