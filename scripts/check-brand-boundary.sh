@@ -3,7 +3,7 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
-expected_logo_sha='16f3a6e1cdd619c4fd11d75f3881d753024bb36f77f6dd8008f81b1266e4e8bf'
+expected_logo_sha='4cf4521ec1c02c7713399b5aed44e6ed918f8adbd6db8858a5b6f7afa1f4c0de'
 expected_favicon_sha='ba4efd39e338b3b1451f05bc55146ae003d5705dad0a7703de67f32980ff42e8'
 
 actual_logo_sha="$(shasum -a 256 public/logo.png | awk '{print $1}')"
