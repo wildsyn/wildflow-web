@@ -93,21 +93,17 @@ export function Hero(props: HeroProps) {
             className='landing-animate-fade-up mb-5 inline-flex items-center gap-1.5 rounded-full border border-blue-500/20 bg-blue-500/5 px-3 py-1.5 text-[11px] font-medium text-blue-600 opacity-0 shadow-xs dark:border-blue-400/20 dark:bg-blue-400/5 dark:text-blue-400'
             style={{ animationDelay: '0ms' }}
           >
-            <span className='relative flex size-1.5'>
-              <span className='absolute inline-flex h-full w-full animate-ping rounded-full bg-blue-400 opacity-75' />
-              <span className='relative inline-flex size-1.5 rounded-full bg-blue-500 dark:bg-blue-400' />
-            </span>
-            <span>WildFlow 1.0</span>
+            <span>{t('For developers and small teams')}</span>
           </div>
 
           <h1
             className='landing-animate-fade-up text-[clamp(2.25rem,4.5vw,3.25rem)] leading-[1.15] font-bold tracking-tight'
             style={{ animationDelay: '60ms' }}
           >
-            {t('Bring models into real work')}
+            {t('Bring focused AI models')}
             <br />
             <span className='text-primary'>
-              {t('Model services, Skills, and composable Harness')}
+              {t('into products and real work')}
             </span>
           </h1>
           <p
@@ -115,7 +111,7 @@ export function Hero(props: HeroProps) {
             style={{ animationDelay: '120ms' }}
           >
             {t(
-              "WildFlow is WildSyn's AI model, API, and task service platform, providing model services, Skills, and composable Harness capabilities for content production and project delivery."
+              'WildFlow helps developers and small teams connect suitable small and medium models through practical APIs, with optional deployment and adaptation support.'
             )}
           </p>
 
@@ -140,15 +136,8 @@ export function Hero(props: HeroProps) {
                   className='group h-11 rounded-lg px-5 text-sm font-medium'
                   render={<Link to={WILDFLOW_ROUTES.models} />}
                 >
-                  {t('Explore Models')}
+                  {t('Browse Model Square')}
                   <ArrowRight className='ml-1.5 size-4 transition-transform duration-200 group-hover:translate-x-0.5' />
-                </Button>
-                <Button
-                  variant='outline'
-                  className='border-border/50 hover:border-border hover:bg-muted/50 h-11 rounded-lg px-5 text-sm font-medium'
-                  render={<Link to={WILDFLOW_ROUTES.harness} />}
-                >
-                  {t('Explore Harness')}
                 </Button>
                 {renderDocsButton()}
               </>

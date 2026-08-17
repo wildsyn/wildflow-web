@@ -58,7 +58,10 @@ describe('WildFlow 1.0 product shell', () => {
   })
 
   test('cache-busts the legacy logo URL returned by the backend', () => {
-    assert.equal(mapStatusDataToConfig({ logo: '/logo.png' }).logo, DEFAULT_LOGO)
+    assert.equal(
+      mapStatusDataToConfig({ logo: '/logo.png' }).logo,
+      DEFAULT_LOGO
+    )
   })
 
   test('keeps unapproved commercial and upstream task entries closed by default', () => {
@@ -111,6 +114,33 @@ describe('WildFlow 1.0 product shell', () => {
     assert.doesNotMatch(heroDemoSource, /latency:\s*\d+/)
     assert.doesNotMatch(heroDemoSource, /tokens:\s*\d+/)
     assert.doesNotMatch(heroDemoSource, />\s*200 ok\s*</i)
+  })
+
+  test('positions the home page for developers and small teams without unverified commercial promises', () => {
+    const heroSource = readFileSync(
+      new URL('../features/home/components/sections/hero.tsx', import.meta.url),
+      'utf8'
+    )
+    const ctaSource = readFileSync(
+      new URL('../features/home/components/sections/cta.tsx', import.meta.url),
+      'utf8'
+    )
+    const modelCatalogSource = readFileSync(
+      new URL(
+        '../features/home/components/sections/model-catalog.tsx',
+        import.meta.url
+      ),
+      'utf8'
+    )
+
+    assert.match(heroSource, /developers and small teams/i)
+    assert.doesNotMatch(heroSource, /Explore Harness/)
+    assert.doesNotMatch(ctaSource, /View Pricing/)
+    assert.doesNotMatch(modelCatalogSource, /Available|Unavailable/)
+    assert.doesNotMatch(
+      modelCatalogSource,
+      /Two voice experiences and one image model/
+    )
   })
 
   test('keeps required upstream attribution on About instead of the footer', () => {
