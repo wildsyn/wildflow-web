@@ -23,6 +23,7 @@ grep -q '野生流动是野生智能旗下的 AI 模型、API 与任务服务平
   echo "index description is not WildFlow branded"; fail=1; }
 
 bash scripts/check-wildflow-introduction.sh || fail=1
+bash scripts/check-brand-boundary.sh || fail=1
 
 echo "[wildflow-web] secret pattern guard (best effort)"
 if grep -RInE "AKIA[0-9A-Z]{16}|BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY|sk-[A-Za-z0-9]{20,}" src public scripts README.md 2>/dev/null; then

@@ -47,23 +47,32 @@ const DEFAULT_SIDEBAR_MODULES: SidebarModulesAdminConfig = {
     detail: true,
     token: true,
     log: true,
-    midjourney: true,
-    task: true,
+    midjourney: false,
+    task: false,
   },
   personal: {
     enabled: true,
-    topup: true,
+    topup: false,
     personal: true,
   },
   admin: {
     enabled: true,
     channel: true,
     models: true,
-    redemption: true,
+    redemption: false,
     user: true,
     setting: true,
-    subscription: true,
+    subscription: false,
   },
+}
+
+export function getDefaultSidebarModules(): SidebarModulesAdminConfig {
+  return Object.fromEntries(
+    Object.entries(DEFAULT_SIDEBAR_MODULES).map(([section, config]) => [
+      section,
+      { ...config },
+    ])
+  )
 }
 
 const mergeWithDefaultSidebarModules = (

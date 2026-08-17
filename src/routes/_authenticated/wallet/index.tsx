@@ -16,16 +16,22 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, redirect } from '@tanstack/react-router'
 import { z } from 'zod'
 
 import { Wallet } from '@/features/wallet'
+import { isSidebarModuleEnabled } from '@/lib/nav-modules'
 
 const walletSearchSchema = z.object({
   show_history: z.boolean().optional(),
 })
 
 export const Route = createFileRoute('/_authenticated/wallet/')({
+  beforeLoad: () => {
+    if (!isSidebarModuleEnabled('personal', 'topup')) {
+      throw redirect({ to: '/profile' })
+    }
+  },
   component: RouteComponent,
   validateSearch: walletSearchSchema,
 })

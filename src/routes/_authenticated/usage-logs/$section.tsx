@@ -24,6 +24,7 @@ import {
   isUsageLogsSectionId,
   USAGE_LOGS_DEFAULT_SECTION,
 } from '@/features/usage-logs/section-registry'
+import { isSidebarModuleEnabled } from '@/lib/nav-modules'
 
 const logTypeValues = ['0', '1', '2', '3', '4', '5', '6', '7'] as const
 const logTypeSearchSchema = z
@@ -52,6 +53,16 @@ const usageLogsSearchSchema = z.object({
 export const Route = createFileRoute('/_authenticated/usage-logs/$section')({
   beforeLoad: ({ params, search }) => {
     if (!isUsageLogsSectionId(params.section)) {
+      throw redirect({
+        to: '/usage-logs/$section',
+        params: { section: USAGE_LOGS_DEFAULT_SECTION },
+      })
+    }
+    if (
+      (params.section === 'drawing' &&
+        !isSidebarModuleEnabled('console', 'midjourney')) ||
+      (params.section === 'task' && !isSidebarModuleEnabled('console', 'task'))
+    ) {
       throw redirect({
         to: '/usage-logs/$section',
         params: { section: USAGE_LOGS_DEFAULT_SECTION },

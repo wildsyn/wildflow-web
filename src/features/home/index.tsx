@@ -32,7 +32,6 @@ import {
   Hero,
   HowItWorks,
   ModelCatalog,
-  Stats,
 } from './components'
 import { useHomePageContent, useWildFlowCatalog } from './hooks'
 
@@ -42,7 +41,6 @@ function DefaultHome({ isAuthenticated }: { isAuthenticated: boolean }) {
   return (
     <>
       <Hero isAuthenticated={isAuthenticated} />
-      <Stats />
       <ModelCatalog offerings={offerings} isLoading={!isLoaded} />
       <Features />
       <HowItWorks />
