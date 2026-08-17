@@ -112,4 +112,23 @@ describe('WildFlow 1.0 product shell', () => {
     assert.doesNotMatch(heroDemoSource, /tokens:\s*\d+/)
     assert.doesNotMatch(heroDemoSource, />\s*200 ok\s*</i)
   })
+
+  test('keeps required upstream attribution on About instead of the footer', () => {
+    const footerSource = readFileSync(
+      new URL('../components/layout/components/footer.tsx', import.meta.url),
+      'utf8'
+    )
+    const aboutSource = readFileSync(
+      new URL('../features/about/index.tsx', import.meta.url),
+      'utf8'
+    )
+
+    assert.doesNotMatch(footerSource, /ProjectAttribution/)
+    assert.doesNotMatch(footerSource, /github\.com\/QuantumNous\/new-api/)
+    assert.match(
+      aboutSource,
+      /Frontend design and development by New API contributors\./
+    )
+    assert.match(aboutSource, /github\.com\/QuantumNous\/new-api/)
+  })
 })
