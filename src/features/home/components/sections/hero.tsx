@@ -22,10 +22,10 @@ import { ArrowRight, BookOpen } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 import { Button } from '@/components/ui/button'
+import { WILDFLOW_PRODUCT, WILDFLOW_ROUTES } from '@/config/wildflow-product'
 import { useStatus } from '@/hooks/use-status'
 
 import { HeroTerminalDemo } from '../hero-terminal-demo'
-import { WILDFLOW_PRODUCT, WILDFLOW_ROUTES } from '@/config/wildflow-product'
 
 interface HeroProps {
   className?: string
@@ -119,10 +119,10 @@ export function Hero(props: HeroProps) {
             className='landing-animate-fade-up text-[clamp(2.25rem,4.5vw,3.25rem)] leading-[1.15] font-bold tracking-tight'
             style={{ animationDelay: '60ms' }}
           >
-            {t('Models that flow into real work')}
+            {t('Bring models into real work')}
             <br />
             <span className='text-primary'>
-              {t('Model services and composable Harness')}
+              {t('Model services, Skills, and composable Harness')}
             </span>
           </h1>
           <p
@@ -130,7 +130,7 @@ export function Hero(props: HeroProps) {
             style={{ animationDelay: '120ms' }}
           >
             {t(
-              'WildFlow provides model APIs, Skills, and composable Harness capabilities for real content and delivery workflows.'
+              "WildFlow is WildSyn's AI model, API, and task service platform, providing model services, Skills, and composable Harness capabilities for content production and project delivery."
             )}
           </p>
 
@@ -181,7 +181,7 @@ export function Hero(props: HeroProps) {
               </span>
               <p className='text-muted-foreground/60 text-xs leading-relaxed'>
                 {t(
-                  'Connect WildFlow model services to the tools and workflows your team already uses.'
+                  'Use compatible APIs to connect WildFlow to the applications and workflows your team already uses.'
                 )}
               </p>
             </div>
