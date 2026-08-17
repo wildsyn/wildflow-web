@@ -5280,6 +5280,23 @@
     "Two voice experiences and one image model": "Two voice experiences and one image model",
     "Unavailable": "Unavailable",
     "VoxCPM2 Standard TTS": "VoxCPM2 Standard TTS",
-    "VoxCPM2 Wang Liqun Premium Voice": "VoxCPM2 Wang Liqun Premium Voice"
+    "VoxCPM2 Wang Liqun Premium Voice": "VoxCPM2 Wang Liqun Premium Voice",
+    "WildFlow internal testing and compliance preparation notice": "WildFlow internal testing and compliance preparation notice",
+    "WildFlow is currently in internal testing and compliance preparation and is not yet formally open to the public.": "WildFlow is currently in internal testing and compliance preparation and is not yet formally open to the public.",
+    "Website registration is only for WildFlow team members and designated test users to test functionality. Public visitors should not register accounts, top up, make paid calls, or use the platform for production.": "Website registration is only for WildFlow team members and designated test users to test functionality. Public visitors should not register accounts, top up, make paid calls, or use the platform for production.",
+    "Filing and qualification requirements": "Filing and qualification requirements",
+    "We are identifying and completing the filings and qualifications required for the website, domains, and actual business.": "We are identifying and completing the filings and qualifications required for the website, domains, and actual business.",
+    "Content safety review and governance": "Content safety review and governance",
+    "We are improving content review, risk identification, reporting, handling, and appeal processes for inputs and generated content.": "We are improving content review, risk identification, reporting, handling, and appeal processes for inputs and generated content.",
+    "Identity management and log retention": "Identity management and log retention",
+    "We are improving account identity management, access control, abuse response, security auditing, and necessary log retention.": "We are improving account identity management, access control, abuse response, security auditing, and necessary log retention.",
+    "Tax and payment compliance": "Tax and payment compliance",
+    "We are preparing top-up, payment, reconciliation, invoicing, refund, and related tax processes. These functions are currently available only to designated internal test users.": "We are preparing top-up, payment, reconciliation, invoicing, refund, and related tax processes. These functions are currently available only to designated internal test users.",
+    "Consumer protection": "Consumer protection",
+    "We are completing user agreements, privacy disclosures, pricing information, after-sales support, refund arrangements, and complaint channels.": "We are completing user agreements, privacy disclosures, pricing information, after-sales support, refund arrangements, and complaint channels.",
+    "Upstream authorization and terms compliance": "Upstream authorization and terms compliance",
+    "We are reviewing and following authorization scopes, usage and resale restrictions, content rules, and service terms for models, APIs, and other upstream services.": "We are reviewing and following authorization scopes, usage and resale restrictions, content rules, and service terms for models, APIs, and other upstream services.",
+    "WildFlow will publish a separate announcement when the above preparations are complete and the service is ready to open formally. Thank you for your understanding and cooperation.": "WildFlow will publish a separate announcement when the above preparations are complete and the service is ready to open formally. Thank you for your understanding and cooperation.",
+    "I understand, continue browsing": "I understand, continue browsing"
   }
 }
