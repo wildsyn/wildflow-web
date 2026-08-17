@@ -20,10 +20,10 @@ import { Link } from '@tanstack/react-router'
 import { Fragment, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { WILDFLOW_PRODUCT } from '@/config/wildflow-product'
 import { useStatus } from '@/hooks/use-status'
 import { useSystemConfig } from '@/hooks/use-system-config'
 import { cn } from '@/lib/utils'
-import { WILDFLOW_PRODUCT } from '@/config/wildflow-product'
 
 interface FooterLink {
   text: string
@@ -266,7 +266,9 @@ export function Footer(props: FooterProps) {
               </span>
             </Link>
             <p className='text-muted-foreground/60 mt-3 max-w-[240px] text-xs leading-relaxed'>
-              {t('Model services, Skills, and composable Harness for real work.')}
+              {t(
+                'Model services, Skills, and composable Harness for content and delivery workflows.'
+              )}
             </p>
           </div>
 
