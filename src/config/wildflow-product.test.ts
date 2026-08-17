@@ -36,7 +36,7 @@ describe('WildFlow 1.0 product shell', () => {
         '/',
         '/pricing',
         '/harness',
-        'https://github.com/wildsyn/wildflow/tree/main/docs',
+        'https://docs.wildflow.cn',
         '/dashboard',
       ]
     )
