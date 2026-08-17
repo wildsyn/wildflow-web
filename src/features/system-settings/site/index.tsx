@@ -26,8 +26,8 @@ import {
 
 const defaultSiteSettings: SiteSettings = {
   Notice: '',
-  SystemName: 'New API',
-  Logo: '',
+  SystemName: '野生流动',
+  Logo: '/logo.png',
   Footer: '',
   About: '',
   HomePageContent: '',

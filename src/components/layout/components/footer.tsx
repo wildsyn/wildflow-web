@@ -167,53 +167,32 @@ export function Footer(props: FooterProps) {
   const fallbackColumns = useMemo<FooterColumnProps[]>(
     () => [
       {
-        title: t('footer.columns.about.title'),
+        title: t('WildFlow'),
         links: [
           {
-            text: t('footer.columns.about.links.aboutProject'),
-            href: 'https://docs.newapi.pro/wiki/project-introduction/',
+            text: t('About'),
+            href: '/about',
           },
           {
-            text: t('footer.columns.about.links.contact'),
-            href: 'https://docs.newapi.pro/support/community-interaction/',
+            text: t('Model Square'),
+            href: '/pricing',
           },
           {
-            text: t('footer.columns.about.links.features'),
-            href: 'https://docs.newapi.pro/wiki/features-introduction/',
+            text: t('Harness'),
+            href: '/harness',
           },
         ],
       },
       {
-        title: t('footer.columns.docs.title'),
+        title: t('Resources'),
         links: [
           {
-            text: t('footer.columns.docs.links.quickStart'),
-            href: 'https://docs.newapi.pro/getting-started/',
+            text: t('Docs'),
+            href: WILDFLOW_PRODUCT.docsUrl,
           },
           {
-            text: t('footer.columns.docs.links.installation'),
-            href: 'https://docs.newapi.pro/installation/',
-          },
-          {
-            text: t('footer.columns.docs.links.apiDocs'),
-            href: 'https://docs.newapi.pro/api/',
-          },
-        ],
-      },
-      {
-        title: t('footer.columns.related.title'),
-        links: [
-          {
-            text: t('footer.columns.related.links.oneApi'),
-            href: 'https://github.com/songquanpeng/one-api',
-          },
-          {
-            text: t('footer.columns.related.links.midjourney'),
-            href: 'https://github.com/novicezk/midjourney-proxy',
-          },
-          {
-            text: t('footer.columns.related.links.newApiKeyTool'),
-            href: 'https://github.com/Calcium-Ion/new-api-key-tool',
+            text: t('Source Code'),
+            href: WILDFLOW_PRODUCT.sourceUrl,
           },
         ],
       },

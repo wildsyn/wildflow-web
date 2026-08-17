@@ -46,6 +46,21 @@ const DEFAULTS: Record<HeaderNavModule, ModuleAccess> = {
   rankings: DEFAULT_HEADER_NAV_MODULES.rankings,
 }
 
+const CLOSED_SIDEBAR_MODULES = new Set([
+  'console.midjourney',
+  'console.task',
+  'personal.topup',
+  'admin.redemption',
+  'admin.subscription',
+])
+
+function isSidebarModuleEnabledByDefault(
+  section: string,
+  module: string
+): boolean {
+  return !CLOSED_SIDEBAR_MODULES.has(`${section}.${module}`)
+}
+
 function cloneHeaderNavDefaults(): HeaderNavModules {
   return {
     ...DEFAULT_HEADER_NAV_MODULES,
@@ -190,10 +205,11 @@ export function isSidebarModuleEnabled(
   module: string
 ): boolean {
   const status = getCachedStatus()
-  if (!status) return true
+  const fallback = isSidebarModuleEnabledByDefault(section, module)
+  if (!status) return fallback
 
   const raw = status.SidebarModulesAdmin
-  if (!raw || String(raw).trim() === '') return true
+  if (!raw || String(raw).trim() === '') return fallback
 
   try {
     const parsed = JSON.parse(String(raw)) as Record<
@@ -201,11 +217,11 @@ export function isSidebarModuleEnabled(
       Record<string, boolean>
     >
     const sectionConfig = parsed[section]
-    if (!sectionConfig) return true
+    if (!sectionConfig) return fallback
     if (sectionConfig.enabled === false) return false
-    if (sectionConfig[module] === false) return false
-    return true
+    if (typeof sectionConfig[module] !== 'boolean') return fallback
+    return sectionConfig[module]
   } catch {
-    return true
+    return fallback
   }
 }

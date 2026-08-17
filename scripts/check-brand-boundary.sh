@@ -35,6 +35,13 @@ grep -Fq "https://github.com/QuantumNous/new-api" src/features/about/index.tsx |
   exit 1
 }
 
+if rg -n 'DEFAULT_STATS|<Stats[[:space:]]*/>' \
+  src/features/home/constants.ts \
+  src/features/home/index.tsx; then
+  echo 'unsupported marketing counts remain on the public home page' >&2
+  exit 1
+fi
+
 for route in \
   src/routes/_authenticated/wallet/index.tsx \
   src/routes/_authenticated/redemption-codes/index.tsx \

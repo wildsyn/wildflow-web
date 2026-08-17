@@ -20,7 +20,7 @@ For commercial licensing, please contact support@quantumnous.com
  * Home page constants
  * All hardcoded data for home page sections
  */
-import { type TFunction } from 'i18next'
+import type { TFunction } from 'i18next'
 
 // Layout - Main base classes
 export const MAIN_BASE_CLASSES = 'bg-background text-foreground w-full'
@@ -55,30 +55,6 @@ export const GATEWAY_FEATURES = [
   'Token Mgmt',
   'Prompt Caching',
   'Pass-Through',
-] as const
-
-// Stats section - Default statistics
-export const DEFAULT_STATS = [
-  {
-    value: '50',
-    suffix: '+',
-    description: 'upstream services integrated',
-  },
-  {
-    value: '100',
-    suffix: '+',
-    description: 'model billing support',
-  },
-  {
-    value: '50',
-    suffix: '+',
-    description: 'compatible API routes',
-  },
-  {
-    value: '10',
-    suffix: '+',
-    description: 'scheduling controls',
-  },
 ] as const
 
 // Features section - Default features
@@ -129,13 +105,6 @@ export const DEFAULT_FEATURES = [
 
 export function getGatewayFeatures(t: TFunction) {
   return GATEWAY_FEATURES.map((feature) => t(feature))
-}
-
-export function getDefaultStats(t: TFunction) {
-  return DEFAULT_STATS.map((stat) => ({
-    ...stat,
-    description: stat.description ? t(stat.description) : undefined,
-  }))
 }
 
 export function getDefaultFeatures(t: TFunction) {

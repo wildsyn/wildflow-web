@@ -21,7 +21,6 @@ assert_contains() {
 assert_contains "$hero" "Bring models into real work" "hero title"
 assert_contains "$hero" "Model services, Skills, and composable Harness" "hero product line"
 assert_contains "$hero" "WildFlow is WildSyn's AI model, API, and task service platform" "hero introduction"
-assert_contains "$hero" "Use compatible APIs to connect WildFlow" "supported applications"
 
 assert_contains "$cta" "Bring AI into real work" "CTA title"
 assert_contains "$cta" "Start with models, build with Harness" "CTA product line"

@@ -1,12 +1,13 @@
 import assert from 'node:assert/strict'
+import { readFileSync } from 'node:fs'
 import { describe, test } from 'node:test'
 
+import { getDefaultSidebarModules } from '@/hooks/use-sidebar-config'
+import { DEFAULT_LOGO, DEFAULT_SYSTEM_NAME } from '@/lib/constants'
 import {
   isSidebarModuleEnabled,
   parseHeaderNavModules,
 } from '@/lib/nav-modules'
-import { getDefaultSidebarModules } from '@/hooks/use-sidebar-config'
-import { DEFAULT_LOGO, DEFAULT_SYSTEM_NAME } from '@/lib/constants'
 
 import {
   WILDFLOW_DEFAULT_NAV_LINKS,
@@ -28,13 +29,16 @@ describe('WildFlow 1.0 product shell', () => {
   })
 
   test('keeps only decided public entries in the fallback navigation', () => {
-    assert.deepEqual(WILDFLOW_DEFAULT_NAV_LINKS.map((link) => link.href), [
-      '/',
-      '/pricing',
-      '/harness',
-      'https://github.com/wildsyn/wildflow/tree/main/docs',
-      '/dashboard',
-    ])
+    assert.deepEqual(
+      WILDFLOW_DEFAULT_NAV_LINKS.map((link) => link.href),
+      [
+        '/',
+        '/pricing',
+        '/harness',
+        'https://github.com/wildsyn/wildflow/tree/main/docs',
+        '/dashboard',
+      ]
+    )
     assert.equal(
       WILDFLOW_DEFAULT_NAV_LINKS.some((link) =>
         /rank|wallet|subscription|check.?in|affiliate/i.test(link.href)
@@ -68,5 +72,19 @@ describe('WildFlow 1.0 product shell', () => {
     assert.equal(isSidebarModuleEnabled('personal', 'topup'), false)
     assert.equal(isSidebarModuleEnabled('admin', 'redemption'), false)
     assert.equal(isSidebarModuleEnabled('admin', 'subscription'), false)
+  })
+
+  test('does not publish unsupported marketing counts on the public home page', () => {
+    const homeSource = readFileSync(
+      new URL('../features/home/index.tsx', import.meta.url),
+      'utf8'
+    )
+    const constantsSource = readFileSync(
+      new URL('../features/home/constants.ts', import.meta.url),
+      'utf8'
+    )
+
+    assert.doesNotMatch(homeSource, /<Stats\s*\/>/)
+    assert.doesNotMatch(constantsSource, /DEFAULT_STATS/)
   })
 })
