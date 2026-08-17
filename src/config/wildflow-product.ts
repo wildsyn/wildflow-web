@@ -4,7 +4,7 @@ export const WILDFLOW_PRODUCT = {
   name: '野生流动',
   englishName: 'WildFlow',
   version: '1.0',
-  docsUrl: 'https://github.com/wildsyn/wildflow/tree/main/docs',
+  docsUrl: 'https://docs.wildflow.cn',
   sourceUrl: 'https://github.com/wildsyn/wildflow-web',
   upstreamUrl: 'https://github.com/QuantumNous/new-api',
 } as const
