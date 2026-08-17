@@ -25,3 +25,14 @@
 
 - Repository-wide lint and format checks still report unrelated baseline
   findings outside this change. Those files were left untouched.
+
+## Black-and-white logo regression fix
+
+- RED: `bash scripts/check-brand-boundary.sh` rejected the colorful
+  `public/logo.png` after the approved hash was changed to the existing
+  black-and-white WildFlow brand asset.
+- GREEN: the same command passed after `public/logo.png` was replaced with the
+  canonical 180 x 180 black-and-white asset already used by WildFlow.
+- Regression verification: `bun test src/config/wildflow-product.test.ts`
+  passed 7 tests; `bash scripts/check-local.sh`, `bun run typecheck`, and
+  `bun run build` all passed.
