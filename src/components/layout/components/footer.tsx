@@ -23,6 +23,7 @@ import { useTranslation } from 'react-i18next'
 import { WILDFLOW_PRODUCT } from '@/config/wildflow-product'
 import { useStatus } from '@/hooks/use-status'
 import { useSystemConfig } from '@/hooks/use-system-config'
+import { DEFAULT_LOGO } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 
 interface FooterLink {
@@ -159,7 +160,7 @@ export function Footer(props: FooterProps) {
     demoSiteEnabled,
   } = useSystemConfig()
 
-  const displayLogo = systemLogo || props.logo || '/logo.png'
+  const displayLogo = systemLogo || props.logo || DEFAULT_LOGO
   const displayName = systemName || props.name || WILDFLOW_PRODUCT.name
   const isDemoSiteMode = Boolean(demoSiteEnabled)
   const currentYear = new Date().getFullYear()
