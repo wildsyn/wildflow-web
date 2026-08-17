@@ -22,7 +22,11 @@ For commercial licensing, please contact support@quantumnous.com
 
 // System Configuration Defaults
 export const DEFAULT_SYSTEM_NAME = '野生流动'
-export const DEFAULT_LOGO = '/logo.png'
+export const DEFAULT_LOGO = '/logo.png?v=4cf4521e'
+
+export function resolveLogoUrl(logo?: string | null): string {
+  return !logo || logo === '/logo.png' ? DEFAULT_LOGO : logo
+}
 
 // LocalStorage Keys
 export const STORAGE_KEYS = {

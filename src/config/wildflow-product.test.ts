@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs'
 import { describe, test } from 'node:test'
 
 import { getDefaultSidebarModules } from '@/hooks/use-sidebar-config'
+import { mapStatusDataToConfig } from '@/hooks/use-system-config'
 import { DEFAULT_LOGO, DEFAULT_SYSTEM_NAME } from '@/lib/constants'
 import {
   isSidebarModuleEnabled,
@@ -53,7 +54,11 @@ describe('WildFlow 1.0 product shell', () => {
 
   test('uses WildFlow brand defaults before status is loaded', () => {
     assert.equal(DEFAULT_SYSTEM_NAME, '野生流动')
-    assert.equal(DEFAULT_LOGO, '/logo.png')
+    assert.equal(DEFAULT_LOGO, '/logo.png?v=4cf4521e')
+  })
+
+  test('cache-busts the legacy logo URL returned by the backend', () => {
+    assert.equal(mapStatusDataToConfig({ logo: '/logo.png' }).logo, DEFAULT_LOGO)
   })
 
   test('keeps unapproved commercial and upstream task entries closed by default', () => {

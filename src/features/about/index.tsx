@@ -23,6 +23,7 @@ import { PublicLayout } from '@/components/layout'
 import { RichContent } from '@/components/rich-content'
 import { Skeleton } from '@/components/ui/skeleton'
 import { isHttpUrl, isLikelyHtml } from '@/lib/content-format'
+import { DEFAULT_LOGO } from '@/lib/constants'
 
 import { getAboutContent } from './api'
 
@@ -34,7 +35,7 @@ function EmptyAboutState() {
       <div className='max-w-2xl space-y-6 text-center'>
         <div className='flex justify-center'>
           <img
-            src='/logo.png'
+            src={DEFAULT_LOGO}
             alt={t('WildFlow logo')}
             className='size-20 object-contain'
           />
