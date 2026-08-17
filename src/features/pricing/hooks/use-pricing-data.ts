@@ -19,12 +19,18 @@ For commercial licensing, please contact support@quantumnous.com
 import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
 
+import { useWildFlowCatalog } from '@/features/home/hooks/use-wildflow-catalog'
 import { useStatus } from '@/hooks/use-status'
 
 import { getPricing } from '../api'
+import {
+  mergeWildFlowCatalogIntoPricing,
+  mergeWildFlowCatalogVendors,
+} from '../lib/wildflow-catalog'
 
 export function usePricingData() {
   const { status } = useStatus()
+  const catalog = useWildFlowCatalog()
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['pricing'],
@@ -47,7 +53,7 @@ export function usePricingData() {
 
     const vendorMap = new Map(data.vendors.map((v) => [v.id, v]))
 
-    return data.data.map((model) => {
+    const pricedModels = data.data.map((model) => {
       const vendor = model.vendor_id
         ? vendorMap.get(model.vendor_id)
         : undefined
@@ -60,16 +66,23 @@ export function usePricingData() {
         group_ratio: data.group_ratio,
       }
     })
-  }, [data])
+
+    return mergeWildFlowCatalogIntoPricing(pricedModels, catalog.offerings)
+  }, [catalog.offerings, data])
+
+  const vendors = useMemo(
+    () => mergeWildFlowCatalogVendors(data?.vendors ?? [], catalog.offerings),
+    [catalog.offerings, data?.vendors]
+  )
 
   return {
     models,
-    vendors: data?.vendors ?? [],
+    vendors,
     groupRatio: data?.group_ratio ?? {},
     usableGroup: data?.usable_group ?? {},
     endpointMap: data?.supported_endpoint ?? {},
     autoGroups: data?.auto_groups ?? [],
-    isLoading,
+    isLoading: isLoading || !catalog.isLoaded,
     error,
     refetch,
     priceRate,

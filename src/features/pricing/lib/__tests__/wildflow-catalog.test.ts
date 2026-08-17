@@ -1,0 +1,131 @@
+/*
+Copyright (C) 2023-2026 QuantumNous
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@quantumnous.com
+*/
+import assert from 'node:assert/strict'
+import { describe, test } from 'node:test'
+
+import type { WildFlowOffering } from '@/features/home/types'
+
+import type { PricingModel } from '../../types'
+import { mergeWildFlowCatalogIntoPricing } from '../wildflow-catalog'
+
+const pricedModel: PricingModel = {
+  id: 101,
+  model_name: 'priced-model',
+  quota_type: 1,
+  model_ratio: 0,
+  completion_ratio: 0,
+  model_price: 2,
+  enable_groups: ['default'],
+}
+
+const offerings: WildFlowOffering[] = [
+  {
+    id: 'VoxCPM2',
+    display_name: 'VoxCPM2',
+    kind: 'tts',
+    vendor: 'OpenBMB',
+    model_version_ref: 'openbmb/VoxCPM2',
+    description: 'General-purpose voice design and voice cloning.',
+    required_parameters: ['voice'],
+    voices: [
+      { id: 'shuoshuren', name: '说书人', category: 'official' },
+      { id: 'dabin', name: '大斌', category: 'official' },
+      { id: 'tingting', name: '婷婷', category: 'official' },
+      { id: 'default', name: '默认', category: 'official' },
+      { id: 'wangliqun', name: '王立群', category: 'custom' },
+    ],
+    pricing: {
+      currency: 'CNY',
+      amount: 0.8,
+      unit: '10k_characters',
+      display: '¥0.8 / 万字符',
+    },
+    callable: true,
+    status: 'available',
+  },
+  {
+    id: 'FLUX.2 [klein] 4B',
+    display_name: 'FLUX.2 [klein] 4B Image Generation',
+    kind: 'image',
+    vendor: 'Black Forest Labs',
+    model_version_ref: 'black-forest-labs/FLUX.2-klein-4B',
+    description: 'Image generation.',
+    required_parameters: [],
+    voices: [],
+    pricing: {
+      currency: 'CNY',
+      amount: 0.05,
+      unit: 'image',
+      display: '¥0.05 / 张',
+    },
+    callable: false,
+    status: 'unavailable',
+  },
+]
+
+describe('WildFlow catalog in the model square', () => {
+  test('adds both first-party models with their configured unit prices', () => {
+    const models = mergeWildFlowCatalogIntoPricing([pricedModel], offerings)
+
+    assert.deepEqual(
+      models.map((model) => model.model_name),
+      ['priced-model', 'VoxCPM2', 'FLUX.2 [klein] 4B']
+    )
+
+    const catalogModels = models.filter(
+      (model) => model.pricing_status === 'catalog'
+    )
+    assert.equal(catalogModels.length, 2)
+    assert.equal(
+      catalogModels.every((model) => model.model_price === undefined),
+      true
+    )
+    assert.equal(
+      catalogModels.find((model) => model.model_name === 'FLUX.2 [klein] 4B')
+        ?.catalog_callable,
+      false
+    )
+    assert.deepEqual(
+      catalogModels.map((model) => model.catalog_price_display),
+      ['¥0.8 / 万字符', '¥0.05 / 张']
+    )
+    assert.deepEqual(
+      catalogModels[0].catalog_voices?.map((voice) => voice.id),
+      ['shuoshuren', 'dabin', 'tingting', 'default', 'wangliqun']
+    )
+  })
+
+  test('does not duplicate a catalog model after backend pricing is configured', () => {
+    const configuredTts: PricingModel = {
+      ...pricedModel,
+      id: 102,
+      model_name: 'VoxCPM2',
+      model_price: 0.8,
+    }
+
+    const models = mergeWildFlowCatalogIntoPricing([configuredTts], offerings)
+
+    assert.equal(
+      models.filter((model) => model.model_name === 'VoxCPM2').length,
+      1
+    )
+    assert.equal(models[0].model_price, 0.8)
+    assert.equal(models[0].pricing_status, undefined)
+  })
+})

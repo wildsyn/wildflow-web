@@ -68,6 +68,16 @@ export type PricingModel = {
   input_modalities?: Modality[]
   output_modalities?: Modality[]
   capabilities?: ModelCapability[]
+  /** First-party catalog entries remain visible before billing is configured. */
+  pricing_status?: 'catalog'
+  /** Runtime availability reported by the first-party catalog. */
+  catalog_callable?: boolean
+  catalog_display_name?: string
+  catalog_model_version_ref?: string
+  catalog_price_amount?: number
+  catalog_price_display?: string
+  catalog_required_parameters?: string[]
+  catalog_voices?: Array<{ id: string; name: string }>
 }
 
 /** Input/output modalities supported by a model. */

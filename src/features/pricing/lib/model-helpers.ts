@@ -107,3 +107,8 @@ export function replaceModelInPath(path: string, modelName: string): string {
 export function isTokenBasedModel(model: PricingModel): boolean {
   return model.quota_type === QUOTA_TYPE_VALUES.TOKEN
 }
+
+/** Catalog-only models are visible before a billable price is configured. */
+export function hasConfiguredPricing(model: PricingModel): boolean {
+  return model.pricing_status !== 'catalog'
+}

@@ -30,7 +30,7 @@ import {
   getDynamicPricingSummary,
 } from '../lib/dynamic-price'
 import { parseTags } from '../lib/filters'
-import { isTokenBasedModel } from '../lib/model-helpers'
+import { hasConfiguredPricing, isTokenBasedModel } from '../lib/model-helpers'
 import { formatPrice, formatRequestPrice } from '../lib/price'
 import type { PricingModel, TokenUnit } from '../types'
 import { ModelBillingModeBadge } from './model-billing-mode-badge'
@@ -55,6 +55,7 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
   const usdExchangeRate = props.usdExchangeRate ?? 1
   const showRechargePrice = props.showRechargePrice ?? false
   const isTokenBased = isTokenBasedModel(props.model)
+  const hasPricing = hasConfiguredPricing(props.model)
   const tokenUnitLabel = tokenUnit === 'K' ? '1K' : '1M'
   const tags = parseTags(props.model.tags)
   const groups = props.model.enable_groups || []
@@ -66,18 +67,19 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
     props.model.billing_mode === 'tiered_expr' &&
     Boolean(props.model.billing_expr)
   const hasCachedPrice = isTokenBased && props.model.cache_ratio != null
-  const dynamicSummary = isDynamicPricing
-    ? getDynamicPricingSummary(props.model, {
-        tokenUnit,
-        showRechargePrice,
-        priceRate,
-        usdExchangeRate,
-        groupRatioMultiplier: getDynamicDisplayGroupRatio(
-          props.model,
-          props.selectedGroup
-        ),
-      })
-    : null
+  const dynamicSummary =
+    hasPricing && isDynamicPricing
+      ? getDynamicPricingSummary(props.model, {
+          tokenUnit,
+          showRechargePrice,
+          priceRate,
+          usdExchangeRate,
+          groupRatioMultiplier: getDynamicDisplayGroupRatio(
+            props.model,
+            props.selectedGroup
+          ),
+        })
+      : null
 
   const primaryGroup = groups[0]
   const bottomTags = [...endpoints.slice(0, 2), ...tags.slice(0, 2)]
@@ -92,7 +94,25 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
   }
 
   let priceSummary: ReactNode
-  if (dynamicSummary) {
+  if (!hasPricing) {
+    priceSummary = (
+      <>
+        <span className='text-foreground font-mono font-semibold whitespace-nowrap'>
+          {props.model.catalog_price_display}
+        </span>
+        <span
+          className={cn(
+            'font-medium whitespace-nowrap',
+            props.model.catalog_callable
+              ? 'text-success'
+              : 'text-muted-foreground'
+          )}
+        >
+          {t(props.model.catalog_callable ? 'Available' : 'Unavailable')}
+        </span>
+      </>
+    )
+  } else if (dynamicSummary) {
     if (dynamicSummary.isSpecialExpression) {
       priceSummary = (
         <span className='min-w-0'>
@@ -263,9 +283,11 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
               {item}
             </span>
           ))}
-          <span className='text-muted-foreground/50 text-xs'>
-            {tokenUnitLabel}
-          </span>
+          {hasPricing && (
+            <span className='text-muted-foreground/50 text-xs'>
+              {tokenUnitLabel}
+            </span>
+          )}
           {hiddenCount > 0 && (
             <span className='text-muted-foreground/40 text-xs'>
               +{hiddenCount}

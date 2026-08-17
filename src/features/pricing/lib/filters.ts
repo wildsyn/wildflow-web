@@ -24,6 +24,7 @@ import {
   ENDPOINT_TYPES,
 } from '../constants'
 import type { PricingModel } from '../types'
+import { hasConfiguredPricing } from './model-helpers'
 
 // ----------------------------------------------------------------------------
 // Filter Utilities
@@ -101,8 +102,21 @@ export function filterByEndpointType(
 /**
  * Get model price for sorting
  */
-function getModelPrice(model: PricingModel): number {
+function getModelPrice(model: PricingModel): number | null {
+  if (!hasConfiguredPricing(model)) return model.catalog_price_amount ?? null
   return model.quota_type === 0 ? model.model_ratio : model.model_price || 0
+}
+
+function compareModelPrices(
+  a: PricingModel,
+  b: PricingModel,
+  direction: 'asc' | 'desc'
+): number {
+  const aPrice = getModelPrice(a)
+  const bPrice = getModelPrice(b)
+  if (aPrice == null) return bPrice == null ? 0 : 1
+  if (bPrice == null) return -1
+  return direction === 'asc' ? aPrice - bPrice : bPrice - aPrice
 }
 
 /**
@@ -121,10 +135,10 @@ export function sortModels(
       )
       break
     case SORT_OPTIONS.PRICE_LOW:
-      sorted.sort((a, b) => getModelPrice(a) - getModelPrice(b))
+      sorted.sort((a, b) => compareModelPrices(a, b, 'asc'))
       break
     case SORT_OPTIONS.PRICE_HIGH:
-      sorted.sort((a, b) => getModelPrice(b) - getModelPrice(a))
+      sorted.sort((a, b) => compareModelPrices(a, b, 'desc'))
       break
   }
 
@@ -183,7 +197,7 @@ export function extractAllTags(models: PricingModel[]): string[] {
     }
   })
 
-  return Array.from(tagSet).sort((a, b) => a.localeCompare(b))
+  return [...tagSet].sort((a, b) => a.localeCompare(b))
 }
 
 /**
