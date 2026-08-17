@@ -2,6 +2,8 @@ import assert from 'node:assert/strict'
 import { describe, test } from 'node:test'
 
 import { parseHeaderNavModules } from '@/lib/nav-modules'
+import { getDefaultSidebarModules } from '@/hooks/use-sidebar-config'
+import { DEFAULT_LOGO, DEFAULT_SYSTEM_NAME } from '@/lib/constants'
 
 import {
   WILDFLOW_DEFAULT_NAV_LINKS,
@@ -40,5 +42,20 @@ describe('WildFlow 1.0 product shell', () => {
 
   test('keeps rankings closed when the backend has no explicit configuration', () => {
     assert.equal(parseHeaderNavModules(undefined).rankings.enabled, false)
+  })
+
+  test('uses WildFlow brand defaults before status is loaded', () => {
+    assert.equal(DEFAULT_SYSTEM_NAME, '野生流动')
+    assert.equal(DEFAULT_LOGO, '/logo.png')
+  })
+
+  test('keeps unapproved commercial and upstream task entries closed by default', () => {
+    const modules = getDefaultSidebarModules()
+
+    assert.equal(modules.console.midjourney, false)
+    assert.equal(modules.console.task, false)
+    assert.equal(modules.personal.topup, false)
+    assert.equal(modules.admin.redemption, false)
+    assert.equal(modules.admin.subscription, false)
   })
 })
