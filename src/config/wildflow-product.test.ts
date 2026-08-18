@@ -136,7 +136,10 @@ describe('WildFlow 1.0 product shell', () => {
     assert.match(heroSource, /developers and small teams/i)
     assert.doesNotMatch(heroSource, /Explore Harness/)
     assert.doesNotMatch(ctaSource, /View Pricing/)
-    assert.doesNotMatch(modelCatalogSource, /Available|Unavailable/)
+    assert.match(
+      modelCatalogSource,
+      /offering\.callable[\s\S]*'Available'[\s\S]*'Unavailable'/
+    )
     assert.doesNotMatch(
       modelCatalogSource,
       /Two voice experiences and one image model/
