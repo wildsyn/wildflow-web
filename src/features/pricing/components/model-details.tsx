@@ -82,6 +82,7 @@ import type {
 import { DynamicPricingBreakdown } from './dynamic-pricing-breakdown'
 import { ModelBillingModeBadge } from './model-billing-mode-badge'
 import { ModelDetailsApi } from './model-details-api'
+import { ModelDocumentationLink } from './model-documentation-link'
 import { ModelDetailsPerformance } from './model-details-performance'
 
 // ----------------------------------------------------------------------------
@@ -572,6 +573,7 @@ function ModelHeader(props: { model: PricingModel }) {
           successTooltip={t('Copied!')}
           aria-label={t('Copy model name')}
         />
+        <ModelDocumentationLink modelName={model.model_name} />
       </div>
       <div className='mt-1 flex flex-wrap items-center gap-1.5 text-xs'>
         {model.vendor_name && (
