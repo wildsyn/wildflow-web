@@ -88,7 +88,10 @@ describe('ModelDocumentationLink', () => {
     const link = container.querySelector('a')
 
     assert.equal(link?.textContent?.includes('View documentation'), true)
-    assert.equal(link?.getAttribute('href'), 'https://docs.wildflow.cn/docs/voxcpm2')
+    assert.equal(
+      link?.getAttribute('href'),
+      'https://docs.wildflow.cn/docs/voxcpm2'
+    )
     assert.equal(link?.getAttribute('target'), '_blank')
     assert.equal(link?.getAttribute('rel'), 'noreferrer')
 

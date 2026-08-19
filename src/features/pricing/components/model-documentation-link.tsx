@@ -28,7 +28,7 @@ const MODEL_DOCUMENTATION_PATHS: Record<string, string> = {
   'FLUX.2 [klein] 4B': '/docs/flux-2-klein-4b',
 }
 
-export function getModelDocumentationUrl(modelName: string): string | null {
+function getModelDocumentationUrl(modelName: string): string | null {
   const path = MODEL_DOCUMENTATION_PATHS[modelName]
   if (!path) return null
   return `${WILDFLOW_PRODUCT.docsUrl}${path}`
