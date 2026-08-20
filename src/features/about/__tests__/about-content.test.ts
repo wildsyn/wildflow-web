@@ -20,7 +20,10 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { describe, test } from 'node:test'
 
-const aboutSource = readFileSync(new URL('../index.tsx', import.meta.url), 'utf8')
+const aboutSource = readFileSync(
+  new URL('../index.tsx', import.meta.url),
+  'utf8'
+)
 
 describe('WildFlow About content', () => {
   test('explains the product boundary with concrete platform capabilities', () => {
