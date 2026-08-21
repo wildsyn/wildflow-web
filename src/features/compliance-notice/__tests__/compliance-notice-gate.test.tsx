@@ -97,11 +97,10 @@ describe('ComplianceNoticeGate', () => {
 
     assert.match(document.body.textContent ?? '', /Registration form/)
     assert.match(document.body.textContent ?? '', /野生流动内测与合规筹备公告/)
-    assert.match(document.body.textContent ?? '', /请公众用户暂时不要注册账号/)
-    assert.match(
-      document.body.textContent ?? '',
-      /也不要进行充值、付费调用或将本平台用于任何生产用途/
-    )
+    assert.match(document.body.textContent ?? '', /注册功能已关闭/)
+    assert.match(document.body.textContent ?? '', /禁止任何新用户注册/)
+    assert.match(document.body.textContent ?? '', /尚未开展社会或公众内测/)
+    assert.match(document.body.textContent ?? '', /当前备案模型数量：0/)
     for (const heading of [
       '备案与资质要求',
       '内容安全审核与治理机制',

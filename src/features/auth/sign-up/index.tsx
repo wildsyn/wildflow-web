@@ -16,51 +16,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import { Loader2 } from 'lucide-react'
-import { useEffect } from 'react'
-import { useTranslation } from 'react-i18next'
-
 import { AuthLayout } from '../auth-layout'
-import {
-  buildUnifiedEnrollmentPath,
-  startUnifiedEnrollment,
-} from '../lib/unified-enrollment'
+import { RegistrationFilingNotice } from '../components/registration-filing-notice'
 
 export function SignUp() {
-  const { t } = useTranslation()
-
-  useEffect(() => {
-    startUnifiedEnrollment({
-      search: window.location.search,
-      replace: (destination) => window.location.replace(destination),
-    })
-  }, [])
-
-  const fallbackPath = buildUnifiedEnrollmentPath(
-    typeof window === 'undefined' ? '' : window.location.search
-  )
-
   return (
     <AuthLayout>
-      <div className='w-full space-y-6 text-center'>
-        <Loader2 className='text-primary mx-auto size-8 animate-spin' />
-        <div className='space-y-2'>
-          <h2 className='text-2xl font-semibold tracking-tight'>
-            {t('Redirecting to unified account registration')}
-          </h2>
-          <p className='text-muted-foreground text-sm sm:text-base'>
-            {t(
-              'Registration and email verification are handled by WildFlow unified account.'
-            )}
-          </p>
-        </div>
-        <a
-          href={fallbackPath}
-          className='hover:text-primary text-sm font-medium underline underline-offset-4'
-        >
-          {t('Continue if you are not redirected automatically')}
-        </a>
-      </div>
+      <RegistrationFilingNotice variant='sign-up' />
     </AuthLayout>
   )
 }
