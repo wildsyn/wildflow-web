@@ -23,7 +23,7 @@ import { Dialog } from '@/components/dialog'
 import { Button } from '@/components/ui/button'
 
 export const COMPLIANCE_NOTICE_STORAGE_KEY =
-  'wildflow_compliance_notice_ack_2026-08-17'
+  'wildflow_compliance_notice_ack_2026-08-20_registration_closed'
 
 const ACKNOWLEDGED_VALUE = 'acknowledged'
 
@@ -102,7 +102,7 @@ export function ComplianceNoticeGate({ children }: ComplianceNoticeGateProps) {
             'WildFlow internal testing and compliance preparation notice'
           )}
           description={t(
-            'WildFlow is currently in internal testing and compliance preparation and is not yet formally open to the public.'
+            'WildFlow is currently in filing preparation and company-internal testing. It has not started any social or public beta.'
           )}
           contentClassName='sm:max-w-3xl'
           descriptionClassName='leading-6'
@@ -115,10 +115,19 @@ export function ComplianceNoticeGate({ children }: ComplianceNoticeGateProps) {
             </Button>
           }
         >
-          <div className='border-border bg-muted/40 rounded-lg border p-4 text-sm leading-6'>
-            {t(
-              'Website registration is only for WildFlow team members and designated test users to test functionality. Public visitors should not register accounts, top up, make paid calls, or use the platform for production.'
-            )}
+          <div className='border-border bg-muted/40 space-y-3 rounded-lg border p-4 text-sm leading-6'>
+            <p className='font-medium'>
+              {t(
+                'Registration is closed. No new users may register at this stage.'
+              )}
+            </p>
+            <ul className='space-y-1 text-sm'>
+              <li>{t('Filing in progress')}</li>
+              <li>
+                {t('Company-internal testing only; no social or public beta')}
+              </li>
+              <li>{t('Filed models: 0')}</li>
+            </ul>
           </div>
 
           <ol className='space-y-3'>
