@@ -1,50 +1,94 @@
-# wildflow-web
+# WildFlow Web（野生流动前端）
 
-野生流动 1.0 官网、模型目录、控制台和 Harness 入口前端。本仓库是
-[QuantumNous/new-api](https://github.com/QuantumNous/new-api) 前端（`web/`）的受控 Fork。
+[![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](LICENSE)
+[![Upstream: New API](https://img.shields.io/badge/Upstream-QuantumNous%2Fnew--api-6f42c1.svg)](https://github.com/QuantumNous/new-api)
 
-## 技术路线
+WildFlow Web 是野生流动的开源 Web 前端，承载官网、模型目录、开发者控制台和 Harness 入口。
+它与 [WildFlow API](https://github.com/wildsyn/wildflow-api) 分离构建和部署，通过同源 `/api/*`
+路由访问公开控制面。
 
-- 复制 New API 前端源码，保留业务层：API Client、状态、路由、表格、表单、SSE、i18n；
-- UI 层逐步替换为 Ant Design 与 WildFlow 品牌体系；
-- 构建基线：React 19 + Rsbuild + TypeScript（见 `package.json`）。
+[野生流动官网](https://wildflow.cn) · [开发者文档](https://docs.wildflow.cn/docs) ·
+[后端源码](https://github.com/wildsyn/wildflow-api)
 
-## 许可证与可见性
+> **上游与署名**
+>
+> 本项目基于 [QuantumNous/new-api](https://github.com/QuantumNous/new-api) 的 `web/` 前端开发，
+> 固定导入 `v1.0.0-rc.24` / `5c3abffe8572aa8a49f15c3916707d2019d66af4`，并在其上进行
+> WildFlow 产品、品牌和前后端分离改造。原项目由 QuantumNous 与 New API contributors 开发；
+> 本仓库不是 New API 官方发行版。
+>
+> **Frontend design and development by New API contributors.**
 
-- 许可证：AGPL-3.0（继承上游）；
-- 可见性：公开仓库；
-- 必须保留 New API NOTICE 第 7 条署名：
+导入方式、过滤历史和精确基线见 [UPSTREAM.md](UPSTREAM.md)；完整法律声明见
+[LICENSE](LICENSE)、[NOTICE](NOTICE) 和 [THIRD-PARTY-LICENSES.md](THIRD-PARTY-LICENSES.md)。
 
-> Frontend design and development by New API contributors.
+## 项目职责
 
-- 必须在用户可见的 about / legal / footer / attribution 位置保留原项目链接。
+| 负责 | 不负责 |
+|---|---|
+| WildFlow 官网与公开产品页面 | 用户、余额、价格和账单的后端事实 |
+| 模型目录、模型详情与开发者文档入口 | GPU 生命周期、Worker、Lease 和 Artifact 执行 |
+| 登录后控制台、API Key 与用量界面 | 渠道凭据、生产配置和私密运营资料 |
+| Harness 入口和浏览器侧交互 | 另建一套后端或推理控制面 |
 
-## 上游基线
+相关仓库：
 
-- 上游：https://github.com/QuantumNous/new-api
-- 源目录：`web/`
-- 锁定 Release：`v1.0.0-rc.24`
-- 锁定上游 commit：`5c3abffe8572aa8a49f15c3916707d2019d66af4`
-- 详细来源：`UPSTREAM.md`
+- [wildflow-api](https://github.com/wildsyn/wildflow-api)：用户、Key、价格、余额、账单和公共 API；
+- `wildflow-inference`：私有推理执行面，不在本公开仓库中分发；
+- WildFlow 内部主仓：品牌、跨仓契约与产品治理。
 
-## 边界
+## 技术栈
 
-- 公开页面和登录后控制台是同一个前端，不拆两套；
-- 通过 `wildflow.cn/api/*` 同源反向代理访问 `wildflow-api`；
-- 私密品牌主张、运营资料、客户数据和生产配置不进入本仓库。
+- React 19 + TypeScript；
+- Rsbuild；
+- TanStack Router / Query / Table；
+- Zustand、i18next、React Hook Form、Zod；
+- Tailwind CSS 与现有上游组件体系。
 
-## 本地验证
+依赖和脚本的准确版本以 [package.json](package.json) 与 [bun.lock](bun.lock) 为准。
+
+## 本地启动
+
+准备 Bun 后执行：
 
 ```bash
 bun install --frozen-lockfile
-bun test
+bun run dev
+```
+
+开发服务器默认把 `/api`、`/mj` 和 `/pg` 代理到本地 WildFlow API。需要指定其他本地后端时：
+
+```bash
+VITE_REACT_APP_SERVER_URL=http://127.0.0.1:3000 bun run dev
+```
+
+完整的前后端分离说明见 [DEV.md](DEV.md)。不要把生产密钥、用户数据或 `.env` 文件提交到仓库。
+
+## 验证
+
+```bash
 bun run typecheck
 bun run build
 bash scripts/check-local.sh
 ```
 
-固定上游版本的测试和 lint 当前并非全绿；准确结果与处置边界见 `BASELINE.md`。在基线债务清零前，
-任何 WildFlow 新改动都必须补充受影响范围的测试，不能用已有失败掩盖新增回归。
+固定上游基线仍有已记录的测试与 lint 债务，详情见 [BASELINE.md](BASELINE.md)。新增 WildFlow 改动
+必须验证受影响范围，不能用上游已有失败掩盖新回归。
 
-首次改造先保证固定基线可构建；Ant Design 迁移、WildFlow 页面和 about/legal/footer 的可见署名分别
-通过后续 PR 推进。
+## 上游同步与修改说明
+
+- 本仓库是 New API `web/` 的受控过滤历史，不是从零实现的前端；
+- 上游同步必须与 `wildflow-api` 成对评审，避免前后端协议漂移；
+- WildFlow 自有修改从 `upstream/v1.0.0-rc.24` 之后开始，可通过 Git 历史审计；
+- New API 的名称、作者信息、原项目链接和所需署名必须保留；
+- 用户界面的 About / Legal / Attribution 位置必须继续提供原项目链接和署名。
+
+## 开源许可证
+
+本项目依据 [GNU Affero General Public License v3.0](LICENSE) 开源。通过网络向用户提供修改版服务时，
+应按 AGPL-3.0 和 NOTICE 的要求提供对应源码、保留适当法律声明并标记修改。第三方依赖仍遵循各自许可。
+
+## 参与贡献
+
+提交变更前请阅读 [CONTRIBUTING.md](CONTRIBUTING.md)、[SECURITY.md](SECURITY.md) 和
+[AGENTS.md](AGENTS.md)。所有变更通过 Pull Request 进入 `main`。

@@ -6,6 +6,12 @@ fail=0
 echo "[wildflow-web] license/attribution presence"
 test -f LICENSE || { echo "missing LICENSE"; fail=1; }
 test -f NOTICE || { echo "missing NOTICE"; fail=1; }
+grep -Fq '# WildFlow Web（野生流动前端）' README.md || {
+  echo "README must present the public WildFlow Web name"; fail=1; }
+grep -Fq '本项目基于 [QuantumNous/new-api]' README.md || {
+  echo "README must identify the upstream derivative"; fail=1; }
+grep -Fq 'Frontend design and development by New API contributors.' README.md || {
+  echo "README must preserve the required upstream attribution"; fail=1; }
 grep -q "Frontend design and development by New API contributors" NOTICE || {
   echo "missing required New API attribution in NOTICE"; fail=1; }
 grep -q "AGPL" LICENSE || { echo "LICENSE is not AGPL text"; fail=1; }
