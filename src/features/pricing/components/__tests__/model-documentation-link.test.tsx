@@ -111,6 +111,20 @@ describe('ModelDocumentationLink', () => {
     container.remove()
   })
 
+  test('links dual ASR to its public integration guide', async () => {
+    const { container, root } = await renderLink(
+      'wildflow/exam-replay-dual-asr-v1'
+    )
+
+    assert.equal(
+      container.querySelector('a')?.getAttribute('href'),
+      'https://docs.wildflow.cn/docs/exam-dual-asr'
+    )
+
+    await act(async () => root.unmount())
+    container.remove()
+  })
+
   test('does not show a model-specific link for undocumented models', async () => {
     const { container, root } = await renderLink('DeepSeek-V4-Flash@hefei')
 

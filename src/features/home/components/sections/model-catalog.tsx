@@ -16,7 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import { AudioLines, ImageIcon } from 'lucide-react'
+import { AudioLines, Captions, ImageIcon } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 import type { WildFlowOffering } from '../../types'
@@ -33,11 +33,15 @@ export function ModelCatalog({ offerings, isLoading }: ModelCatalogProps) {
   if (isLoading) {
     catalogContent = (
       <div
-        className='grid gap-4 md:grid-cols-2'
+        className='grid gap-4 md:grid-cols-2 lg:grid-cols-3'
         aria-label={t('Loading...')}
         aria-busy='true'
       >
-        {['VoxCPM2', 'FLUX.2 [klein] 4B'].map((id) => (
+        {[
+          'VoxCPM2',
+          'FLUX.2 [klein] 4B',
+          'wildflow/exam-replay-dual-asr-v1',
+        ].map((id) => (
           <div
             key={id}
             className='border-border bg-muted/30 h-64 animate-pulse rounded-xl border'
@@ -53,9 +57,19 @@ export function ModelCatalog({ offerings, isLoading }: ModelCatalogProps) {
     )
   } else {
     catalogContent = (
-      <div className='grid gap-4 md:grid-cols-2'>
+      <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-3'>
         {offerings.map((offering) => {
           const isTTS = offering.kind === 'tts'
+          const isASR = offering.kind === 'asr'
+          let offeringIcon = <ImageIcon className='size-5' aria-hidden='true' />
+          let offeringKind = 'Image Generation'
+          if (isTTS) {
+            offeringIcon = <AudioLines className='size-5' aria-hidden='true' />
+            offeringKind = 'TTS'
+          } else if (isASR) {
+            offeringIcon = <Captions className='size-5' aria-hidden='true' />
+            offeringKind = 'Speech Recognition'
+          }
           return (
             <article
               key={offering.id}
@@ -64,11 +78,7 @@ export function ModelCatalog({ offerings, isLoading }: ModelCatalogProps) {
             >
               <div className='mb-6 flex items-start justify-between gap-4'>
                 <div className='bg-muted flex size-10 items-center justify-center rounded-lg'>
-                  {isTTS ? (
-                    <AudioLines className='size-5' aria-hidden='true' />
-                  ) : (
-                    <ImageIcon className='size-5' aria-hidden='true' />
-                  )}
+                  {offeringIcon}
                 </div>
                 <span
                   className={
@@ -82,7 +92,7 @@ export function ModelCatalog({ offerings, isLoading }: ModelCatalogProps) {
               </div>
 
               <p className='text-muted-foreground mb-2 text-xs font-medium tracking-wide uppercase'>
-                {t(isTTS ? 'TTS' : 'Image Generation')}
+                {t(offeringKind)}
               </p>
               <h3 className='mb-2 text-base font-semibold'>
                 {offering.display_name}
@@ -132,7 +142,7 @@ export function ModelCatalog({ offerings, isLoading }: ModelCatalogProps) {
             {t('First-party models')}
           </p>
           <h2 className='text-2xl leading-tight font-bold tracking-tight md:text-3xl'>
-            {t('One voice model and one image model')}
+            {t('Voice, image, and speech recognition models')}
           </h2>
         </div>
         {catalogContent}

@@ -21,19 +21,30 @@ import { useEffect, useState } from 'react'
 import { getWildFlowCatalog } from '../api'
 import type { WildFlowCatalogResult, WildFlowOffering } from '../types'
 
-const OFFERING_IDS = ['VoxCPM2', 'FLUX.2 [klein] 4B'] as const
+const OFFERING_IDS = [
+  'VoxCPM2',
+  'FLUX.2 [klein] 4B',
+  'wildflow/exam-replay-dual-asr-v1',
+] as const
 
 function isPricing(value: unknown): boolean {
   if (!value || typeof value !== 'object') return false
   const pricing = value as Record<string, unknown>
-  return (
-    pricing.currency === 'CNY' &&
-    typeof pricing.amount === 'number' &&
-    Number.isFinite(pricing.amount) &&
-    pricing.amount > 0 &&
-    (pricing.unit === '10k_characters' || pricing.unit === 'image') &&
-    typeof pricing.display === 'string'
-  )
+  if (
+    pricing.currency !== 'CNY' ||
+    typeof pricing.amount !== 'number' ||
+    !Number.isFinite(pricing.amount) ||
+    typeof pricing.display !== 'string'
+  ) {
+    return false
+  }
+  const supportedUnit =
+    pricing.unit === '10k_characters' ||
+    pricing.unit === 'image' ||
+    pricing.unit === 'team_trial'
+  const validAmount =
+    pricing.unit === 'team_trial' ? pricing.amount === 0 : pricing.amount > 0
+  return supportedUnit && validAmount
 }
 
 function isVoice(value: unknown): boolean {
@@ -51,7 +62,7 @@ function isOffering(value: unknown): value is WildFlowOffering {
   const item = value as Record<string, unknown>
   return (
     OFFERING_IDS.includes(item.id as (typeof OFFERING_IDS)[number]) &&
-    (item.kind === 'tts' || item.kind === 'image') &&
+    (item.kind === 'tts' || item.kind === 'image' || item.kind === 'asr') &&
     typeof item.display_name === 'string' &&
     typeof item.vendor === 'string' &&
     typeof item.model_version_ref === 'string' &&
