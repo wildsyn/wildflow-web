@@ -5287,6 +5287,8 @@
     "First-party models": "自有模型服务",
     "First-party model": "自有模型",
     "One voice model and one image model": "一个语音模型和一个图片模型",
+    "Voice, image, and speech recognition models": "语音、图片与语音识别模型",
+    "Speech Recognition": "语音识别",
     "Voice": "音色",
     "FLUX.2 [klein] 4B Image Generation": "FLUX.2 [klein] 4B 图片生成",
     "General-purpose voice design and voice cloning.": "支持通用语音设计与声音克隆。",

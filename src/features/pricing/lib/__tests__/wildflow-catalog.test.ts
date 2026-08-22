@@ -77,21 +77,43 @@ const offerings: WildFlowOffering[] = [
     callable: false,
     status: 'unavailable',
   },
+  {
+    id: 'wildflow/exam-replay-dual-asr-v1',
+    display_name: '直播回放双 ASR',
+    kind: 'asr',
+    vendor: 'WildFlow',
+    model_version_ref: 'wildflow/exam-replay-dual-asr-v1',
+    description: 'Segment transcript and word timestamps.',
+    required_parameters: ['input_artifact_ids'],
+    pricing: {
+      currency: 'CNY',
+      amount: 0,
+      unit: 'team_trial',
+      display: '团队内测 · 暂不扣零售余额',
+    },
+    callable: true,
+    status: 'available',
+  },
 ]
 
 describe('WildFlow catalog in the model square', () => {
-  test('adds both first-party models with their configured unit prices', () => {
+  test('adds priced and team-trial first-party models', () => {
     const models = mergeWildFlowCatalogIntoPricing([pricedModel], offerings)
 
     assert.deepEqual(
       models.map((model) => model.model_name),
-      ['priced-model', 'VoxCPM2', 'FLUX.2 [klein] 4B']
+      [
+        'priced-model',
+        'VoxCPM2',
+        'FLUX.2 [klein] 4B',
+        'wildflow/exam-replay-dual-asr-v1',
+      ]
     )
 
     const catalogModels = models.filter(
       (model) => model.pricing_status === 'catalog'
     )
-    assert.equal(catalogModels.length, 2)
+    assert.equal(catalogModels.length, 3)
     assert.equal(
       catalogModels.every((model) => model.model_price === undefined),
       true
@@ -103,11 +125,23 @@ describe('WildFlow catalog in the model square', () => {
     )
     assert.deepEqual(
       catalogModels.map((model) => model.catalog_price_display),
-      ['¥0.8 / 万字符', '¥0.05 / 张']
+      ['¥0.8 / 万字符', '¥0.05 / 张', '团队内测 · 暂不扣零售余额']
     )
     assert.deepEqual(
       catalogModels[0].catalog_voices?.map((voice) => voice.id),
       ['shuoshuren', 'dabin', 'tingting', 'default', 'wangliqun']
+    )
+    assert.deepEqual(
+      catalogModels.find(
+        (model) => model.model_name === 'wildflow/exam-replay-dual-asr-v1'
+      )?.input_modalities,
+      ['audio']
+    )
+    assert.deepEqual(
+      catalogModels.find(
+        (model) => model.model_name === 'wildflow/exam-replay-dual-asr-v1'
+      )?.supported_endpoint_types,
+      ['wildflow-jobs']
     )
   })
 

@@ -39,9 +39,9 @@ export interface HomePageContentResult {
 }
 
 export interface WildFlowOffering {
-  id: 'VoxCPM2' | 'FLUX.2 [klein] 4B'
+  id: 'VoxCPM2' | 'FLUX.2 [klein] 4B' | 'wildflow/exam-replay-dual-asr-v1'
   display_name: string
-  kind: 'tts' | 'image'
+  kind: 'tts' | 'image' | 'asr'
   vendor: string
   model_version_ref: string
   description: string
@@ -61,7 +61,7 @@ export interface WildFlowVoice {
 export interface WildFlowCatalogPricing {
   currency: 'CNY'
   amount: number
-  unit: '10k_characters' | 'image'
+  unit: '10k_characters' | 'image' | 'team_trial'
   display: string
 }
 

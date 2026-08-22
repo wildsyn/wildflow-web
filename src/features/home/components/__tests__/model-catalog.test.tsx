@@ -61,12 +61,13 @@ await i18n.use(initReactI18next).init({
     en: {
       translation: {
         'First-party models': 'First-party models',
-        'One voice model and one image model':
-          'One voice model and one image model',
+        'Voice, image, and speech recognition models':
+          'Voice, image, and speech recognition models',
         Available: 'Available',
         Unavailable: 'Unavailable',
         TTS: 'TTS',
         'Image Generation': 'Image Generation',
+        'Speech Recognition': 'Speech Recognition',
       },
     },
   },
@@ -115,12 +116,29 @@ const offerings: WildFlowOffering[] = [
     callable: false,
     status: 'unavailable',
   },
+  {
+    id: 'wildflow/exam-replay-dual-asr-v1',
+    display_name: '直播回放双 ASR',
+    kind: 'asr',
+    vendor: 'WildFlow',
+    model_version_ref: 'wildflow/exam-replay-dual-asr-v1',
+    description: 'Segment transcript and word timestamps.',
+    required_parameters: ['input_artifact_ids'],
+    pricing: {
+      currency: 'CNY',
+      amount: 0,
+      unit: 'team_trial',
+      display: '团队内测 · 暂不扣零售余额',
+    },
+    callable: true,
+    status: 'available',
+  },
 ]
 
 describe('WildFlow first-party model catalog', () => {
   after(() => domWindow.close())
 
-  test('renders exactly one TTS model and one image model with voices and prices', async () => {
+  test('renders TTS, image, and team-trial dual ASR models', async () => {
     const container = document.createElement('div')
     document.body.append(container)
     const root = createRoot(container)
@@ -134,16 +152,21 @@ describe('WildFlow first-party model catalog', () => {
     )
 
     const cards = container.querySelectorAll('[data-model-offering]')
-    assert.equal(cards.length, 2)
+    assert.equal(cards.length, 3)
     assert.deepEqual(
       [...cards].map((card) => card.getAttribute('data-model-offering')),
-      ['VoxCPM2', 'FLUX.2 [klein] 4B']
+      ['VoxCPM2', 'FLUX.2 [klein] 4B', 'wildflow/exam-replay-dual-asr-v1']
     )
     assert.equal(container.textContent?.match(/openbmb\/VoxCPM2/g)?.length, 1)
     assert.equal(container.textContent?.includes('王立群'), true)
     assert.equal(container.textContent?.includes('¥0.8 / 万字符'), true)
     assert.equal(container.textContent?.includes('¥0.05 / 张'), true)
     assert.equal(container.textContent?.includes('Unavailable'), true)
+    assert.equal(container.textContent?.includes('Speech Recognition'), true)
+    assert.equal(
+      container.textContent?.includes('团队内测 · 暂不扣零售余额'),
+      true
+    )
 
     await act(async () => root.unmount())
     container.remove()

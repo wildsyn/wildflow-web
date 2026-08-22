@@ -18,15 +18,29 @@ For commercial licensing, please contact support@quantumnous.com
 */
 import type { WildFlowOffering } from '@/features/home/types'
 
-import type { PricingModel, PricingVendor } from '../types'
+import type { Modality, PricingModel, PricingVendor } from '../types'
 
 const CATALOG_MODEL_IDS: Record<WildFlowOffering['id'], number> = {
   VoxCPM2: -10_001,
   'FLUX.2 [klein] 4B': -10_002,
+  'wildflow/exam-replay-dual-asr-v1': -10_003,
 }
 
 function offeringToPricingModel(offering: WildFlowOffering): PricingModel {
   const isTts = offering.kind === 'tts'
+  const isAsr = offering.kind === 'asr'
+  let tags = 'first-party,image-generation'
+  let inputModalities: Modality[] = ['text', 'image']
+  let outputModalities: Modality[] = ['image']
+  if (isTts) {
+    tags = 'first-party,tts'
+    inputModalities = ['text', 'audio']
+    outputModalities = ['audio']
+  } else if (isAsr) {
+    tags = 'first-party,speech-recognition'
+    inputModalities = ['audio']
+    outputModalities = ['text']
+  }
 
   return {
     id: CATALOG_MODEL_IDS[offering.id],
@@ -37,10 +51,10 @@ function offeringToPricingModel(offering: WildFlowOffering): PricingModel {
     model_ratio: 0,
     completion_ratio: 0,
     enable_groups: [],
-    tags: isTts ? 'first-party,tts' : 'first-party,image-generation',
-    supported_endpoint_types: ['wildflow_jobs'],
-    input_modalities: isTts ? ['text', 'audio'] : ['text', 'image'],
-    output_modalities: isTts ? ['audio'] : ['image'],
+    tags,
+    supported_endpoint_types: ['wildflow-jobs'],
+    input_modalities: inputModalities,
+    output_modalities: outputModalities,
     pricing_status: 'catalog',
     catalog_callable: offering.callable,
     catalog_display_name: offering.display_name,
