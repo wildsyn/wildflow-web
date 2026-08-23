@@ -18,11 +18,33 @@ For commercial licensing, please contact support@quantumnous.com
 */
 import { describe, test } from 'bun:test'
 import assert from 'node:assert/strict'
+import { spawnSync } from 'node:child_process'
 import { existsSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const projectRoot = fileURLToPath(new URL('../../', import.meta.url))
+const bunAmbientTypes =
+  /(?:^|[/\\])node_modules[/\\](?:bun-types|@types[/\\]bun)(?:[/\\]|$)/
+
+function listTypeScriptFiles(configName: string): string[] {
+  const result = spawnSync(
+    join(projectRoot, 'node_modules/.bin/tsgo'),
+    ['-p', configName, '--listFiles', '--noEmit'],
+    {
+      cwd: projectRoot,
+      encoding: 'utf8',
+      maxBuffer: 10 * 1024 * 1024,
+    }
+  )
+
+  assert.equal(result.status, 0, result.stderr)
+  return result.stdout.trim().split(/\r?\n/)
+}
+
+function includesBunAmbientTypes(files: string[]): boolean {
+  return files.some((file) => bunAmbientTypes.test(file))
+}
 
 describe('TypeScript ambient type boundaries', () => {
   test('keeps Bun globals in the test project and out of browser production code', () => {
@@ -59,5 +81,19 @@ describe('TypeScript ambient type boundaries', () => {
       ),
       true
     )
+  })
+
+  test('loads Bun declarations only into the compiled test project', () => {
+    const appFiles = listTypeScriptFiles('tsconfig.app.json')
+    const nodeFiles = listTypeScriptFiles('tsconfig.node.json')
+    const testFiles = listTypeScriptFiles('tsconfig.test.json')
+
+    assert.equal(includesBunAmbientTypes(appFiles), false)
+    assert.equal(includesBunAmbientTypes(nodeFiles), false)
+    assert.equal(
+      nodeFiles.some((file) => /[/\\]rsbuild\.config\.ts$/.test(file)),
+      true
+    )
+    assert.equal(includesBunAmbientTypes(testFiles), true)
   })
 })
