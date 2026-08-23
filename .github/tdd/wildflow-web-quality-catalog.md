@@ -21,15 +21,23 @@ Date: 2026-08-24. Source issue: `wildsyn/wildflow-web#20`; parent issue: `wildsy
 | GREEN | Auto badge, ratio, cross-group state, and reduced-motion behavior remain user-visible | Same targeted API Key test                                                    | 4 passed, 0 failed                                                       |
 | GREEN | All tests use the Bun-native runner and are discovered reliably                       | `bun test`                                                                    | 189 passed, 0 failed across 42 files                                     |
 | GREEN | Changed-file lint is a required, debt-safe ratchet                                    | `bash scripts/lint-changed.sh origin/main`                                    | 43 changed source files passed                                           |
+| RED   | Explicit invalid bases fell back to `HEAD^`; an all-zero initial push could not lint  | `bun test scripts/__tests__/lint-changed.test.ts`                             | 1 passed, 4 failed; checkpoint `a58e34e`                                 |
+| RED   | Configured prices hid catalog unavailability and catalog identity metadata            | `bun test src/features/pricing/components/__tests__/model-card.test.tsx`      | 1 passed, 2 failed; checkpoint `a58e34e`                                 |
+| RED   | Browser production TypeScript loaded Bun ambient globals                              | `bun test scripts/__tests__/typescript-boundary.test.ts`                      | 0 passed, 1 failed; checkpoint `a58e34e`                                 |
+| GREEN | Multi-commit, invalid, missing-object, all-zero, and missing-base lint contracts hold | `bun test scripts/__tests__/lint-changed.test.ts`                             | 5 passed, 0 failed                                                       |
+| GREEN | Backend price and catalog availability render separately; catalog identity is visible | `bun test src/features/pricing/components/__tests__/model-card.test.tsx`      | 3 passed, 0 failed                                                       |
+| GREEN | Bun ambient globals are restricted to the dedicated test TypeScript project           | `bun test scripts/__tests__/typescript-boundary.test.ts`                      | 1 passed, 0 failed                                                       |
+| GREEN | The expanded Bun suite remains executable                                             | `bun test`                                                                    | 197 passed, 0 failed across 44 files                                     |
+| GREEN | The full branch diff remains lint-clean                                               | `bash scripts/lint-changed.sh origin/main`                                    | 46 changed source files passed                                           |
 
 The GREEN checkpoint is the commit containing this report. `bun run typecheck`, `bun run build`,
-`bash scripts/check-local.sh`, `bash -n scripts/lint-changed.sh`, `git diff --check`, frozen dependency install, and
-GitHub Actions YAML parsing also passed.
+`bash scripts/check-local.sh`, `bash -n scripts/lint-changed.sh`, the invalid-base fail-closed command,
+`git diff --check`, frozen dependency install, and GitHub Actions YAML parsing also passed.
 
 ## Coverage and known gaps
 
-`bun test --coverage` passed all 189 tests. The changed `api-key-group-cell.tsx` reports 100% function and line
-coverage; `wildflow-catalog.ts` reports 88.89% function and 88.30% line coverage. The full-repository lint command
+`bun test --coverage` passed all 197 tests. The changed `api-key-group-cell.tsx` reports 100% function and line
+coverage; `wildflow-catalog.ts` reports 88.89% function and 88.42% line coverage. The full-repository lint command
 still reports 352 errors and 78 warnings in unrelated files, so CI keeps that job as explicit allowed debt while
-the required baseline rejects every changed-file lint error. This branch has not been pushed, merged, deployed, or
-verified in production.
+the required baseline rejects every changed-file lint error. The protected-header format check also reports 12
+pre-existing files outside this task. This branch has not been pushed, merged, deployed, or verified in production.

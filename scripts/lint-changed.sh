@@ -4,12 +4,18 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 base_ref="${1:-}"
-if [[ -z "$base_ref" || "$base_ref" =~ ^0+$ ]] || \
-  ! resolved_base="$(git rev-parse --verify "${base_ref}^{commit}" 2>/dev/null)"; then
-  resolved_base="$(git rev-parse --verify 'HEAD^{commit}^' 2>/dev/null)" || {
-    echo '[wildflow-web] unable to resolve a lint comparison base' >&2
-    exit 1
-  }
+if [[ -z "$base_ref" ]]; then
+  echo '[wildflow-web] an explicit lint comparison base is required' >&2
+  exit 1
+fi
+
+if [[ "$base_ref" =~ ^0+$ ]]; then
+  resolved_base="$(git hash-object -t tree -w /dev/null)"
+elif ! resolved_base="$(
+  git rev-parse --verify --end-of-options "${base_ref}^{commit}" 2>/dev/null
+)"; then
+  echo "[wildflow-web] unable to resolve lint comparison base: $base_ref" >&2
+  exit 1
 fi
 
 changed_files=()

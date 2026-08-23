@@ -28,7 +28,7 @@ jobs:
       - run: bun run typecheck
       - name: Lint changed source files
         env:
-          LINT_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          LINT_BASE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
         run: bash scripts/lint-changed.sh "$LINT_BASE_SHA"
       - run: bun run build
       - run: bash scripts/check-local.sh

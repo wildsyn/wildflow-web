@@ -18,6 +18,7 @@ For commercial licensing, please contact support@quantumnous.com
 */
 import { afterEach, describe, test } from 'bun:test'
 import assert from 'node:assert/strict'
+import { spawnSync, type SpawnSyncReturns } from 'node:child_process'
 import {
   chmodSync,
   copyFileSync,
@@ -30,7 +31,6 @@ import {
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { spawnSync, type SpawnSyncReturns } from 'node:child_process'
 
 const lintScript = fileURLToPath(new URL('../lint-changed.sh', import.meta.url))
 const temporaryRepos: string[] = []
@@ -153,7 +153,10 @@ describe('lint-changed comparison base contract', () => {
     const result = runLint(repo, missingCommit)
 
     assert.notEqual(result.status, 0)
-    assert.match(result.stderr, new RegExp(`unable to resolve.*${missingCommit}`))
+    assert.match(
+      result.stderr,
+      new RegExp(`unable to resolve.*${missingCommit}`)
+    )
   })
 
   test('treats an all-zero before SHA as the empty tree for an initial push', () => {

@@ -62,7 +62,16 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
   const endpoints = props.model.supported_endpoint_types || []
   const modelIconKey = props.model.icon || props.model.vendor_icon
   const modelIcon = modelIconKey ? getLobeIcon(modelIconKey, 28) : null
-  const initial = props.model.model_name?.charAt(0).toUpperCase() || '?'
+  const catalogDisplayName =
+    props.model.catalog_display_name?.trim() || props.model.model_name
+  const catalogVersionRef = props.model.catalog_model_version_ref?.trim()
+  const catalogReferences = [
+    catalogDisplayName !== props.model.model_name
+      ? props.model.model_name
+      : undefined,
+    catalogVersionRef,
+  ].filter((reference): reference is string => Boolean(reference))
+  const initial = catalogDisplayName?.charAt(0).toUpperCase() || '?'
   const isDynamicPricing =
     props.model.billing_mode === 'tiered_expr' &&
     Boolean(props.model.billing_expr)
@@ -96,21 +105,9 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
   let priceSummary: ReactNode
   if (!hasPricing) {
     priceSummary = (
-      <>
-        <span className='text-foreground font-mono font-semibold whitespace-nowrap'>
-          {props.model.catalog_price_display}
-        </span>
-        <span
-          className={cn(
-            'font-medium whitespace-nowrap',
-            props.model.catalog_callable
-              ? 'text-success'
-              : 'text-muted-foreground'
-          )}
-        >
-          {t(props.model.catalog_callable ? 'Available' : 'Unavailable')}
-        </span>
-      </>
+      <span className='text-foreground font-mono font-semibold whitespace-nowrap'>
+        {props.model.catalog_price_display}
+      </span>
     )
   } else if (dynamicSummary) {
     if (dynamicSummary.isSpecialExpression) {
@@ -231,11 +228,30 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
             )}
           </div>
           <div className='min-w-0'>
-            <h3 className='text-foreground truncate font-mono text-[15px] leading-tight font-bold'>
-              {props.model.model_name}
+            <h3 className='text-foreground truncate text-[15px] leading-tight font-bold'>
+              {catalogDisplayName}
             </h3>
+            {catalogReferences.length > 0 && (
+              <p className='text-muted-foreground/70 mt-0.5 truncate font-mono text-[11px]'>
+                {catalogReferences.join(' · ')}
+              </p>
+            )}
             <div className='mt-0.5 flex flex-wrap items-baseline gap-x-2 gap-y-0.5 text-sm sm:mt-1 sm:gap-x-3'>
               {priceSummary}
+              {typeof props.model.catalog_callable === 'boolean' && (
+                <span
+                  className={cn(
+                    'font-medium whitespace-nowrap',
+                    props.model.catalog_callable
+                      ? 'text-success'
+                      : 'text-destructive'
+                  )}
+                >
+                  {t(
+                    props.model.catalog_callable ? 'Available' : 'Unavailable'
+                  )}
+                </span>
+              )}
             </div>
           </div>
         </div>

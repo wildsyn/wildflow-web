@@ -49,6 +49,7 @@ describe('TypeScript ambient type boundaries', () => {
       include?: string[]
     }
     assert.deepEqual(testConfig.compilerOptions?.types, ['node', 'bun'])
+    assert.equal(testConfig.include?.includes('src/**/*.d.ts'), true)
     assert.equal(testConfig.include?.includes('src/**/*.test.ts'), true)
     assert.equal(testConfig.include?.includes('src/**/*.test.tsx'), true)
     assert.equal(testConfig.include?.includes('scripts/**/*.test.ts'), true)
