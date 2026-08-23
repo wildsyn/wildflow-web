@@ -69,16 +69,48 @@ function offeringToPricingModel(offering: WildFlowOffering): PricingModel {
   }
 }
 
+function enrichPricingModelWithOffering(
+  model: PricingModel,
+  offering: WildFlowOffering
+): PricingModel {
+  const catalogModel = offeringToPricingModel(offering)
+  return {
+    ...model,
+    description: model.description ?? catalogModel.description,
+    vendor_name: model.vendor_name ?? catalogModel.vendor_name,
+    tags: model.tags ?? catalogModel.tags,
+    supported_endpoint_types:
+      model.supported_endpoint_types ?? catalogModel.supported_endpoint_types,
+    input_modalities: model.input_modalities ?? catalogModel.input_modalities,
+    output_modalities:
+      model.output_modalities ?? catalogModel.output_modalities,
+    catalog_callable: catalogModel.catalog_callable,
+    catalog_display_name: catalogModel.catalog_display_name,
+    catalog_model_version_ref: catalogModel.catalog_model_version_ref,
+    catalog_price_amount: catalogModel.catalog_price_amount,
+    catalog_price_display: catalogModel.catalog_price_display,
+    catalog_required_parameters: catalogModel.catalog_required_parameters,
+    catalog_voices: catalogModel.catalog_voices,
+  }
+}
+
 export function mergeWildFlowCatalogIntoPricing(
   models: PricingModel[],
   offerings: WildFlowOffering[]
 ): PricingModel[] {
+  const offeringById = new Map<string, WildFlowOffering>(
+    offerings.map((offering) => [offering.id, offering])
+  )
+  const enrichedModels = models.map((model) => {
+    const offering = offeringById.get(model.model_name)
+    return offering ? enrichPricingModelWithOffering(model, offering) : model
+  })
   const configuredNames = new Set(models.map((model) => model.model_name))
   const catalogModels = offerings
     .filter((offering) => !configuredNames.has(offering.id))
     .map(offeringToPricingModel)
 
-  return [...models, ...catalogModels]
+  return [...enrichedModels, ...catalogModels]
 }
 
 export function mergeWildFlowCatalogVendors(

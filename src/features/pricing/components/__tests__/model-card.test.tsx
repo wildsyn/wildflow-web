@@ -16,8 +16,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
+import { afterAll, describe, test } from 'bun:test'
 import assert from 'node:assert/strict'
-import { after, describe, test } from 'node:test'
 
 import { Window } from 'happy-dom'
 
@@ -88,7 +88,7 @@ const model: PricingModel = {
 }
 
 describe('ModelCard first-party catalog pricing state', () => {
-  after(() => domWindow.close())
+  afterAll(() => domWindow.close())
 
   test('shows availability and the configured character price instead of a request price', async () => {
     const container = document.createElement('div')

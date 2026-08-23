@@ -16,8 +16,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
+import { describe, test } from 'bun:test'
 import assert from 'node:assert/strict'
-import { describe, test } from 'node:test'
 
 import type { WildFlowOffering } from '@/features/home/types'
 
@@ -171,10 +171,7 @@ describe('WildFlow catalog in the model square', () => {
       model_price: 0.8,
     }
 
-    const [model] = mergeWildFlowCatalogIntoPricing(
-      [configuredTts],
-      offerings
-    )
+    const [model] = mergeWildFlowCatalogIntoPricing([configuredTts], offerings)
 
     assert.deepEqual(
       {
