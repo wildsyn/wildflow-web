@@ -63,6 +63,7 @@ await i18n.use(initReactI18next).init({
     en: {
       translation: {
         Available: 'Available',
+        Unavailable: 'Unavailable',
         Details: 'Details',
         Copy: 'Copy',
         'First-party model': 'First-party model',
@@ -110,5 +111,69 @@ describe('ModelCard first-party catalog pricing state', () => {
 
     await act(async () => root.unmount())
     container.remove()
+  })
+
+  test('shows an unavailable catalog state separately from configured backend pricing', async () => {
+    const container = document.createElement('div')
+    document.body.append(container)
+    const root = createRoot(container)
+    const configuredButUnavailable: PricingModel = {
+      ...model,
+      id: 102,
+      model_price: 0.8,
+      pricing_status: undefined,
+      catalog_callable: false,
+    }
+
+    try {
+      await act(async () =>
+        root.render(
+          <I18nextProvider i18n={i18n}>
+            <ModelCard
+              model={configuredButUnavailable}
+              onClick={() => undefined}
+            />
+          </I18nextProvider>
+        )
+      )
+
+      assert.equal(container.textContent?.includes('Unavailable'), true)
+      assert.equal(container.textContent?.includes('$0.8'), true)
+      assert.equal(container.textContent?.includes('/ request'), true)
+      assert.equal(container.textContent?.includes('¥0.8 / 万字符'), false)
+    } finally {
+      await act(async () => root.unmount())
+      container.remove()
+    }
+  })
+
+  test('shows the catalog display name and exact model version', async () => {
+    const container = document.createElement('div')
+    document.body.append(container)
+    const root = createRoot(container)
+    const enrichedModel: PricingModel = {
+      ...model,
+      catalog_display_name: 'VoxCPM2 Voice Generation',
+      catalog_model_version_ref: 'openbmb/VoxCPM2',
+    }
+
+    try {
+      await act(async () =>
+        root.render(
+          <I18nextProvider i18n={i18n}>
+            <ModelCard model={enrichedModel} onClick={() => undefined} />
+          </I18nextProvider>
+        )
+      )
+
+      assert.equal(
+        container.textContent?.includes('VoxCPM2 Voice Generation'),
+        true
+      )
+      assert.equal(container.textContent?.includes('openbmb/VoxCPM2'), true)
+    } finally {
+      await act(async () => root.unmount())
+      container.remove()
+    }
   })
 })
