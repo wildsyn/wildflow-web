@@ -162,4 +162,51 @@ describe('WildFlow catalog in the model square', () => {
     assert.equal(models[0].model_price, 0.8)
     assert.equal(models[0].pricing_status, undefined)
   })
+
+  test('keeps backend pricing while enriching a same-name model with catalog metadata', () => {
+    const configuredTts: PricingModel = {
+      ...pricedModel,
+      id: 102,
+      model_name: 'VoxCPM2',
+      model_price: 0.8,
+    }
+
+    const [model] = mergeWildFlowCatalogIntoPricing(
+      [configuredTts],
+      offerings
+    )
+
+    assert.deepEqual(
+      {
+        id: model.id,
+        model_price: model.model_price,
+        pricing_status: model.pricing_status,
+        catalog_callable: model.catalog_callable,
+        catalog_display_name: model.catalog_display_name,
+        catalog_model_version_ref: model.catalog_model_version_ref,
+        catalog_price_amount: model.catalog_price_amount,
+        catalog_price_display: model.catalog_price_display,
+        catalog_required_parameters: model.catalog_required_parameters,
+        catalog_voices: model.catalog_voices,
+      },
+      {
+        id: 102,
+        model_price: 0.8,
+        pricing_status: undefined,
+        catalog_callable: true,
+        catalog_display_name: 'VoxCPM2',
+        catalog_model_version_ref: 'openbmb/VoxCPM2',
+        catalog_price_amount: 0.8,
+        catalog_price_display: '¥0.8 / 万字符',
+        catalog_required_parameters: ['voice'],
+        catalog_voices: [
+          { id: 'shuoshuren', name: '说书人' },
+          { id: 'dabin', name: '大斌' },
+          { id: 'tingting', name: '婷婷' },
+          { id: 'default', name: '默认' },
+          { id: 'wangliqun', name: '王立群' },
+        ],
+      }
+    )
+  })
 })

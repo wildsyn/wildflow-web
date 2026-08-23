@@ -200,6 +200,7 @@ describe('API key group table cell', () => {
     )
     assert.equal(container.textContent?.includes('Auto'), true)
     assert.equal(container.textContent?.includes('Ratio'), false)
+    assert.equal(container.textContent?.includes('Cross-group'), false)
 
     await act(async () => root.unmount())
     container.remove()
