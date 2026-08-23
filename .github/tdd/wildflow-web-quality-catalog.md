@@ -28,7 +28,10 @@ Date: 2026-08-24. Source issue: `wildsyn/wildflow-web#20`; parent issue: `wildsy
 | GREEN | Backend price and catalog availability render separately; catalog identity is visible | `bun test src/features/pricing/components/__tests__/model-card.test.tsx`      | 3 passed, 0 failed                                                       |
 | GREEN | Bun ambient globals are restricted to the dedicated test TypeScript project           | `bun test scripts/__tests__/typescript-boundary.test.ts`                      | 1 passed, 0 failed                                                       |
 | GREEN | The expanded Bun suite remains executable                                             | `bun test`                                                                    | 197 passed, 0 failed across 44 files                                     |
-| GREEN | The full branch diff remains lint-clean                                               | `bash scripts/lint-changed.sh origin/main`                                    | 46 changed source files passed                                           |
+| GREEN | The full branch diff remains lint-clean                                               | `bash scripts/lint-changed.sh origin/main`                                    | 47 changed source files passed                                           |
+| RED   | The Node build project still loaded Bun declarations through unplugin                 | `bun test scripts/__tests__/typescript-boundary.test.ts`                      | 1 passed, 1 failed; checkpoint `a3d3e49`                                 |
+| GREEN | Actual TypeScript file lists keep app and Node Bun-free while tests retain Bun        | Same targeted TypeScript boundary test                                        | 2 passed, 0 failed                                                       |
+| GREEN | The final expanded Bun suite remains executable                                       | `bun test`                                                                    | 198 passed, 0 failed across 44 files                                     |
 
 The GREEN checkpoint is the commit containing this report. `bun run typecheck`, `bun run build`,
 `bash scripts/check-local.sh`, `bash -n scripts/lint-changed.sh`, the invalid-base fail-closed command,
@@ -36,8 +39,10 @@ The GREEN checkpoint is the commit containing this report. `bun run typecheck`, 
 
 ## Coverage and known gaps
 
-`bun test --coverage` passed all 197 tests. The changed `api-key-group-cell.tsx` reports 100% function and line
+`bun test --coverage` passed all 198 tests. The changed `api-key-group-cell.tsx` reports 100% function and line
 coverage; `wildflow-catalog.ts` reports 88.89% function and 88.42% line coverage. The full-repository lint command
 still reports 352 errors and 78 warnings in unrelated files, so CI keeps that job as explicit allowed debt while
 the required baseline rejects every changed-file lint error. The protected-header format check also reports 12
-pre-existing files outside this task. This branch has not been pushed, merged, deployed, or verified in production.
+pre-existing files outside this task. The Node-only TypeScript project redirects unplugin's unused optional `bun`
+type import to a local no-ambient shim; runtime module resolution and the production bundle are unchanged. This
+branch has not been pushed, merged, deployed, or verified in production.

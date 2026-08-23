@@ -91,6 +91,12 @@ describe('TypeScript ambient type boundaries', () => {
     assert.equal(includesBunAmbientTypes(appFiles), false)
     assert.equal(includesBunAmbientTypes(nodeFiles), false)
     assert.equal(
+      nodeFiles.some((file) =>
+        /[/\\]node_modules[/\\]@types[/\\]node[/\\]index\.d\.ts$/.test(file)
+      ),
+      true
+    )
+    assert.equal(
       nodeFiles.some((file) => /[/\\]rsbuild\.config\.ts$/.test(file)),
       true
     )
