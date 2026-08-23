@@ -16,22 +16,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import { describe, test } from 'bun:test'
-import assert from 'node:assert/strict'
-
-import { buildWildFlowJobSample } from '../../lib/wildflow-job-samples'
-
-describe('WildFlow Job code samples', () => {
-  test('renders a copyable dual ASR request with its required artifact and idempotency key', () => {
-    const sample = buildWildFlowJobSample('curl', {
-      apiKeyEnv: 'NEW_API_KEY',
-      modelName: 'wildflow/exam-replay-dual-asr-v1',
-    })
-
-    assert.match(sample, /https:\/\/api\.wildflow\.cn\/v1\/jobs/)
-    assert.match(sample, /Idempotency-Key/)
-    assert.match(sample, /wildflow\/exam-replay-dual-asr-v1/)
-    assert.match(sample, /input_artifact_ids/)
-    assert.match(sample, /输入 Artifact ID/)
-  })
-})
+/**
+ * The Node-only Rsbuild config reaches unplugin's optional Bun adapter types.
+ * These exports keep that unused adapter from importing Bun ambient globals.
+ */
+export type BunPlugin = never
+export type Loader = never
+export type PluginBuilder = never

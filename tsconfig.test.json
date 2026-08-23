@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.app.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.test.tsbuildinfo",
+    "types": ["node", "bun"]
+  },
+  "include": [
+    "src/**/*.d.ts",
+    "src/**/*.test.ts",
+    "src/**/*.test.tsx",
+    "scripts/**/*.test.ts"
+  ],
+  "exclude": []
+}

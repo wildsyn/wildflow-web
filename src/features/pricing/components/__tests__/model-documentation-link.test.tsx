@@ -16,8 +16,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
+import { afterAll, describe, test } from 'bun:test'
 import assert from 'node:assert/strict'
-import { after, describe, test } from 'node:test'
 
 import { Window } from 'happy-dom'
 
@@ -81,7 +81,7 @@ async function renderLink(modelName: string) {
 }
 
 describe('ModelDocumentationLink', () => {
-  after(() => domWindow.close())
+  afterAll(() => domWindow.close())
 
   test('links VoxCPM2 to its public guide from the model detail header', async () => {
     const { container, root } = await renderLink('VoxCPM2')

@@ -1,6 +1,6 @@
+import { describe, test } from 'bun:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
-import { describe, test } from 'node:test'
 
 import { getDefaultSidebarModules } from '@/hooks/use-sidebar-config'
 import { mapStatusDataToConfig } from '@/hooks/use-system-config'
@@ -32,13 +32,7 @@ describe('WildFlow 1.0 product shell', () => {
   test('keeps only decided public entries in the fallback navigation', () => {
     assert.deepEqual(
       WILDFLOW_DEFAULT_NAV_LINKS.map((link) => link.href),
-      [
-        '/',
-        '/pricing',
-        '/harness',
-        'https://docs.wildflow.cn',
-        '/dashboard',
-      ]
+      ['/', '/pricing', '/harness', 'https://docs.wildflow.cn', '/dashboard']
     )
     assert.equal(
       WILDFLOW_DEFAULT_NAV_LINKS.some((link) =>

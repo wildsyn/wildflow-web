@@ -5,6 +5,10 @@
     "lib": ["ES2023"],
     "module": "ESNext",
     "skipLibCheck": true,
+    "types": ["node"],
+    "paths": {
+      "bun": ["./types/node-build-bun-shim.d.ts"]
+    },
 
     /* Bundler mode */
     "moduleResolution": "Bundler",

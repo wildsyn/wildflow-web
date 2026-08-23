@@ -16,8 +16,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
+import { afterAll, describe, test } from 'bun:test'
 import assert from 'node:assert/strict'
-import { after, describe, test } from 'node:test'
 
 import { Window } from 'happy-dom'
 
@@ -96,7 +96,7 @@ function CellHarness(props: {
 }
 
 describe('API key group table cell', () => {
-  after(() => {
+  afterAll(() => {
     domWindow.close()
   })
 
@@ -200,6 +200,7 @@ describe('API key group table cell', () => {
     )
     assert.equal(container.textContent?.includes('Auto'), true)
     assert.equal(container.textContent?.includes('Ratio'), false)
+    assert.equal(container.textContent?.includes('Cross-group'), false)
 
     await act(async () => root.unmount())
     container.remove()
