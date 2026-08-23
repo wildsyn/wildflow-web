@@ -83,12 +83,13 @@ describe('TypeScript ambient type boundaries', () => {
     )
   })
 
-  test('loads Bun declarations only into the compiled test project', () => {
+  test('keeps Bun declarations out of the compiled app project', () => {
     const appFiles = listTypeScriptFiles('tsconfig.app.json')
-    const nodeFiles = listTypeScriptFiles('tsconfig.node.json')
-    const testFiles = listTypeScriptFiles('tsconfig.test.json')
-
     assert.equal(includesBunAmbientTypes(appFiles), false)
+  }, 15_000)
+
+  test('keeps Bun declarations out of the compiled Node project', () => {
+    const nodeFiles = listTypeScriptFiles('tsconfig.node.json')
     assert.equal(includesBunAmbientTypes(nodeFiles), false)
     assert.equal(
       nodeFiles.some((file) =>
@@ -100,6 +101,10 @@ describe('TypeScript ambient type boundaries', () => {
       nodeFiles.some((file) => /[/\\]rsbuild\.config\.ts$/.test(file)),
       true
     )
+  }, 15_000)
+
+  test('loads Bun declarations into the compiled test project', () => {
+    const testFiles = listTypeScriptFiles('tsconfig.test.json')
     assert.equal(includesBunAmbientTypes(testFiles), true)
-  })
+  }, 15_000)
 })
