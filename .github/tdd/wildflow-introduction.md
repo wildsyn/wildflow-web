@@ -17,13 +17,13 @@ Harness 和任务服务的产品定位，从而不会把它误解为 New API 的
 
 ## GREEN
 
-| 保证 | 验证命令 | 类型 | 结果 |
-| --- | --- | --- | --- |
-| 首页关键位置使用新的野生流动介绍 | `bash scripts/check-wildflow-introduction.sh` | 文案契约 | PASS |
-| 品牌、NOTICE、上游署名和密钥扫描仍满足仓库约束 | `bash scripts/check-local.sh` | 集成契约 | PASS |
-| 修改后的 TSX 类型正确 | `bun run typecheck` | 静态检查 | PASS |
-| 生产静态站可以构建 | `bun run build` | 构建 | PASS |
-| 修改文件格式、Shell 和 TSX lint 通过 | `oxfmt --check ...`、`shellcheck ...`、`oxlint ...` | 静态检查 | PASS；Footer 保留一条既有 `no-danger` warning |
+| 保证                                           | 验证命令                                            | 类型     | 结果                                          |
+| ---------------------------------------------- | --------------------------------------------------- | -------- | --------------------------------------------- |
+| 首页关键位置使用新的野生流动介绍               | `bash scripts/check-wildflow-introduction.sh`       | 文案契约 | PASS                                          |
+| 品牌、NOTICE、上游署名和密钥扫描仍满足仓库约束 | `bash scripts/check-local.sh`                       | 集成契约 | PASS                                          |
+| 修改后的 TSX 类型正确                          | `bun run typecheck`                                 | 静态检查 | PASS                                          |
+| 生产静态站可以构建                             | `bun run build`                                     | 构建     | PASS                                          |
+| 修改文件格式、Shell 和 TSX lint 通过           | `oxfmt --check ...`、`shellcheck ...`、`oxlint ...` | 静态检查 | PASS；Footer 保留一条既有 `no-danger` warning |
 
 ## 已知边界
 

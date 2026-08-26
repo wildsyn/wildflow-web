@@ -32,6 +32,7 @@ import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { createOccurrenceKeyedItems } from '@/lib/stable-list-identity'
 import { cn } from '@/lib/utils'
 
 type RequiredTextPart = {
@@ -65,7 +66,7 @@ type RiskAcknowledgementDialogProps = {
 }
 
 function getRequiredTextRows(text: string) {
-  return Math.max(1, Math.ceil(Array.from(text).length / 42))
+  return Math.max(1, Math.ceil([...text].length / 42))
 }
 
 export function RiskAcknowledgementDialog({
@@ -112,6 +113,21 @@ export function RiskAcknowledgementDialog({
     ).parts
   }, [requiredTextParts])
 
+  const keyedItems = useMemo(
+    () => createOccurrenceKeyedItems(items, (item) => item),
+    [items]
+  )
+  const keyedChecklist = useMemo(
+    () => createOccurrenceKeyedItems(checklist, (item) => item),
+    [checklist]
+  )
+  const keyedRequiredTextParts = useMemo(
+    () =>
+      createOccurrenceKeyedItems(normalizedRequiredTextParts, (part) =>
+        JSON.stringify([part.type, part.text, part.placeholder ?? ''])
+      ),
+    [normalizedRequiredTextParts]
+  )
   const requiredTextInputCount = useMemo(
     () =>
       normalizedRequiredTextParts.filter((part) => part.type === 'input')
@@ -202,18 +218,18 @@ export function RiskAcknowledgementDialog({
         <div className='min-h-0 flex-1 space-y-4 overflow-y-auto px-4 pb-4 sm:px-6'>
           {items.length > 0 ? (
             <ol className='border-border/70 bg-muted/30 text-foreground list-decimal space-y-2 rounded-lg border px-4 py-3 pl-8 text-sm leading-6 sm:px-5 sm:py-4 sm:pl-9'>
-              {items.map((item) => (
-                <li key={item}>{item}</li>
+              {keyedItems.map(({ item, key }) => (
+                <li key={key}>{item}</li>
               ))}
             </ol>
           ) : null}
 
           {checklist.length > 0 ? (
             <div className='border-border/70 bg-muted/30 space-y-3 rounded-lg border p-3 sm:p-4'>
-              {checklist.map((item, index) => {
+              {keyedChecklist.map(({ item, index, key }) => {
                 const id = `risk-acknowledgement-${index}`
                 return (
-                  <div key={item} className='flex items-start gap-3'>
+                  <div key={key} className='flex items-start gap-3'>
                     <Checkbox
                       id={id}
                       checked={checkedItems[index] ?? false}
@@ -244,17 +260,17 @@ export function RiskAcknowledgementDialog({
               </div>
               {hasSegmentedRequiredText ? (
                 <div className='flex flex-col gap-2'>
-                  {normalizedRequiredTextParts.map((part, index) =>
+                  {keyedRequiredTextParts.map(({ item: part, key }) =>
                     part.type === 'static' ? (
                       <span
-                        key={`static-${index}`}
+                        key={key}
                         className='text-muted-foreground bg-background/70 border-border w-fit rounded-md border px-2 py-1.5 font-mono text-sm select-none'
                       >
                         {part.text}
                       </span>
                     ) : (
                       <Textarea
-                        key={`input-${index}`}
+                        key={key}
                         value={typedTextParts[part.inputIndex ?? 0] ?? ''}
                         onChange={(event) =>
                           handleTextPartChange(

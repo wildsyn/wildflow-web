@@ -18,6 +18,7 @@ For commercial licensing, please contact support@quantumnous.com
 */
 import { useEffect, useState } from 'react'
 
+import type { MutationMode } from '../../lib/mutation-mode'
 import type { PrefillGroup } from '../../types'
 import { PrefillGroupFormDrawer } from '../drawers/prefill-group-form-drawer'
 import { PrefillGroupManagementDialog } from './prefill-group-management-dialog'
@@ -34,13 +35,14 @@ export function PrefillGroupManagement({
   onOpenChange,
 }: PrefillGroupManagementProps) {
   const [view, setView] = useState<PrefillView>('dialog')
+  const [mutationMode, setMutationMode] = useState<MutationMode>('create')
   const [currentGroup, setCurrentGroup] = useState<PrefillGroup | null>(null)
 
   useEffect(() => {
     if (!open) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setView('dialog')
-
+      setMutationMode('create')
       setCurrentGroup(null)
     }
   }, [open])
@@ -48,6 +50,7 @@ export function PrefillGroupManagement({
   const handleDialogOpenChange = (nextOpen: boolean) => {
     if (!nextOpen) {
       setView('dialog')
+      setMutationMode('create')
       setCurrentGroup(null)
       onOpenChange(false)
     }
@@ -55,10 +58,12 @@ export function PrefillGroupManagement({
 
   const handleDrawerClose = () => {
     setView('dialog')
+    setMutationMode('create')
     setCurrentGroup(null)
   }
 
-  const handleShowDrawer = (group: PrefillGroup | null) => {
+  const handleShowDrawer = (mode: MutationMode, group: PrefillGroup | null) => {
+    setMutationMode(mode)
     setCurrentGroup(group)
     setView('drawer')
   }
@@ -68,12 +73,13 @@ export function PrefillGroupManagement({
       <PrefillGroupManagementDialog
         open={open && view === 'dialog'}
         onOpenChange={handleDialogOpenChange}
-        onCreateGroup={() => handleShowDrawer(null)}
-        onEditGroup={(group) => handleShowDrawer(group)}
+        onCreateGroup={() => handleShowDrawer('create', null)}
+        onEditGroup={(group) => handleShowDrawer('edit', group)}
       />
       <PrefillGroupFormDrawer
         open={open && view === 'drawer'}
         onClose={handleDrawerClose}
+        mode={mutationMode}
         currentGroup={currentGroup}
       />
     </>
