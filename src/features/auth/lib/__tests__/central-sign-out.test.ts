@@ -23,14 +23,14 @@ import { redirectToCentralSignOut } from '../central-sign-out'
 
 describe('central sign-out redirect', () => {
   test('continues through the server-owned identity-provider logout route', () => {
-    const assigned: string[] = []
+    const replaced: string[] = []
 
     redirectToCentralSignOut({
-      assign: (url) => {
-        assigned.push(url)
+      replace: (url) => {
+        replaced.push(url)
       },
     })
 
-    assert.deepEqual(assigned, ['/api/oauth/oidc/logout'])
+    assert.deepEqual(replaced, ['/api/oauth/oidc/logout'])
   })
 })
