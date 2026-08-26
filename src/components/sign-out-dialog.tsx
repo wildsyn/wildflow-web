@@ -17,38 +17,51 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 import { useQueryClient } from '@tanstack/react-query'
-import { useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { logout } from '@/features/auth/api'
+import { redirectToCentralSignOut } from '@/features/auth/lib/central-sign-out'
 import { clearAuthenticatedClientState } from '@/lib/auth-session'
+
+interface SignOutDialogRuntime {
+  logout: typeof logout
+  clearAuthenticatedClientState: typeof clearAuthenticatedClientState
+  redirectToCentralSignOut: typeof redirectToCentralSignOut
+}
+
+const defaultSignOutDialogRuntime: SignOutDialogRuntime = {
+  logout,
+  clearAuthenticatedClientState,
+  redirectToCentralSignOut,
+}
 
 interface SignOutDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
+  runtime?: SignOutDialogRuntime
 }
 
-export function SignOutDialog({ open, onOpenChange }: SignOutDialogProps) {
+export function SignOutDialog(props: SignOutDialogProps) {
   const { t } = useTranslation()
-  const navigate = useNavigate()
   const queryClient = useQueryClient()
+  const runtime = props.runtime ?? defaultSignOutDialogRuntime
   const [isSigningOut, setIsSigningOut] = useState(false)
 
   const handleSignOut = async () => {
     setIsSigningOut(true)
     try {
-      const response = await logout()
+      const response = await runtime.logout()
       if (!response.success) {
         toast.error(response.message || t('Failed to sign out session'))
         return
       }
 
-      clearAuthenticatedClientState(queryClient)
+      runtime.clearAuthenticatedClientState(queryClient)
       toast.success(t('Signed out'))
-      void navigate({ to: '/sign-in', replace: true })
+      runtime.redirectToCentralSignOut(window.location)
     } catch (error: unknown) {
       toast.error(
         error instanceof Error ? error.message : t('Failed to sign out session')
@@ -60,8 +73,8 @@ export function SignOutDialog({ open, onOpenChange }: SignOutDialogProps) {
 
   return (
     <ConfirmDialog
-      open={open}
-      onOpenChange={onOpenChange}
+      open={props.open}
+      onOpenChange={props.onOpenChange}
       title={t('Sign out')}
       desc={t(
         'Are you sure you want to sign out? You will need to sign in again to access your account.'
