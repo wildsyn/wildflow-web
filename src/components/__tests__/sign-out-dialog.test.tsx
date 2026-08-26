@@ -52,9 +52,8 @@ for (const key of domGlobals) {
   })
 }
 
-const { QueryClient, QueryClientProvider } = await import(
-  '@tanstack/react-query'
-)
+const { QueryClient, QueryClientProvider } =
+  await import('@tanstack/react-query')
 const { act } = await import('react')
 const { createRoot } = await import('react-dom/client')
 const i18next = (await import('i18next')).default
@@ -92,7 +91,7 @@ async function renderDialog() {
     root.render(
       <QueryClientProvider client={queryClient}>
         <SignOutDialog
-          open={true}
+          open
           onOpenChange={() => undefined}
           runtime={createRuntime()}
         />
