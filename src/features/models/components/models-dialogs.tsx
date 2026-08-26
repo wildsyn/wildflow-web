@@ -48,6 +48,7 @@ export function ModelsDialogs() {
       <VendorMutateDialog
         open={open === 'create-vendor' || open === 'update-vendor'}
         onOpenChange={(v) => !v && setOpen(null)}
+        mode={open === 'update-vendor' ? 'edit' : 'create'}
         currentVendor={open === 'update-vendor' ? currentVendor : null}
       />
 

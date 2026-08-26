@@ -9,12 +9,12 @@ link on the About page.
 
 ## RED and GREEN evidence
 
-| Guarantee | Test | Result |
-| --- | --- | --- |
-| The footer no longer renders the New API project attribution | `bun test src/config/wildflow-product.test.ts` | RED before implementation because `ProjectAttribution` was still present; GREEN after removal |
-| About retains the exact NOTICE sentence and the original-project link | `bun test src/config/wildflow-product.test.ts` | GREEN |
-| The affected frontend still type-checks and builds | `bun run typecheck`; `bun run build` | GREEN |
-| Repository attribution and brand checks still pass | `bash scripts/check-local.sh` | GREEN |
+| Guarantee                                                             | Test                                           | Result                                                                                        |
+| --------------------------------------------------------------------- | ---------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| The footer no longer renders the New API project attribution          | `bun test src/config/wildflow-product.test.ts` | RED before implementation because `ProjectAttribution` was still present; GREEN after removal |
+| About retains the exact NOTICE sentence and the original-project link | `bun test src/config/wildflow-product.test.ts` | GREEN                                                                                         |
+| The affected frontend still type-checks and builds                    | `bun run typecheck`; `bun run build`           | GREEN                                                                                         |
+| Repository attribution and brand checks still pass                    | `bash scripts/check-local.sh`                  | GREEN                                                                                         |
 
 ## Coverage and gaps
 

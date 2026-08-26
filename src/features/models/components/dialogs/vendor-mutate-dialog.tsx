@@ -40,11 +40,13 @@ import { Textarea } from '@/components/ui/textarea'
 
 import { createVendor, updateVendor } from '../../api'
 import { vendorsQueryKeys, modelsQueryKeys } from '../../lib'
+import { getMutationTargetId, type MutationMode } from '../../lib/mutation-mode'
 import { vendorFormSchema, type Vendor } from '../../types'
 
 type VendorMutateDialogProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
+  mode: MutationMode
   currentVendor?: Vendor | null
 }
 
@@ -53,11 +55,12 @@ const VENDOR_MUTATE_FORM_ID = 'vendor-mutate-form'
 export function VendorMutateDialog({
   open,
   onOpenChange,
+  mode,
   currentVendor,
 }: VendorMutateDialogProps) {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
-  const isEdit = Boolean(currentVendor?.id)
+  const isEdit = mode === 'edit'
   const [isSaving, setIsSaving] = useState(false)
 
   const form = useForm({
@@ -90,11 +93,19 @@ export function VendorMutateDialog({
     }
   }, [open, isEdit, currentVendor, form])
 
+  let submitLabel = t('Create')
+  if (isSaving) {
+    submitLabel = t('Saving...')
+  } else if (isEdit) {
+    submitLabel = t('Update')
+  }
+
   const onSubmit = async (values: Record<string, unknown>) => {
     setIsSaving(true)
     try {
-      const response = isEdit
-        ? await updateVendor({ ...values, id: currentVendor!.id })
+      const targetId = getMutationTargetId(mode, currentVendor?.id)
+      const response = targetId
+        ? await updateVendor({ ...values, id: targetId })
         : await createVendor(values)
 
       if (response.success) {
@@ -146,7 +157,7 @@ export function VendorMutateDialog({
             {isSaving ? (
               <Loader2 className='mr-2 h-4 w-4 animate-spin' />
             ) : null}
-            {isSaving ? t('Saving...') : isEdit ? t('Update') : t('Create')}
+            {submitLabel}
           </Button>
         </>
       }

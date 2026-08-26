@@ -49,7 +49,7 @@ export function UserQuotaDialog(props: UserQuotaDialogProps) {
   const currencyLabel = getCurrencyLabel()
   const tokensOnly = currencyMeta.kind === 'tokens'
 
-  const amountValue = parseFloat(amount) || 0
+  const amountValue = Number.parseFloat(amount) || 0
   const quotaValue = parseQuotaFromDollars(Math.abs(amountValue))
 
   const getPreviewText = () => {
@@ -109,6 +109,12 @@ export function UserQuotaDialog(props: UserQuotaDialogProps) {
     ? t('Enter amount in tokens')
     : t('Enter amount in {{currency}}', { currency: currencyLabel })
 
+  const getModeLabel = (quotaMode: QuotaAdjustMode) => {
+    if (quotaMode === 'add') return t('Add')
+    if (quotaMode === 'subtract') return t('Subtract')
+    return t('Override')
+  }
+
   return (
     <Dialog
       open={props.open}
@@ -149,11 +155,7 @@ export function UserQuotaDialog(props: UserQuotaDialogProps) {
                   setAmount('')
                 }}
               >
-                {m === 'add'
-                  ? t('Add')
-                  : m === 'subtract'
-                    ? t('Subtract')
-                    : t('Override')}
+                {getModeLabel(m)}
               </Button>
             ))}
           </div>

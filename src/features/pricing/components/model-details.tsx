@@ -82,8 +82,8 @@ import type {
 import { DynamicPricingBreakdown } from './dynamic-pricing-breakdown'
 import { ModelBillingModeBadge } from './model-billing-mode-badge'
 import { ModelDetailsApi } from './model-details-api'
-import { ModelDocumentationLink } from './model-documentation-link'
 import { ModelDetailsPerformance } from './model-details-performance'
+import { ModelDocumentationLink } from './model-documentation-link'
 
 // ----------------------------------------------------------------------------
 // Local UI helpers

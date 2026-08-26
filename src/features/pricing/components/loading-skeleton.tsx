@@ -20,6 +20,55 @@ import { Skeleton } from '@/components/ui/skeleton'
 
 import { VIEW_MODES, type ViewMode } from '../constants'
 
+const CARD_SKELETON_IDS = [
+  'featured-model',
+  'balanced-model',
+  'budget-model',
+  'fast-model',
+  'vision-model',
+  'audio-model',
+  'reasoning-model',
+  'embedding-model',
+  'multimodal-model',
+] as const
+
+const FILTER_SKELETONS = [
+  { id: 'provider-filter', width: 80 },
+  { id: 'capability-filter', width: 90 },
+  { id: 'context-filter', width: 75 },
+  { id: 'price-filter', width: 85 },
+  { id: 'status-filter', width: 70 },
+] as const
+
+const TABLE_COLUMN_SKELETONS = [
+  { id: 'model-column', width: 200 },
+  { id: 'input-price-column', width: 100 },
+  { id: 'output-price-column', width: 100 },
+  { id: 'context-column', width: 100 },
+  { id: 'latency-column', width: 80 },
+  { id: 'actions-column', width: 100 },
+] as const
+
+const TABLE_ROW_SKELETON_IDS = [
+  'model-row-alpha',
+  'model-row-bravo',
+  'model-row-charlie',
+  'model-row-delta',
+  'model-row-echo',
+  'model-row-foxtrot',
+  'model-row-golf',
+  'model-row-hotel',
+  'model-row-india',
+  'model-row-juliet',
+] as const
+
+const PAGINATION_SKELETON_IDS = [
+  'previous-page',
+  'first-page',
+  'current-page',
+  'next-page',
+] as const
+
 export interface LoadingSkeletonProps {
   viewMode?: ViewMode
 }
@@ -47,8 +96,8 @@ export function LoadingSkeleton(props: LoadingSkeletonProps) {
 function CardContentSkeleton() {
   return (
     <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3'>
-      {Array.from({ length: 9 }).map((_, i) => (
-        <div key={i} className='rounded-xl border p-5'>
+      {CARD_SKELETON_IDS.map((skeletonId) => (
+        <div key={skeletonId} className='rounded-xl border p-5'>
           <div className='flex items-start justify-between gap-3'>
             <div className='flex min-w-0 items-start gap-3'>
               <Skeleton className='size-10 shrink-0 rounded-xl' />
@@ -83,11 +132,11 @@ function FilterBarSkeleton() {
     <div className='space-y-3'>
       <div className='flex items-center gap-3'>
         <div className='flex flex-1 flex-wrap items-center gap-2'>
-          {[80, 90, 75, 85, 70].map((width, i) => (
+          {FILTER_SKELETONS.map((filter) => (
             <Skeleton
-              key={i}
+              key={filter.id}
               className='h-8 rounded-lg'
-              style={{ width: `${width}px` }}
+              style={{ width: `${filter.width}px` }}
             />
           ))}
         </div>
@@ -104,39 +153,30 @@ function FilterBarSkeleton() {
 }
 
 function TableContentSkeleton() {
-  const columns = [
-    { width: 200 },
-    { width: 100 },
-    { width: 100 },
-    { width: 100 },
-    { width: 80 },
-    { width: 100 },
-  ]
-
   return (
     <div className='space-y-4'>
       <div className='overflow-hidden rounded-lg border'>
         <div className='bg-muted/30 border-b px-4 py-3'>
           <div className='flex items-center gap-4'>
-            {columns.map((col, i) => (
+            {TABLE_COLUMN_SKELETONS.map((column) => (
               <Skeleton
-                key={i}
+                key={column.id}
                 className='h-4'
-                style={{ width: `${col.width}px` }}
+                style={{ width: `${column.width}px` }}
               />
             ))}
           </div>
         </div>
-        {Array.from({ length: 10 }).map((_, i) => (
+        {TABLE_ROW_SKELETON_IDS.map((rowId) => (
           <div
-            key={i}
+            key={rowId}
             className='flex items-center gap-4 border-b px-4 py-3 last:border-b-0'
           >
-            {columns.map((col, j) => (
+            {TABLE_COLUMN_SKELETONS.map((column) => (
               <Skeleton
-                key={j}
+                key={`${rowId}-${column.id}`}
                 className='h-5'
-                style={{ width: `${col.width}px` }}
+                style={{ width: `${column.width}px` }}
               />
             ))}
           </div>
@@ -145,8 +185,8 @@ function TableContentSkeleton() {
       <div className='flex items-center justify-between'>
         <Skeleton className='h-5 w-32' />
         <div className='flex items-center gap-2'>
-          {Array.from({ length: 4 }).map((_, i) => (
-            <Skeleton key={i} className='size-8' />
+          {PAGINATION_SKELETON_IDS.map((skeletonId) => (
+            <Skeleton key={skeletonId} className='size-8' />
           ))}
         </div>
       </div>

@@ -20,14 +20,21 @@ export function HarnessOverview() {
             万物皆可组合，但先从真实工作开始
           </h1>
           <p className='text-muted-foreground mt-5 text-base leading-7 sm:text-lg'>
-            这里是野生流动的 Harness 生态入口。当前阶段先服务野生智能的内容营销交付，
-            以 AI 视频自动化和考公项目验证可复用的 Skill 与场景包。
+            这里是野生流动的 Harness
+            生态入口。当前阶段先服务野生智能的内容营销交付， 以 AI
+            视频自动化和考公项目验证可复用的 Skill 与场景包。
           </p>
         </div>
 
-        <section className='mt-12 grid gap-4 md:grid-cols-3' aria-label='产品能力'>
+        <section
+          className='mt-12 grid gap-4 md:grid-cols-3'
+          aria-label='产品能力'
+        >
           {capabilities.map(([title, description]) => (
-            <article key={title} className='border-border rounded-xl border p-6'>
+            <article
+              key={title}
+              className='border-border rounded-xl border p-6'
+            >
               <h2 className='text-lg font-semibold'>{title}</h2>
               <p className='text-muted-foreground mt-3 text-sm leading-6'>
                 {description}

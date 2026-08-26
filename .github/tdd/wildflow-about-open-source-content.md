@@ -10,13 +10,13 @@ New API distribution.
 
 ## TDD evidence
 
-| Stage | Command | Result |
-| --- | --- | --- |
-| RED | `bun test src/features/about/__tests__/about-content.test.ts` | 0 passed, 3 failed; the old page lacked the product, repository, and upstream relationship content; checkpoint `074cb857` |
-| GREEN | Same targeted test | 3 passed, 0 failed |
-| Related regression | `bun test src/features/about/__tests__/about-content.test.ts src/config/wildflow-product.test.ts` | 14 passed, 0 failed |
-| Static checks | `bun run typecheck`; targeted `oxlint`; targeted `oxfmt --check` | Passed |
-| Release checks | `bun run build`; `bash scripts/check-local.sh` | Passed |
+| Stage              | Command                                                                                           | Result                                                                                                                    |
+| ------------------ | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| RED                | `bun test src/features/about/__tests__/about-content.test.ts`                                     | 0 passed, 3 failed; the old page lacked the product, repository, and upstream relationship content; checkpoint `074cb857` |
+| GREEN              | Same targeted test                                                                                | 3 passed, 0 failed                                                                                                        |
+| Related regression | `bun test src/features/about/__tests__/about-content.test.ts src/config/wildflow-product.test.ts` | 14 passed, 0 failed                                                                                                       |
+| Static checks      | `bun run typecheck`; targeted `oxlint`; targeted `oxfmt --check`                                  | Passed                                                                                                                    |
+| Release checks     | `bun run build`; `bash scripts/check-local.sh`                                                    | Passed                                                                                                                    |
 
 `bun test --coverage` also passed for the source-contract test, but no numeric
 production-code coverage is claimed because this change is user-visible copy

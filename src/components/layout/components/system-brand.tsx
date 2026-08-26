@@ -24,10 +24,10 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
+import { WILDFLOW_PRODUCT } from '@/config/wildflow-product'
 import { useStatus } from '@/hooks/use-status'
 import { useSystemConfig } from '@/hooks/use-system-config'
 import { cn } from '@/lib/utils'
-import { WILDFLOW_PRODUCT } from '@/config/wildflow-product'
 
 type SystemBrandProps = {
   defaultName?: string
