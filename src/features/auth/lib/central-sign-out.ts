@@ -17,11 +17,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 interface CentralSignOutLocation {
-  assign: (url: string) => void
+  replace: (url: string) => void
 }
 
 export function redirectToCentralSignOut(
   location: CentralSignOutLocation
 ): void {
-  location.assign('/api/oauth/oidc/logout')
+  location.replace('/api/oauth/oidc/logout')
 }
