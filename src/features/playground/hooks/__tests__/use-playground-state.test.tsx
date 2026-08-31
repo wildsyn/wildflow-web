@@ -57,7 +57,8 @@ const { useAuthStore } = await import('@/stores/auth-store')
 type AuthBundle = Parameters<typeof applyAuthBundle>[0]
 const { applyAuthBundle, clearAuthenticatedClientState } =
   await import('@/lib/auth-session')
-const { STORAGE_KEYS } = await import('@/features/playground/constants')
+const { DEFAULT_CONFIG, DEFAULT_PARAMETER_ENABLED, STORAGE_KEYS } =
+  await import('@/features/playground/constants')
 const { installPlaygroundAuthBoundary } =
   await import('@/features/playground/lib/storage/auth-boundary')
 
@@ -69,6 +70,8 @@ const reactTestGlobals = globalThis as typeof globalThis & {
   IS_REACT_ACT_ENVIRONMENT?: boolean
 }
 reactTestGlobals.IS_REACT_ACT_ENVIRONMENT = true
+
+type HookFixtures = Awaited<ReturnType<typeof usePlaygroundState>>
 
 type Message = {
   key: string
@@ -107,11 +110,16 @@ function makeBundle(userId: number, sid: string): AuthBundle {
   }
 }
 
-type HookState = {
-  messages: unknown[]
-  updateMessages: (updater: Message[]) => void
-  isLoadingMessages: boolean
-}
+type HookState = Pick<
+  HookFixtures,
+  | 'messages'
+  | 'config'
+  | 'parameterEnabled'
+  | 'updateMessages'
+  | 'updateConfig'
+  | 'updateParameterEnabled'
+  | 'isLoadingMessages'
+>
 
 function renderHook(): {
   state: HookState
@@ -122,8 +130,12 @@ function renderHook(): {
   function Probe() {
     const playground = usePlaygroundState()
     state.messages = playground.messages
+    state.config = playground.config
+    state.parameterEnabled = playground.parameterEnabled
     state.isLoadingMessages = playground.isLoadingMessages
     state.updateMessages = playground.updateMessages
+    state.updateConfig = playground.updateConfig
+    state.updateParameterEnabled = playground.updateParameterEnabled
     return null
   }
 
@@ -240,6 +252,64 @@ describe('usePlaygroundState at authentication boundaries', () => {
       domWindow.localStorage.getItem(`${STORAGE_KEYS.MESSAGES}:u-1`),
       null
     )
+  })
+
+  test('a mounted account switch also isolates config and parameter state', async () => {
+    applyAuthBundle(makeBundle(1, 'session-a'))
+    const rendered = renderHook()
+    unmountHook = rendered.unmount
+    await flushLoadTimer()
+
+    // Account A customizes the model and parameter toggles.
+    await act(async () => {
+      rendered.state.updateConfig('model', 'account-a-private-model')
+      rendered.state.updateConfig('temperature', 0.2)
+      rendered.state.updateParameterEnabled('max_tokens', true)
+    })
+    await flushSaveTimer()
+    assert.equal(
+      rendered.state.config.model,
+      'account-a-private-model',
+      'sanity: account A model is active in memory'
+    )
+
+    // Account switch on the same tab without a remount: B is applied while
+    // the Playground is still mounted (OAuth callback path).
+    clearAuthenticatedClientState(new QueryClient())
+    await flushLoadTimer()
+    applyAuthBundle(makeBundle(2, 'session-b'))
+    await flushLoadTimer()
+
+    // Account B must not see account A's model or parameter state, and
+    // editing a value must not persist A's full config into B's namespace.
+    assert.equal(rendered.state.config.model, DEFAULT_CONFIG.model)
+    assert.equal(rendered.state.config.temperature, DEFAULT_CONFIG.temperature)
+    assert.deepEqual(rendered.state.parameterEnabled, DEFAULT_PARAMETER_ENABLED)
+
+    await act(async () => {
+      rendered.state.updateConfig('temperature', 0.3)
+    })
+    await flushSaveTimer()
+
+    const storedBConfig = JSON.parse(
+      domWindow.localStorage.getItem(`${STORAGE_KEYS.CONFIG}:u-2`) ?? 'null'
+    )
+    assert.ok(storedBConfig, 'B config namespace is written after edit')
+    assert.notEqual(
+      storedBConfig.data?.model,
+      'account-a-private-model',
+      'account A model must never land in account B namespace'
+    )
+    assert.equal(storedBConfig.data?.model, DEFAULT_CONFIG.model)
+    assert.equal(storedBConfig.data?.temperature, 0.3)
+
+    const storedBParameterEnabled = JSON.parse(
+      domWindow.localStorage.getItem(`${STORAGE_KEYS.PARAMETER_ENABLED}:u-2`) ??
+        'null'
+    )
+    // No parameter edit happened after the switch, so nothing about A's
+    // toggles may have been persisted for B.
+    assert.equal(storedBParameterEnabled, null)
   })
 
   test('the same account keeps persisted content across a reload', async () => {

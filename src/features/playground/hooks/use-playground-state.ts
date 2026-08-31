@@ -113,6 +113,9 @@ export function usePlaygroundState() {
   // in-memory conversation belonged to the previous account. Drop it so a
   // save can never write the previous account's content into the new
   // account's namespace; the next mount reloads from the new namespace.
+  // Config and parameter state are reset to defaults the same way: keeping
+  // the previous account's values in memory would both show them to the new
+  // account and persist them into its namespace on the next edit.
   useEffect(
     () =>
       onStorageOwnerChange(() => {
@@ -124,6 +127,8 @@ export function usePlaygroundState() {
         latestMessagesRef.current = []
         setMessages([])
         setIsLoadingMessages(true)
+        setConfig(DEFAULT_CONFIG)
+        setParameterEnabled(DEFAULT_PARAMETER_ENABLED)
       }),
     []
   )

@@ -23,11 +23,16 @@ import { QueryClient } from '@tanstack/react-query'
 
 import { useAuthStore, type AuthBundle } from '../stores/auth-store'
 import {
+  applyAuthBundle,
   applyAuthRotation,
   bootstrapAuthentication,
+  clearAuthentication,
+  clearAuthSessionOnRefresh,
   clearAuthenticatedClientState,
   createRefreshRunner,
   isAuthBundle,
+  onAuthenticationBoundary,
+  type AuthenticationBoundaryEvent,
   type AuthRefreshRuntime,
 } from './auth-session'
 
@@ -66,6 +71,124 @@ describe('authentication session coordination', () => {
       kind: 'authenticated',
       bundle,
     })
+  })
+
+  test('a local stale-SID clear notifies the persistence boundary without broadcasting sign-out', async () => {
+    const boundaryEvents: AuthenticationBoundaryEvent[] = []
+    const unsubscribe = onAuthenticationBoundary((event) =>
+      boundaryEvents.push(event)
+    )
+    useAuthStore.getState().auth.setBundle(bundle)
+
+    clearAuthSessionOnRefresh('idle')
+
+    assert.equal(useAuthStore.getState().auth.user, null)
+    assert.equal(useAuthStore.getState().auth.session, null)
+    assert.equal(useAuthStore.getState().auth.bootstrapState, 'idle')
+    assert.deepEqual(boundaryEvents, [
+      { kind: 'cleared', previousUserId: bundle.user.id },
+    ])
+
+    unsubscribe()
+  })
+
+  test('a mismatch followed by a transient error fails closed through the persistence boundary', async () => {
+    // Production-shaped runtime: `clear` behaves like the real refresh
+    // adapter, so the boundary notification is the only fail-closed guard.
+    const boundaryEvents: AuthenticationBoundaryEvent[] = []
+    const unsubscribe = onAuthenticationBoundary((event) =>
+      boundaryEvents.push(event)
+    )
+    useAuthStore.getState().auth.setBundle(bundle)
+    let expectedSID: string | undefined = bundle.session.sid
+
+    const outcome = await createRefreshRunner({
+      request: async () => {
+        if (expectedSID === bundle.session.sid) {
+          return {
+            status: 409,
+            data: { code: 'AUTH_SESSION_MISMATCH' },
+          }
+        }
+        return { status: 503, error: new Error('unavailable') }
+      },
+      getExpectedSID: () => expectedSID,
+      parseBundle: (value) => (isAuthBundle(value) ? value : null),
+      acceptBundle: () => undefined,
+      clear: (synchronizeTabs, bootstrapState) => {
+        // Mirrors the production adapter: a stale-SID mismatch drop must not
+        // broadcast a cross-tab sign-out or reset the bootstrap progress.
+        if (!synchronizeTabs && bootstrapState === 'idle') {
+          clearAuthSessionOnRefresh('idle')
+          expectedSID = undefined
+          return
+        }
+        clearAuthentication(false, bootstrapState)
+        expectedSID = undefined
+      },
+      markTransient: () =>
+        useAuthStore.getState().auth.setBootstrapState('idle'),
+      wait: async () => undefined,
+    })()
+
+    assert.equal(outcome.kind, 'transient_error')
+    // The auth subject was discarded (the mismatch clear), so the boundary
+    // must have fired: the persistence owner is released and saved content
+    // is wiped — fail closed even though the outcome is transient.
+    assert.deepEqual(boundaryEvents, [
+      { kind: 'cleared', previousUserId: bundle.user.id },
+    ])
+    assert.equal(useAuthStore.getState().auth.user, null)
+    assert.equal(useAuthStore.getState().auth.session, null)
+
+    unsubscribe()
+  })
+
+  test('a mismatch whose retry succeeds re-binds the account through the applied boundary', async () => {
+    const boundaryEvents: AuthenticationBoundaryEvent[] = []
+    const unsubscribe = onAuthenticationBoundary((event) =>
+      boundaryEvents.push(event)
+    )
+    useAuthStore.getState().auth.setBundle(bundle)
+    let expectedSID: string | undefined = bundle.session.sid
+
+    const outcome = await createRefreshRunner({
+      request: async (sid) => {
+        if (sid === bundle.session.sid) {
+          return {
+            status: 409,
+            data: { code: 'AUTH_SESSION_MISMATCH' },
+          }
+        }
+        return { status: 200, data: { success: true, data: bundle } }
+      },
+      getExpectedSID: () => expectedSID,
+      parseBundle: (value) => (isAuthBundle(value) ? value : null),
+      acceptBundle: (acceptedBundle) => applyAuthBundle(acceptedBundle, false),
+      clear: (synchronizeTabs, bootstrapState) => {
+        if (!synchronizeTabs && bootstrapState === 'idle') {
+          clearAuthSessionOnRefresh('idle')
+          expectedSID = undefined
+          return
+        }
+        clearAuthentication(false, bootstrapState)
+        expectedSID = undefined
+      },
+      markTransient: () =>
+        useAuthStore.getState().auth.setBootstrapState('idle'),
+      wait: async () => undefined,
+    })()
+
+    assert.equal(outcome.kind, 'authenticated')
+    // The mismatch clear fired the boundary before the retry; the retry then
+    // re-applied the (still valid) account without any cleared event after.
+    assert.deepEqual(boundaryEvents, [
+      { kind: 'cleared', previousUserId: bundle.user.id },
+      { kind: 'applied', userId: bundle.user.id },
+    ])
+    assert.equal(useAuthStore.getState().auth.session?.sid, bundle.session.sid)
+
+    unsubscribe()
   })
 
   test('a session mismatch clears only local state and retries without the stale SID', async () => {
