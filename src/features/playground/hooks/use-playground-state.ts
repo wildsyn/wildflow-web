@@ -29,6 +29,7 @@ import {
   loadMessages,
   type MessageStateUpdater,
 } from '../lib'
+import { onStorageOwnerChange } from '../lib/storage/storage-owner'
 import type {
   Message,
   PlaygroundConfig,
@@ -105,6 +106,25 @@ export function usePlaygroundState() {
         saveMessages(latestMessagesRef.current)
       }
     },
+    []
+  )
+
+  // When the persistence owner changes (sign-out, account switch), the
+  // in-memory conversation belonged to the previous account. Drop it so a
+  // save can never write the previous account's content into the new
+  // account's namespace; the next mount reloads from the new namespace.
+  useEffect(
+    () =>
+      onStorageOwnerChange(() => {
+        if (messagesSaveTimerRef.current !== null) {
+          window.clearTimeout(messagesSaveTimerRef.current)
+          messagesSaveTimerRef.current = null
+        }
+        hasLoadedMessagesRef.current = false
+        latestMessagesRef.current = []
+        setMessages([])
+        setIsLoadingMessages(true)
+      }),
     []
   )
 

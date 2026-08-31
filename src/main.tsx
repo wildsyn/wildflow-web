@@ -28,11 +28,12 @@ import { StrictMode } from 'react'
 import ReactDOM from 'react-dom/client'
 import { toast } from 'sonner'
 
+import { installPlaygroundAuthBoundary } from '@/features/playground/lib/storage/auth-boundary'
 import { getStatus } from '@/lib/api'
 import { installBuildMetadata } from '@/lib/build-metadata'
 import { resolveLogoUrl } from '@/lib/constants'
-import { applyFaviconToDom } from '@/lib/dom-utils'
 import '@/lib/dayjs'
+import { applyFaviconToDom } from '@/lib/dom-utils'
 import { initializeFrontendCache } from '@/lib/frontend-cache'
 import { handleServerError } from '@/lib/handle-server-error'
 
@@ -50,6 +51,9 @@ import './styles/index.css'
 // VChart theme is driven by our ThemeProvider (html.light/html.dark) via per-chart `theme` prop.
 initializeFrontendCache()
 installBuildMetadata()
+// Namespaced Playground persistence reacts to every authentication boundary:
+// owner resolution on sign-in/refresh, deterministic wipe on clear/switch.
+installPlaygroundAuthBoundary()
 
 const queryClient = new QueryClient({
   defaultOptions: {

@@ -155,6 +155,43 @@ export function applyAuthBundle(
   if (synchronizeTabs && previousSID !== bundle.session.sid) {
     publishAuthSessionEvent('authenticated', bundle.session.sid)
   }
+  notifyAuthenticationBoundary({ kind: 'applied', userId: bundle.user.id })
+}
+
+export type AuthenticationBoundaryEvent =
+  | { kind: 'cleared'; previousUserId?: number }
+  | { kind: 'applied'; userId: number }
+
+const authenticationBoundaryListeners = new Set<
+  (event: AuthenticationBoundaryEvent) => void
+>()
+
+/**
+ * Subscribe to authentication boundaries: `applied` fires whenever a bundle
+ * becomes active (sign-in, refresh, rotation); `cleared` fires whenever local
+ * authentication state is discarded (sign-out, session invalidation, account
+ * switch). Lets feature persistence react without `lib` importing features.
+ */
+export function onAuthenticationBoundary(
+  listener: (event: AuthenticationBoundaryEvent) => void
+): () => void {
+  authenticationBoundaryListeners.add(listener)
+  return () => {
+    authenticationBoundaryListeners.delete(listener)
+  }
+}
+
+function notifyAuthenticationBoundary(
+  event: AuthenticationBoundaryEvent
+): void {
+  for (const listener of authenticationBoundaryListeners) {
+    try {
+      listener(event)
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('Authentication boundary listener failed:', error)
+    }
+  }
 }
 
 export function applyAuthRotation(value: unknown): void {
@@ -186,12 +223,18 @@ export function clearAuthentication(
   synchronizeTabs = true,
   bootstrapState: AuthBootstrapState = 'complete'
 ): void {
-  const sid = useAuthStore.getState().auth.session?.sid
+  const auth = useAuthStore.getState().auth
+  const previousUserId = auth.user?.id
+  const sid = auth.session?.sid
   authEpoch += 1
-  useAuthStore.getState().auth.reset(bootstrapState)
+  auth.reset(bootstrapState)
   if (synchronizeTabs && sid) {
     publishAuthSessionEvent('signed_out', sid)
   }
+  notifyAuthenticationBoundary({
+    kind: 'cleared',
+    previousUserId,
+  })
 }
 
 export function clearAuthenticatedClientState(

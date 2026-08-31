@@ -24,6 +24,7 @@ export {
   bootstrapAuthentication,
   clearAuthenticatedClientState,
   clearAuthentication,
+  onAuthenticationBoundary,
   getCommonHeaders,
   getFreshAuthHeaders,
   isAuthBundle,

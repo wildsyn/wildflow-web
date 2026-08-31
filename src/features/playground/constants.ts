@@ -65,12 +65,19 @@ export const DEFAULT_PARAMETER_ENABLED: ParameterEnabled = {
   seed: false,
 }
 
-// Storage keys
+// Storage keys — always combined with the account namespace suffix
+// (`:<owner key>`), never used raw: raw keys would share user content
+// across accounts on the same browser.
 export const STORAGE_KEYS = {
   CONFIG: 'playground_config',
   MESSAGES: 'playground_messages',
   PARAMETER_ENABLED: 'playground_parameter_enabled',
 } as const
+
+// Pre-namespacing global keys. They may hold any prior account's content,
+// so ownership can never be proven; authentication boundaries remove them
+// and they are never imported into a resolved account namespace.
+export const LEGACY_STORAGE_KEYS = STORAGE_KEYS
 
 // Error messages
 export const ERROR_MESSAGES = {
