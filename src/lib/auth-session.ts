@@ -155,6 +155,43 @@ export function applyAuthBundle(
   if (synchronizeTabs && previousSID !== bundle.session.sid) {
     publishAuthSessionEvent('authenticated', bundle.session.sid)
   }
+  notifyAuthenticationBoundary({ kind: 'applied', userId: bundle.user.id })
+}
+
+export type AuthenticationBoundaryEvent =
+  | { kind: 'cleared'; previousUserId?: number }
+  | { kind: 'applied'; userId: number }
+
+const authenticationBoundaryListeners = new Set<
+  (event: AuthenticationBoundaryEvent) => void
+>()
+
+/**
+ * Subscribe to authentication boundaries: `applied` fires whenever a bundle
+ * becomes active (sign-in, refresh, rotation); `cleared` fires whenever local
+ * authentication state is discarded (sign-out, session invalidation, account
+ * switch). Lets feature persistence react without `lib` importing features.
+ */
+export function onAuthenticationBoundary(
+  listener: (event: AuthenticationBoundaryEvent) => void
+): () => void {
+  authenticationBoundaryListeners.add(listener)
+  return () => {
+    authenticationBoundaryListeners.delete(listener)
+  }
+}
+
+function notifyAuthenticationBoundary(
+  event: AuthenticationBoundaryEvent
+): void {
+  for (const listener of authenticationBoundaryListeners) {
+    try {
+      listener(event)
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('Authentication boundary listener failed:', error)
+    }
+  }
 }
 
 export function applyAuthRotation(value: unknown): void {
@@ -188,10 +225,33 @@ export function clearAuthentication(
 ): void {
   const sid = useAuthStore.getState().auth.session?.sid
   authEpoch += 1
-  useAuthStore.getState().auth.reset(bootstrapState)
+  clearAuthSessionOnRefresh(bootstrapState)
   if (synchronizeTabs && sid) {
     publishAuthSessionEvent('signed_out', sid)
   }
+}
+
+/**
+ * Discard the local authentication subject and notify the persistence
+ * boundary, without superseding an in-flight refresh and without broadcasting
+ * a cross-tab sign-out.
+ *
+ * Every path that drops the auth subject — including refresh responses that
+ * clear local state as a side effect — must fail closed through the
+ * `cleared` boundary, so feature persistence can never stay bound to an
+ * account whose session is gone. Use `clearAuthentication` when the epoch
+ * must advance or other tabs must learn about the sign-out.
+ */
+export function clearAuthSessionOnRefresh(
+  bootstrapState: AuthBootstrapState = 'complete'
+): void {
+  const auth = useAuthStore.getState().auth
+  const previousUserId = auth.user?.id
+  auth.reset(bootstrapState)
+  notifyAuthenticationBoundary({
+    kind: 'cleared',
+    previousUserId,
+  })
 }
 
 export function clearAuthenticatedClientState(
@@ -301,7 +361,10 @@ function runRefresh(refreshEpoch: number): Promise<RefreshOutcome> {
     acceptBundle: (bundle) => applyAuthBundle(bundle, false),
     clear: (synchronizeTabs, bootstrapState) => {
       if (!synchronizeTabs && bootstrapState === 'idle') {
-        useAuthStore.getState().auth.reset('idle')
+        // A stale-SID mismatch drop: no cross-tab sign-out is broadcast, but
+        // the auth subject is still discarded, so the persistence boundary
+        // must fire (fail closed).
+        clearAuthSessionOnRefresh('idle')
         return
       }
       clearAuthentication(synchronizeTabs, bootstrapState)

@@ -16,7 +16,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import { MESSAGE_STATUS, STORAGE_KEYS } from '../../constants'
+import {
+  LEGACY_STORAGE_KEYS,
+  MESSAGE_STATUS,
+  STORAGE_KEYS,
+} from '../../constants'
 import type { PlaygroundConfig, ParameterEnabled, Message } from '../../types'
 import {
   finalizeMessage,
@@ -25,6 +29,7 @@ import {
 } from '../message/message-streaming-utils'
 import { completeAssistantTiming } from '../message/message-timing-utils'
 import { hasMessageContent } from '../message/message-utils'
+import { getStorageOwner } from './storage-owner'
 import {
   MAX_LOADED_MESSAGE_CHARS,
   MAX_LOADED_MESSAGES_CHARS,
@@ -46,19 +51,36 @@ const MIN_PREFIX_COLLAPSE_LENGTH = 2000
 const MIN_REPEATED_SECTION_COUNT = 3
 const SECTION_HEADING_LINE_PATTERN = /^#{2,6}\s+\d+\.\s+.+$/gm
 
+/**
+ * Namespace a storage key with the resolved account owner. Returns `null`
+ * when no owner is proven, which keeps reads and writes off storage.
+ */
+function namespacedKey(key: string): string | null {
+  const owner = getStorageOwner()
+  if (!owner) return null
+
+  return `${key}:${owner.key}`
+}
+
 function readStoredValue(key: string): unknown | null {
-  const saved = localStorage.getItem(key)
+  const namespaced = namespacedKey(key)
+  if (!namespaced) return null
+
+  const saved = localStorage.getItem(namespaced)
   if (!saved) return null
 
   return JSON.parse(saved) as unknown
 }
 
 function readStoredMessagesValue(): unknown | null {
-  const saved = localStorage.getItem(STORAGE_KEYS.MESSAGES)
+  const namespaced = namespacedKey(STORAGE_KEYS.MESSAGES)
+  if (!namespaced) return null
+
+  const saved = localStorage.getItem(namespaced)
   if (!saved) return null
 
   if (saved.length > MAX_STORED_MESSAGES_BYTES) {
-    localStorage.removeItem(STORAGE_KEYS.MESSAGES)
+    localStorage.removeItem(namespaced)
     return null
   }
 
@@ -78,12 +100,15 @@ function unwrapStoredValue(value: unknown): unknown {
 }
 
 function writeStoredValue<T>(key: string, data: T): void {
+  const namespaced = namespacedKey(key)
+  if (!namespaced) return
+
   const payload: StoredEnvelope<T> = {
     version: STORAGE_VERSION,
     data,
   }
 
-  localStorage.setItem(key, JSON.stringify(payload))
+  localStorage.setItem(namespaced, JSON.stringify(payload))
 }
 
 function trimMessages(messages: Message[]): Message[] {
@@ -384,13 +409,25 @@ export function saveMessages(messages: Message[]): void {
 }
 
 /**
- * Clear all playground data
+ * Clear playground persistence: the resolved account namespace plus the
+ * legacy global keys. Legacy keys predate namespacing and their ownership
+ * can never be proven, so they are always wiped — never carried over.
  */
 export function clearPlaygroundData(): void {
   try {
-    localStorage.removeItem(STORAGE_KEYS.CONFIG)
-    localStorage.removeItem(STORAGE_KEYS.PARAMETER_ENABLED)
-    localStorage.removeItem(STORAGE_KEYS.MESSAGES)
+    const namespacedKeys = [
+      namespacedKey(STORAGE_KEYS.CONFIG),
+      namespacedKey(STORAGE_KEYS.PARAMETER_ENABLED),
+      namespacedKey(STORAGE_KEYS.MESSAGES),
+    ]
+    for (const key of [
+      ...namespacedKeys,
+      ...Object.values(LEGACY_STORAGE_KEYS),
+    ]) {
+      if (key) {
+        localStorage.removeItem(key)
+      }
+    }
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error('Failed to clear playground data:', error)
