@@ -58,6 +58,7 @@ export function usePlaygroundState() {
   const messagesSaveTimerRef = useRef<number | null>(null)
   const latestMessagesRef = useRef<Message[]>(messages)
   const hasLoadedMessagesRef = useRef(false)
+  const persistenceOwnerVersionRef = useRef(0)
 
   const [models, setModels] = useState<ModelOption[]>([])
   const [groups, setGroups] = useState<GroupOption[]>([])
@@ -119,6 +120,10 @@ export function usePlaygroundState() {
   useEffect(
     () =>
       onStorageOwnerChange(() => {
+        // Functional state updaters can run after an auth boundary changes
+        // the storage owner. Mark every queued config/parameter update from
+        // the previous owner stale before React processes it.
+        persistenceOwnerVersionRef.current += 1
         if (messagesSaveTimerRef.current !== null) {
           window.clearTimeout(messagesSaveTimerRef.current)
           messagesSaveTimerRef.current = null
@@ -136,7 +141,11 @@ export function usePlaygroundState() {
   // Update config with automatic save
   const updateConfig = useCallback(
     <K extends keyof PlaygroundConfig>(key: K, value: PlaygroundConfig[K]) => {
+      const ownerVersion = persistenceOwnerVersionRef.current
       setConfig((prev) => {
+        if (ownerVersion !== persistenceOwnerVersionRef.current) {
+          return prev
+        }
         const updated = { ...prev, [key]: value }
         saveConfig(updated)
         return updated
@@ -148,7 +157,11 @@ export function usePlaygroundState() {
   // Update parameter enabled with automatic save
   const updateParameterEnabled = useCallback(
     (key: keyof ParameterEnabled, value: boolean) => {
+      const ownerVersion = persistenceOwnerVersionRef.current
       setParameterEnabled((prev) => {
+        if (ownerVersion !== persistenceOwnerVersionRef.current) {
+          return prev
+        }
         const updated = { ...prev, [key]: value }
         saveParameterEnabled(updated)
         return updated
