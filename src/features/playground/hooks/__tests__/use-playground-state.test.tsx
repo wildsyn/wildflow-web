@@ -312,6 +312,35 @@ describe('usePlaygroundState at authentication boundaries', () => {
     assert.equal(storedBParameterEnabled, null)
   })
 
+  test('queued A config and parameter writes are dropped when B is applied in the same batch', async () => {
+    applyAuthBundle(makeBundle(1, 'session-a'))
+    const rendered = renderHook()
+    unmountHook = rendered.unmount
+    await flushLoadTimer()
+
+    // React may defer functional state updaters until after B's auth boundary
+    // has switched the persistence owner. These writes were initiated by A
+    // and therefore must be discarded rather than saved under B's namespace.
+    await act(async () => {
+      rendered.state.updateConfig('model', 'account-a-private-model')
+      rendered.state.updateConfig('temperature', 0.2)
+      rendered.state.updateParameterEnabled('max_tokens', true)
+      applyAuthBundle(makeBundle(2, 'session-b'))
+    })
+
+    assert.equal(rendered.state.config.model, DEFAULT_CONFIG.model)
+    assert.equal(rendered.state.config.temperature, DEFAULT_CONFIG.temperature)
+    assert.deepEqual(rendered.state.parameterEnabled, DEFAULT_PARAMETER_ENABLED)
+
+    for (const key of Object.values(STORAGE_KEYS)) {
+      assert.equal(
+        domWindow.localStorage.getItem(`${key}:u-2`),
+        null,
+        `B namespace ${key} must not receive A data`
+      )
+    }
+  })
+
   test('the same account keeps persisted content across a reload', async () => {
     applyAuthBundle(makeBundle(7, 'session-a'))
     const rendered = renderHook()
