@@ -78,11 +78,11 @@ const offerings: WildFlowOffering[] = [
     status: 'unavailable',
   },
   {
-    id: 'wildflow/exam-replay-dual-asr-v1',
-    display_name: '直播回放双 ASR',
+    id: 'wildflow/internal-vibevoice-faster-whisper-asr-v1',
+    display_name: 'Internal Speech Recognition',
     kind: 'asr',
     vendor: 'WildFlow',
-    model_version_ref: 'wildflow/exam-replay-dual-asr-v1',
+    model_version_ref: 'wildflow/internal-vibevoice-faster-whisper-asr-v1',
     description: 'Segment transcript and word timestamps.',
     required_parameters: ['input_artifact_ids'],
     pricing: {
@@ -97,7 +97,7 @@ const offerings: WildFlowOffering[] = [
 ]
 
 describe('WildFlow catalog in the model square', () => {
-  test('adds priced and team-trial first-party models', () => {
+  test('adds only callable first-party models', () => {
     const models = mergeWildFlowCatalogIntoPricing([pricedModel], offerings)
 
     assert.deepEqual(
@@ -105,27 +105,21 @@ describe('WildFlow catalog in the model square', () => {
       [
         'priced-model',
         'VoxCPM2',
-        'FLUX.2 [klein] 4B',
-        'wildflow/exam-replay-dual-asr-v1',
+        'wildflow/internal-vibevoice-faster-whisper-asr-v1',
       ]
     )
 
     const catalogModels = models.filter(
       (model) => model.pricing_status === 'catalog'
     )
-    assert.equal(catalogModels.length, 3)
+    assert.equal(catalogModels.length, 2)
     assert.equal(
       catalogModels.every((model) => model.model_price === undefined),
       true
     )
-    assert.equal(
-      catalogModels.find((model) => model.model_name === 'FLUX.2 [klein] 4B')
-        ?.catalog_callable,
-      false
-    )
     assert.deepEqual(
       catalogModels.map((model) => model.catalog_price_display),
-      ['¥0.8 / 万字符', '¥0.05 / 张', '团队内测 · 暂不扣零售余额']
+      ['¥0.8 / 万字符', '团队内测 · 暂不扣零售余额']
     )
     assert.deepEqual(
       catalogModels[0].catalog_voices?.map((voice) => voice.id),
@@ -133,13 +127,17 @@ describe('WildFlow catalog in the model square', () => {
     )
     assert.deepEqual(
       catalogModels.find(
-        (model) => model.model_name === 'wildflow/exam-replay-dual-asr-v1'
+        (model) =>
+          model.model_name ===
+          'wildflow/internal-vibevoice-faster-whisper-asr-v1'
       )?.input_modalities,
       ['audio']
     )
     assert.deepEqual(
       catalogModels.find(
-        (model) => model.model_name === 'wildflow/exam-replay-dual-asr-v1'
+        (model) =>
+          model.model_name ===
+          'wildflow/internal-vibevoice-faster-whisper-asr-v1'
       )?.supported_endpoint_types,
       ['wildflow-jobs']
     )
@@ -161,6 +159,29 @@ describe('WildFlow catalog in the model square', () => {
     )
     assert.equal(models[0].model_price, 0.8)
     assert.equal(models[0].pricing_status, undefined)
+  })
+
+  test('does not surface retired ASR models from stale pricing data', () => {
+    const models = mergeWildFlowCatalogIntoPricing(
+      [
+        {
+          ...pricedModel,
+          model_name: 'wildflow/exam-replay-dual-asr-v1',
+        },
+      ],
+      []
+    )
+
+    assert.deepEqual(models, [])
+  })
+
+  test('does not create a catalog model for an unavailable offering', () => {
+    const models = mergeWildFlowCatalogIntoPricing(
+      [],
+      [{ ...offerings[2], callable: false, status: 'unavailable' }]
+    )
+
+    assert.deepEqual(models, [])
   })
 
   test('keeps backend pricing while enriching a same-name model with catalog metadata', () => {

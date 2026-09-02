@@ -23,8 +23,13 @@ import type { Modality, PricingModel, PricingVendor } from '../types'
 const CATALOG_MODEL_IDS: Record<WildFlowOffering['id'], number> = {
   VoxCPM2: -10_001,
   'FLUX.2 [klein] 4B': -10_002,
-  'wildflow/exam-replay-dual-asr-v1': -10_003,
+  'wildflow/internal-vibevoice-faster-whisper-asr-v1': -10_003,
 }
+
+const RETIRED_ASR_MODEL_IDS = new Set([
+  'wildflow/exam-replay-dual-asr-v1',
+  'wildflow/dual-asr-v1',
+])
 
 function offeringToPricingModel(offering: WildFlowOffering): PricingModel {
   const isTts = offering.kind === 'tts'
@@ -52,7 +57,7 @@ function offeringToPricingModel(offering: WildFlowOffering): PricingModel {
     completion_ratio: 0,
     enable_groups: [],
     tags,
-    supported_endpoint_types: ['wildflow-jobs'],
+    supported_endpoint_types: offering.callable ? ['wildflow-jobs'] : [],
     input_modalities: inputModalities,
     output_modalities: outputModalities,
     pricing_status: 'catalog',
@@ -101,13 +106,18 @@ export function mergeWildFlowCatalogIntoPricing(
   const offeringById = new Map<string, WildFlowOffering>(
     offerings.map((offering) => [offering.id, offering])
   )
-  const enrichedModels = models.map((model) => {
+  const activeModels = models.filter(
+    (model) => !RETIRED_ASR_MODEL_IDS.has(model.model_name)
+  )
+  const enrichedModels = activeModels.map((model) => {
     const offering = offeringById.get(model.model_name)
     return offering ? enrichPricingModelWithOffering(model, offering) : model
   })
-  const configuredNames = new Set(models.map((model) => model.model_name))
+  const configuredNames = new Set(activeModels.map((model) => model.model_name))
   const catalogModels = offerings
-    .filter((offering) => !configuredNames.has(offering.id))
+    .filter(
+      (offering) => offering.callable && !configuredNames.has(offering.id)
+    )
     .map(offeringToPricingModel)
 
   return [...enrichedModels, ...catalogModels]
@@ -119,6 +129,7 @@ export function mergeWildFlowCatalogVendors(
 ): PricingVendor[] {
   const vendorNames = new Set(vendors.map((vendor) => vendor.name))
   const catalogVendors = offerings.flatMap((offering, index) => {
+    if (!offering.callable) return []
     if (vendorNames.has(offering.vendor)) return []
     vendorNames.add(offering.vendor)
     return [{ id: -20_001 - index, name: offering.vendor }]

@@ -39,7 +39,10 @@ export interface HomePageContentResult {
 }
 
 export interface WildFlowOffering {
-  id: 'VoxCPM2' | 'FLUX.2 [klein] 4B' | 'wildflow/exam-replay-dual-asr-v1'
+  id:
+    | 'VoxCPM2'
+    | 'FLUX.2 [klein] 4B'
+    | 'wildflow/internal-vibevoice-faster-whisper-asr-v1'
   display_name: string
   kind: 'tts' | 'image' | 'asr'
   vendor: string

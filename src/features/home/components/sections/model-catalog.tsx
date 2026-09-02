@@ -40,7 +40,7 @@ export function ModelCatalog({ offerings, isLoading }: ModelCatalogProps) {
         {[
           'VoxCPM2',
           'FLUX.2 [klein] 4B',
-          'wildflow/exam-replay-dual-asr-v1',
+          'wildflow/internal-vibevoice-faster-whisper-asr-v1',
         ].map((id) => (
           <div
             key={id}

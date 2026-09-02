@@ -22,11 +22,11 @@ import assert from 'node:assert/strict'
 import { normalizeWildFlowCatalog } from '../use-wildflow-catalog'
 
 const asrOffering = {
-  id: 'wildflow/exam-replay-dual-asr-v1',
-  display_name: '直播回放双 ASR',
+  id: 'wildflow/internal-vibevoice-faster-whisper-asr-v1',
+  display_name: 'Internal Speech Recognition',
   kind: 'asr',
   vendor: 'WildFlow',
-  model_version_ref: 'wildflow/exam-replay-dual-asr-v1',
+  model_version_ref: 'wildflow/internal-vibevoice-faster-whisper-asr-v1',
   description: 'Segment transcript and word timestamps.',
   required_parameters: ['input_artifact_ids'],
   pricing: {
@@ -39,11 +39,14 @@ const asrOffering = {
 }
 
 describe('WildFlow catalog normalization', () => {
-  test('accepts the callable dual ASR team-trial contract', () => {
+  test('accepts the callable neutral internal ASR contract', () => {
     const offerings = normalizeWildFlowCatalog([asrOffering])
 
     assert.equal(offerings.length, 1)
-    assert.equal(offerings[0].id, 'wildflow/exam-replay-dual-asr-v1')
+    assert.equal(
+      offerings[0].id,
+      'wildflow/internal-vibevoice-faster-whisper-asr-v1'
+    )
     assert.equal(offerings[0].kind, 'asr')
     assert.equal(offerings[0].status, 'available')
   })
@@ -54,6 +57,14 @@ describe('WildFlow catalog normalization', () => {
         ...asrOffering,
         pricing: { ...asrOffering.pricing, unit: 'image' },
       },
+    ])
+
+    assert.deepEqual(offerings, [])
+  })
+
+  test('rejects retired ASR identities even when returned by the API', () => {
+    const offerings = normalizeWildFlowCatalog([
+      { ...asrOffering, id: 'wildflow/exam-replay-dual-asr-v1' },
     ])
 
     assert.deepEqual(offerings, [])

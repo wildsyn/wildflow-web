@@ -105,6 +105,15 @@ export function Pricing() {
     [usableGroup]
   )
 
+  const callableModels = useMemo(
+    () => (models || []).filter((model) => model.catalog_callable !== false),
+    [models]
+  )
+  const callableFilteredModels = useMemo(
+    () => filteredModels.filter((model) => model.catalog_callable !== false),
+    [filteredModels]
+  )
+
   const handleClearAll = useCallback(() => {
     clearFilters()
     clearSearch()
@@ -183,7 +192,7 @@ export function Pricing() {
             </h1>
             <p className='text-muted-foreground/80 mt-3 text-sm sm:mt-4 sm:text-base'>
               {t('This site currently has {{count}} models enabled', {
-                count: models?.length || 0,
+                count: callableModels.length,
               })}
             </p>
             <p className='text-muted-foreground/60 mx-auto mt-2 max-w-2xl text-xs leading-relaxed sm:text-sm'>
@@ -226,8 +235,8 @@ export function Pricing() {
 
             <main className='min-w-0 space-y-4'>
               <PricingToolbar
-                filteredCount={filteredModels.length}
-                totalCount={models?.length}
+                filteredCount={callableFilteredModels.length}
+                totalCount={callableModels.length}
                 sortBy={sortBy}
                 onSortChange={setSortBy}
                 tokenUnit={tokenUnit}
