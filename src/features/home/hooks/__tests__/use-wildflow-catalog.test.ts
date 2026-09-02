@@ -69,4 +69,12 @@ describe('WildFlow catalog normalization', () => {
 
     assert.deepEqual(offerings, [])
   })
+
+  test('hides internal ASR for anonymous and unauthorized catalog responses', () => {
+    const offerings = normalizeWildFlowCatalog([
+      { ...asrOffering, callable: false },
+    ])
+
+    assert.deepEqual(offerings, [])
+  })
 })

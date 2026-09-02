@@ -85,7 +85,9 @@ export function normalizeWildFlowCatalog(value: unknown): WildFlowOffering[] {
     const item = value.find(
       (candidate) => isOffering(candidate) && candidate.id === id
     )
-    if (!item || !isOffering(item)) return []
+    // The catalog is entitlement-aware. Do not turn an unavailable entry into
+    // a discoverable model for anonymous or unauthorized visitors.
+    if (!item || !isOffering(item) || !item.callable) return []
     return [
       {
         ...item,

@@ -37,19 +37,15 @@ export function ModelCatalog({ offerings, isLoading }: ModelCatalogProps) {
         aria-label={t('Loading...')}
         aria-busy='true'
       >
-        {[
-          'VoxCPM2',
-          'FLUX.2 [klein] 4B',
-          'wildflow/internal-vibevoice-faster-whisper-asr-v1',
-        ].map((id) => (
+        {Array.from({ length: 3 }, (_, index) => index).map((index) => (
           <div
-            key={id}
+            key={index}
             className='border-border bg-muted/30 h-64 animate-pulse rounded-xl border'
           />
         ))}
       </div>
     )
-  } else if (offerings.length === 0) {
+  } else if (offerings.filter((offering) => offering.callable).length === 0) {
     catalogContent = (
       <div className='border-border text-muted-foreground rounded-xl border px-6 py-10 text-sm'>
         {t('Model catalog is temporarily unavailable')}
@@ -58,78 +54,84 @@ export function ModelCatalog({ offerings, isLoading }: ModelCatalogProps) {
   } else {
     catalogContent = (
       <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-3'>
-        {offerings.map((offering) => {
-          const isTTS = offering.kind === 'tts'
-          const isASR = offering.kind === 'asr'
-          let offeringIcon = <ImageIcon className='size-5' aria-hidden='true' />
-          let offeringKind = 'Image Generation'
-          if (isTTS) {
-            offeringIcon = <AudioLines className='size-5' aria-hidden='true' />
-            offeringKind = 'TTS'
-          } else if (isASR) {
-            offeringIcon = <Captions className='size-5' aria-hidden='true' />
-            offeringKind = 'Speech Recognition'
-          }
-          return (
-            <article
-              key={offering.id}
-              data-model-offering={offering.id}
-              className='border-border bg-background flex min-h-64 flex-col rounded-xl border p-6'
-            >
-              <div className='mb-6 flex items-start justify-between gap-4'>
-                <div className='bg-muted flex size-10 items-center justify-center rounded-lg'>
-                  {offeringIcon}
+        {offerings
+          .filter((offering) => offering.callable)
+          .map((offering) => {
+            const isTTS = offering.kind === 'tts'
+            const isASR = offering.kind === 'asr'
+            let offeringIcon = (
+              <ImageIcon className='size-5' aria-hidden='true' />
+            )
+            let offeringKind = 'Image Generation'
+            if (isTTS) {
+              offeringIcon = (
+                <AudioLines className='size-5' aria-hidden='true' />
+              )
+              offeringKind = 'TTS'
+            } else if (isASR) {
+              offeringIcon = <Captions className='size-5' aria-hidden='true' />
+              offeringKind = 'Speech Recognition'
+            }
+            return (
+              <article
+                key={offering.id}
+                data-model-offering={offering.id}
+                className='border-border bg-background flex min-h-64 flex-col rounded-xl border p-6'
+              >
+                <div className='mb-6 flex items-start justify-between gap-4'>
+                  <div className='bg-muted flex size-10 items-center justify-center rounded-lg'>
+                    {offeringIcon}
+                  </div>
+                  <span
+                    className={
+                      offering.callable
+                        ? 'inline-flex rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-xs font-medium text-emerald-600 dark:text-emerald-400'
+                        : 'border-border bg-muted text-muted-foreground inline-flex rounded-full border px-2.5 py-1 text-xs font-medium'
+                    }
+                  >
+                    {t(offering.callable ? 'Available' : 'Unavailable')}
+                  </span>
                 </div>
-                <span
-                  className={
-                    offering.callable
-                      ? 'inline-flex rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-xs font-medium text-emerald-600 dark:text-emerald-400'
-                      : 'border-border bg-muted text-muted-foreground inline-flex rounded-full border px-2.5 py-1 text-xs font-medium'
-                  }
-                >
-                  {t(offering.callable ? 'Available' : 'Unavailable')}
-                </span>
-              </div>
 
-              <p className='text-muted-foreground mb-2 text-xs font-medium tracking-wide uppercase'>
-                {t(offeringKind)}
-              </p>
-              <h3 className='mb-2 text-base font-semibold'>
-                {offering.display_name}
-              </h3>
-              <p className='text-muted-foreground mb-6 text-sm leading-relaxed'>
-                {offering.description}
-              </p>
+                <p className='text-muted-foreground mb-2 text-xs font-medium tracking-wide uppercase'>
+                  {t(offeringKind)}
+                </p>
+                <h3 className='mb-2 text-base font-semibold'>
+                  {offering.display_name}
+                </h3>
+                <p className='text-muted-foreground mb-6 text-sm leading-relaxed'>
+                  {offering.description}
+                </p>
 
-              {isTTS && offering.voices && offering.voices.length > 0 && (
-                <div className='mb-5 flex flex-wrap gap-1.5'>
-                  {offering.voices.map((voice) => (
-                    <span
-                      key={voice.id}
-                      className='bg-muted text-muted-foreground rounded-md px-2 py-1 text-xs'
-                    >
-                      {voice.name}
-                    </span>
-                  ))}
+                {isTTS && offering.voices && offering.voices.length > 0 && (
+                  <div className='mb-5 flex flex-wrap gap-1.5'>
+                    {offering.voices.map((voice) => (
+                      <span
+                        key={voice.id}
+                        className='bg-muted text-muted-foreground rounded-md px-2 py-1 text-xs'
+                      >
+                        {voice.name}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                <div className='border-border mt-auto border-t pt-4'>
+                  <div className='flex items-center justify-between gap-3'>
+                    <p className='text-muted-foreground text-xs'>
+                      {offering.vendor}
+                    </p>
+                    <p className='text-sm font-semibold'>
+                      {offering.pricing.display}
+                    </p>
+                  </div>
+                  <code className='mt-1 block text-xs break-all'>
+                    {offering.model_version_ref}
+                  </code>
                 </div>
-              )}
-
-              <div className='border-border mt-auto border-t pt-4'>
-                <div className='flex items-center justify-between gap-3'>
-                  <p className='text-muted-foreground text-xs'>
-                    {offering.vendor}
-                  </p>
-                  <p className='text-sm font-semibold'>
-                    {offering.pricing.display}
-                  </p>
-                </div>
-                <code className='mt-1 block text-xs break-all'>
-                  {offering.model_version_ref}
-                </code>
-              </div>
-            </article>
-          )
-        })}
+              </article>
+            )
+          })}
       </div>
     )
   }

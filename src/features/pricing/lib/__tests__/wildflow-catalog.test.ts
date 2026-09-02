@@ -175,6 +175,38 @@ describe('WildFlow catalog in the model square', () => {
     assert.deepEqual(models, [])
   })
 
+  test('does not let public pricing inject internal ASR without an entitlement', () => {
+    const models = mergeWildFlowCatalogIntoPricing(
+      [
+        pricedModel,
+        {
+          ...pricedModel,
+          id: 103,
+          model_name: 'wildflow/internal-vibevoice-faster-whisper-asr-v1',
+          supported_endpoint_types: ['wildflow-jobs'],
+        },
+      ],
+      []
+    )
+
+    assert.deepEqual(models, [pricedModel])
+  })
+
+  test('does not let a stale cache retain internal ASR after entitlement is revoked', () => {
+    const models = mergeWildFlowCatalogIntoPricing(
+      [
+        {
+          ...pricedModel,
+          model_name: 'wildflow/internal-vibevoice-faster-whisper-asr-v1',
+          supported_endpoint_types: ['wildflow-jobs'],
+        },
+      ],
+      [{ ...offerings[2], callable: false, status: 'unavailable' }]
+    )
+
+    assert.deepEqual(models, [])
+  })
+
   test('does not create a catalog model for an unavailable offering', () => {
     const models = mergeWildFlowCatalogIntoPricing(
       [],
@@ -226,5 +258,20 @@ describe('WildFlow catalog in the model square', () => {
         ],
       }
     )
+  })
+
+  test('uses the authorized catalog endpoint instead of pricing endpoint data', () => {
+    const [model] = mergeWildFlowCatalogIntoPricing(
+      [
+        {
+          ...pricedModel,
+          model_name: 'wildflow/internal-vibevoice-faster-whisper-asr-v1',
+          supported_endpoint_types: ['chat-completions'],
+        },
+      ],
+      [offerings[2]]
+    )
+
+    assert.deepEqual(model.supported_endpoint_types, ['wildflow-jobs'])
   })
 })
