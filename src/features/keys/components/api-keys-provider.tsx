@@ -24,6 +24,7 @@ import useDialogState from '@/hooks/use-dialog'
 
 import { fetchTokenKey, fetchTokenKeysBatch } from '../api'
 import { ERROR_MESSAGES } from '../constants'
+import { getRateLimitRetryAfterSeconds } from '../lib/rate-limit-error'
 import type { ApiKey, ApiKeysDialogType } from '../types'
 
 type ApiKeysContextType = {
@@ -39,6 +40,7 @@ type ApiKeysContextType = {
   resolveRealKeysBatch: (ids: number[]) => Promise<Record<number, string>>
   resolvedKeys: Record<number, string>
   loadingKeys: Record<number, boolean>
+  keyRetryAfterSeconds: Record<number, number>
   copiedKeyId: number | null
   markKeyCopied: (id: number) => void
 }
@@ -54,6 +56,9 @@ export function ApiKeysProvider({ children }: { children: React.ReactNode }) {
 
   const [resolvedKeys, setResolvedKeys] = useState<Record<number, string>>({})
   const [loadingKeys, setLoadingKeys] = useState<Record<number, boolean>>({})
+  const [keyRetryAfterSeconds, setKeyRetryAfterSeconds] = useState<
+    Record<number, number>
+  >({})
   const pendingRequests = useRef<Record<number, Promise<string | null>>>({})
 
   const [copiedKeyId, setCopiedKeyId] = useState<number | null>(null)
@@ -62,6 +67,22 @@ export function ApiKeysProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     return () => clearTimeout(copiedTimerRef.current)
   }, [])
+
+  useEffect(() => {
+    if (!Object.values(keyRetryAfterSeconds).some((seconds) => seconds > 0)) {
+      return
+    }
+    const timer = setInterval(() => {
+      setKeyRetryAfterSeconds((previous) => {
+        const next: Record<number, number> = {}
+        for (const [id, seconds] of Object.entries(previous)) {
+          if (seconds > 1) next[Number(id)] = seconds - 1
+        }
+        return next
+      })
+    }, 1000)
+    return () => clearInterval(timer)
+  }, [keyRetryAfterSeconds])
 
   const markKeyCopied = useCallback((id: number) => {
     setCopiedKeyId(id)
@@ -76,6 +97,7 @@ export function ApiKeysProvider({ children }: { children: React.ReactNode }) {
   const resolveRealKey = useCallback(
     async (id: number): Promise<string | null> => {
       if (resolvedKeys[id]) return resolvedKeys[id]
+      if (keyRetryAfterSeconds[id] > 0) return null
       if (id in pendingRequests.current) return pendingRequests.current[id]
 
       const request = (async () => {
@@ -89,7 +111,20 @@ export function ApiKeysProvider({ children }: { children: React.ReactNode }) {
           }
           toast.error(res.message || t(ERROR_MESSAGES.UNEXPECTED))
           return null
-        } catch {
+        } catch (error) {
+          const retryAfterSeconds = getRateLimitRetryAfterSeconds(error)
+          if (retryAfterSeconds !== null) {
+            setKeyRetryAfterSeconds((previous) => ({
+              ...previous,
+              [id]: retryAfterSeconds,
+            }))
+            toast.error(
+              t('Too many requests. Try again in {{seconds}} seconds.', {
+                seconds: retryAfterSeconds,
+              })
+            )
+            return null
+          }
           toast.error(t(ERROR_MESSAGES.UNEXPECTED))
           return null
         } finally {
@@ -105,7 +140,7 @@ export function ApiKeysProvider({ children }: { children: React.ReactNode }) {
       pendingRequests.current[id] = request
       return request
     },
-    [resolvedKeys, t]
+    [keyRetryAfterSeconds, resolvedKeys, t]
   )
 
   const resolveRealKeysBatch = useCallback(
@@ -138,7 +173,21 @@ export function ApiKeysProvider({ children }: { children: React.ReactNode }) {
         }
         toast.error(res.message || t(ERROR_MESSAGES.UNEXPECTED))
         return {}
-      } catch {
+      } catch (error) {
+        const retryAfterSeconds = getRateLimitRetryAfterSeconds(error)
+        if (retryAfterSeconds !== null) {
+          setKeyRetryAfterSeconds((previous) => {
+            const next = { ...previous }
+            for (const id of uncachedIds) next[id] = retryAfterSeconds
+            return next
+          })
+          toast.error(
+            t('Too many requests. Try again in {{seconds}} seconds.', {
+              seconds: retryAfterSeconds,
+            })
+          )
+          return {}
+        }
         toast.error(t(ERROR_MESSAGES.UNEXPECTED))
         return {}
       } finally {
@@ -169,6 +218,7 @@ export function ApiKeysProvider({ children }: { children: React.ReactNode }) {
         resolveRealKeysBatch,
         resolvedKeys,
         loadingKeys,
+        keyRetryAfterSeconds,
         copiedKeyId,
         markKeyCopied,
       }}

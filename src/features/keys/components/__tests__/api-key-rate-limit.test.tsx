@@ -102,7 +102,11 @@ async function waitForButton(label: string): Promise<HTMLButtonElement> {
       observer.disconnect()
       reject(new Error(`Button not found: ${label}`))
     }, 1500)
-    observer.observe(document, { attributes: true, childList: true, subtree: true })
+    observer.observe(document, {
+      attributes: true,
+      childList: true,
+      subtree: true,
+    })
   })
 }
 
