@@ -88,6 +88,7 @@ function BatchProbe() {
   const { keyRetryAfterSeconds, resolveRealKeysBatch } = useApiKeys()
   return (
     <button
+      type='button'
       aria-label='Fetch selected API keys'
       onClick={() => void resolveRealKeysBatch([7, 8])}
     >
