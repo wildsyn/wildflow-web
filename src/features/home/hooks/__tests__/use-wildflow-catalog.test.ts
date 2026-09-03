@@ -43,10 +43,7 @@ describe('WildFlow catalog normalization', () => {
     const offerings = normalizeWildFlowCatalog([asrOffering])
 
     assert.equal(offerings.length, 1)
-    assert.equal(
-      offerings[0].id,
-      'wildflow/dual-asr-v1'
-    )
+    assert.equal(offerings[0].id, 'wildflow/dual-asr-v1')
     assert.equal(offerings[0].kind, 'asr')
     assert.equal(offerings[0].status, 'available')
   })
@@ -70,7 +67,7 @@ describe('WildFlow catalog normalization', () => {
     assert.deepEqual(offerings, [])
   })
 
-  test('hides internal ASR from the anonymous catalog when Runtime is unavailable', () => {
+  test('hides public ASR from the catalog when Runtime is unavailable', () => {
     const offerings = normalizeWildFlowCatalog([
       { ...asrOffering, callable: false },
     ])

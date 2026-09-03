@@ -23,16 +23,16 @@ import type { Modality, PricingModel, PricingVendor } from '../types'
 const CATALOG_MODEL_IDS: Record<WildFlowOffering['id'], number> = {
   VoxCPM2: -10_001,
   'FLUX.2 [klein] 4B': -10_002,
-  'wildflow/internal-vibevoice-faster-whisper-asr-v1': -10_003,
+  'wildflow/dual-asr-v1': -10_003,
 }
 
 const RETIRED_ASR_MODEL_IDS = new Set([
   'wildflow/exam-replay-dual-asr-v1',
-  'wildflow/dual-asr-v1',
+  'wildflow/internal-vibevoice-faster-whisper-asr-v1',
 ])
 
-const AUTHENTICATED_ONLY_MODEL_IDS = new Set<string>([
-  'wildflow/internal-vibevoice-faster-whisper-asr-v1',
+const RUNTIME_AUTHORITATIVE_MODEL_IDS = new Set<string>([
+  'wildflow/dual-asr-v1',
 ])
 
 function offeringToPricingModel(offering: WildFlowOffering): PricingModel {
@@ -113,7 +113,7 @@ export function mergeWildFlowCatalogIntoPricing(
   )
   const activeModels = models.filter((model) => {
     if (RETIRED_ASR_MODEL_IDS.has(model.model_name)) return false
-    if (!AUTHENTICATED_ONLY_MODEL_IDS.has(model.model_name)) return true
+    if (!RUNTIME_AUTHORITATIVE_MODEL_IDS.has(model.model_name)) return true
     return offeringById.get(model.model_name)?.callable === true
   })
   const enrichedModels = activeModels.map((model) => {

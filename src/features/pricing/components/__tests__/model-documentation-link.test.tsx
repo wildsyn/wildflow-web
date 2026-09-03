@@ -111,12 +111,13 @@ describe('ModelDocumentationLink', () => {
     container.remove()
   })
 
-  test('does not expose an internal ASR documentation link', async () => {
-    const { container, root } = await renderLink(
-      'wildflow/internal-vibevoice-faster-whisper-asr-v1'
-    )
+  test('links public ASR to its neutral guide', async () => {
+    const { container, root } = await renderLink('wildflow/dual-asr-v1')
 
-    assert.equal(container.querySelector('a'), null)
+    assert.equal(
+      container.querySelector('a')?.getAttribute('href'),
+      'https://docs.wildflow.cn/docs/dual-asr'
+    )
 
     await act(async () => root.unmount())
     container.remove()

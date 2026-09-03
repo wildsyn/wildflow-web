@@ -39,10 +39,7 @@ export interface HomePageContentResult {
 }
 
 export interface WildFlowOffering {
-  id:
-    | 'VoxCPM2'
-    | 'FLUX.2 [klein] 4B'
-    | 'wildflow/internal-vibevoice-faster-whisper-asr-v1'
+  id: 'VoxCPM2' | 'FLUX.2 [klein] 4B' | 'wildflow/dual-asr-v1'
   display_name: string
   kind: 'tts' | 'image' | 'asr'
   vendor: string
@@ -64,7 +61,7 @@ export interface WildFlowVoice {
 export interface WildFlowCatalogPricing {
   currency: 'CNY'
   amount: number
-  unit: '10k_characters' | 'image' | 'team_trial'
+  unit: '10k_characters' | 'image' | 'audio_minute' | 'team_trial'
   display: string
 }
 

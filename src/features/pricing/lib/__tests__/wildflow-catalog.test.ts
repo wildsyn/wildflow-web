@@ -102,11 +102,7 @@ describe('WildFlow catalog in the model square', () => {
 
     assert.deepEqual(
       models.map((model) => model.model_name),
-      [
-        'priced-model',
-        'VoxCPM2',
-        'wildflow/dual-asr-v1',
-      ]
+      ['priced-model', 'VoxCPM2', 'wildflow/dual-asr-v1']
     )
 
     const catalogModels = models.filter(
@@ -126,19 +122,13 @@ describe('WildFlow catalog in the model square', () => {
       ['shuoshuren', 'dabin', 'tingting', 'default', 'wangliqun']
     )
     assert.deepEqual(
-      catalogModels.find(
-        (model) =>
-          model.model_name ===
-          'wildflow/dual-asr-v1'
-      )?.input_modalities,
+      catalogModels.find((model) => model.model_name === 'wildflow/dual-asr-v1')
+        ?.input_modalities,
       ['audio']
     )
     assert.deepEqual(
-      catalogModels.find(
-        (model) =>
-          model.model_name ===
-          'wildflow/dual-asr-v1'
-      )?.supported_endpoint_types,
+      catalogModels.find((model) => model.model_name === 'wildflow/dual-asr-v1')
+        ?.supported_endpoint_types,
       ['wildflow-jobs']
     )
   })
@@ -265,7 +255,7 @@ describe('WildFlow catalog in the model square', () => {
       [
         {
           ...pricedModel,
-          model_name: 'wildflow/internal-vibevoice-faster-whisper-asr-v1',
+          model_name: 'wildflow/dual-asr-v1',
           supported_endpoint_types: ['chat-completions'],
         },
       ],

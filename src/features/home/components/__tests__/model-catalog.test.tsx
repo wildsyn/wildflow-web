@@ -163,10 +163,7 @@ describe('WildFlow first-party model catalog', () => {
     assert.equal(container.textContent?.includes('¥0.05 / 张'), false)
     assert.equal(container.textContent?.includes('Unavailable'), false)
     assert.equal(container.textContent?.includes('Speech Recognition'), true)
-    assert.equal(
-      container.textContent?.includes('¥0.10 / 音频分钟'),
-      true
-    )
+    assert.equal(container.textContent?.includes('¥0.10 / 音频分钟'), true)
 
     await act(async () => root.unmount())
     container.remove()
