@@ -56,7 +56,7 @@ const { createInstance } = await import('i18next')
 const { I18nextProvider, initReactI18next } = await import('react-i18next')
 const { api } = await import('@/lib/api')
 const { ApiKeyCell } = await import('../api-keys-cells')
-const { ApiKeysProvider } = await import('../api-keys-provider')
+const { ApiKeysProvider, useApiKeys } = await import('../api-keys-provider')
 
 const i18n = createInstance()
 await i18n.use(initReactI18next).init({
@@ -83,6 +83,18 @@ const apiClient = api as unknown as MockableApi
 const originalPost = apiClient.post
 let host: HTMLDivElement | null = null
 let root: ReturnType<typeof createRoot> | null = null
+
+function BatchProbe() {
+  const { keyRetryAfterSeconds, resolveRealKeysBatch } = useApiKeys()
+  return (
+    <button
+      aria-label='Fetch selected API keys'
+      onClick={() => void resolveRealKeysBatch([7, 8])}
+    >
+      {keyRetryAfterSeconds[7] || 0}
+    </button>
+  )
+}
 
 async function waitForButton(label: string): Promise<HTMLButtonElement> {
   const findButton = () =>
@@ -175,6 +187,40 @@ describe('API key copy rate limit', () => {
     )
     expect(limitedButton.disabled).toBe(true)
     await act(async () => limitedButton.click())
+    expect(requestCount).toBe(1)
+  })
+
+  test('does not repeat a batch request while its server cooldown is active', async () => {
+    let requestCount = 0
+    apiClient.post = async () => {
+      requestCount += 1
+      throw {
+        isAxiosError: true,
+        response: {
+          status: 429,
+          data: { code: 'rate_limited', retry_after: 3 },
+          headers: { 'retry-after': '3' },
+        },
+      }
+    }
+
+    host = document.createElement('div')
+    document.body.append(host)
+    root = createRoot(host)
+    await act(async () =>
+      root?.render(
+        <I18nextProvider i18n={i18n}>
+          <ApiKeysProvider>
+            <BatchProbe />
+          </ApiKeysProvider>
+        </I18nextProvider>
+      )
+    )
+
+    const batchButton = await waitForButton('Fetch selected API keys')
+    await act(async () => batchButton.click())
+    expect(batchButton.textContent).toBe('3')
+    await act(async () => batchButton.click())
     expect(requestCount).toBe(1)
   })
 })
