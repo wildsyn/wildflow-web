@@ -126,9 +126,9 @@ const offerings: WildFlowOffering[] = [
     required_parameters: ['input_artifact_ids'],
     pricing: {
       currency: 'CNY',
-      amount: 0.1,
+      amount: 0.05,
       unit: 'audio_minute',
-      display: '¥0.10 / 音频分钟',
+      display: '¥0.05 / 音频分钟',
     },
     callable: true,
     status: 'available',
@@ -163,7 +163,7 @@ describe('WildFlow first-party model catalog', () => {
     assert.equal(container.textContent?.includes('¥0.05 / 张'), false)
     assert.equal(container.textContent?.includes('Unavailable'), false)
     assert.equal(container.textContent?.includes('Speech Recognition'), true)
-    assert.equal(container.textContent?.includes('¥0.10 / 音频分钟'), true)
+    assert.equal(container.textContent?.includes('¥0.05 / 音频分钟'), true)
 
     await act(async () => root.unmount())
     container.remove()
