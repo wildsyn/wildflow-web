@@ -31,9 +31,9 @@ const asrOffering = {
   required_parameters: ['input_artifact_ids'],
   pricing: {
     currency: 'CNY',
-    amount: 0.1,
+    amount: 0.05,
     unit: 'audio_minute',
-    display: '¥0.10 / 音频分钟',
+    display: '¥0.05 / 音频分钟',
   },
   callable: true,
 }

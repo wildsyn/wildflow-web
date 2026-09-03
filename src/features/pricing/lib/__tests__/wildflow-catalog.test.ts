@@ -87,9 +87,9 @@ const offerings: WildFlowOffering[] = [
     required_parameters: ['input_artifact_ids'],
     pricing: {
       currency: 'CNY',
-      amount: 0.1,
+      amount: 0.05,
       unit: 'audio_minute',
-      display: '¥0.10 / 音频分钟',
+      display: '¥0.05 / 音频分钟',
     },
     callable: true,
     status: 'available',
@@ -115,7 +115,7 @@ describe('WildFlow catalog in the model square', () => {
     )
     assert.deepEqual(
       catalogModels.map((model) => model.catalog_price_display),
-      ['¥0.8 / 万字符', '¥0.10 / 音频分钟']
+      ['¥0.8 / 万字符', '¥0.05 / 音频分钟']
     )
     assert.deepEqual(
       catalogModels[0].catalog_voices?.map((voice) => voice.id),
