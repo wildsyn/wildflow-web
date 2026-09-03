@@ -34,7 +34,7 @@ function buildParameters(modelName: string): Record<string, unknown> {
   if (modelName === 'FLUX.2 [klein] 4B') {
     return { prompt: '一只在草地上奔跑的小狗', width: 1024, height: 1024 }
   }
-  return { language: 'zh', context: '直播回放' }
+  return { language: 'zh' }
 }
 
 export function buildWildFlowJobSample(
@@ -46,7 +46,9 @@ export function buildWildFlowJobSample(
     model: context.modelName,
     parameters: buildParameters(context.modelName),
   }
-  if (context.modelName === 'wildflow/exam-replay-dual-asr-v1') {
+  if (
+    context.modelName === 'wildflow/internal-vibevoice-faster-whisper-asr-v1'
+  ) {
     body.input_artifact_ids = ['替换为已上传的输入 Artifact ID']
   }
   const bodyJson = JSON.stringify(body, null, 2)

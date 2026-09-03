@@ -117,11 +117,11 @@ const offerings: WildFlowOffering[] = [
     status: 'unavailable',
   },
   {
-    id: 'wildflow/exam-replay-dual-asr-v1',
-    display_name: '直播回放双 ASR',
+    id: 'wildflow/internal-vibevoice-faster-whisper-asr-v1',
+    display_name: 'Internal Speech Recognition',
     kind: 'asr',
     vendor: 'WildFlow',
-    model_version_ref: 'wildflow/exam-replay-dual-asr-v1',
+    model_version_ref: 'wildflow/internal-vibevoice-faster-whisper-asr-v1',
     description: 'Segment transcript and word timestamps.',
     required_parameters: ['input_artifact_ids'],
     pricing: {
@@ -138,7 +138,7 @@ const offerings: WildFlowOffering[] = [
 describe('WildFlow first-party model catalog', () => {
   afterAll(() => domWindow.close())
 
-  test('renders TTS, image, and team-trial dual ASR models', async () => {
+  test('renders only offerings authorized as callable', async () => {
     const container = document.createElement('div')
     document.body.append(container)
     const root = createRoot(container)
@@ -152,16 +152,16 @@ describe('WildFlow first-party model catalog', () => {
     )
 
     const cards = container.querySelectorAll('[data-model-offering]')
-    assert.equal(cards.length, 3)
+    assert.equal(cards.length, 2)
     assert.deepEqual(
       [...cards].map((card) => card.getAttribute('data-model-offering')),
-      ['VoxCPM2', 'FLUX.2 [klein] 4B', 'wildflow/exam-replay-dual-asr-v1']
+      ['VoxCPM2', 'wildflow/internal-vibevoice-faster-whisper-asr-v1']
     )
     assert.equal(container.textContent?.match(/openbmb\/VoxCPM2/g)?.length, 1)
     assert.equal(container.textContent?.includes('王立群'), true)
     assert.equal(container.textContent?.includes('¥0.8 / 万字符'), true)
-    assert.equal(container.textContent?.includes('¥0.05 / 张'), true)
-    assert.equal(container.textContent?.includes('Unavailable'), true)
+    assert.equal(container.textContent?.includes('¥0.05 / 张'), false)
+    assert.equal(container.textContent?.includes('Unavailable'), false)
     assert.equal(container.textContent?.includes('Speech Recognition'), true)
     assert.equal(
       container.textContent?.includes('团队内测 · 暂不扣零售余额'),

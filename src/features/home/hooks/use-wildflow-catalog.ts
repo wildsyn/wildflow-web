@@ -24,7 +24,7 @@ import type { WildFlowCatalogResult, WildFlowOffering } from '../types'
 const OFFERING_IDS = [
   'VoxCPM2',
   'FLUX.2 [klein] 4B',
-  'wildflow/exam-replay-dual-asr-v1',
+  'wildflow/internal-vibevoice-faster-whisper-asr-v1',
 ] as const
 
 function isPricing(value: unknown): boolean {
@@ -85,7 +85,9 @@ export function normalizeWildFlowCatalog(value: unknown): WildFlowOffering[] {
     const item = value.find(
       (candidate) => isOffering(candidate) && candidate.id === id
     )
-    if (!item || !isOffering(item)) return []
+    // The anonymous catalog is Runtime-authoritative. Do not turn an
+    // unavailable entry into a discoverable public model.
+    if (!item || !isOffering(item) || !item.callable) return []
     return [
       {
         ...item,
