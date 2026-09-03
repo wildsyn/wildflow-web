@@ -31,7 +31,7 @@ const RETIRED_ASR_MODEL_IDS = new Set([
   'wildflow/dual-asr-v1',
 ])
 
-const ENTITLEMENT_GATED_MODEL_IDS = new Set<string>([
+const AUTHENTICATED_ONLY_MODEL_IDS = new Set<string>([
   'wildflow/internal-vibevoice-faster-whisper-asr-v1',
 ])
 
@@ -88,8 +88,8 @@ function enrichPricingModelWithOffering(
     description: model.description ?? catalogModel.description,
     vendor_name: model.vendor_name ?? catalogModel.vendor_name,
     tags: model.tags ?? catalogModel.tags,
-    // Pricing is presentation data only. The entitlement catalog alone
-    // authorizes which endpoint samples can be offered for this model.
+    // Pricing is presentation data only. Runtime callability controls which
+    // endpoint samples can be offered for this model.
     supported_endpoint_types: catalogModel.supported_endpoint_types,
     input_modalities: model.input_modalities ?? catalogModel.input_modalities,
     output_modalities:
@@ -113,7 +113,7 @@ export function mergeWildFlowCatalogIntoPricing(
   )
   const activeModels = models.filter((model) => {
     if (RETIRED_ASR_MODEL_IDS.has(model.model_name)) return false
-    if (!ENTITLEMENT_GATED_MODEL_IDS.has(model.model_name)) return true
+    if (!AUTHENTICATED_ONLY_MODEL_IDS.has(model.model_name)) return true
     return offeringById.get(model.model_name)?.callable === true
   })
   const enrichedModels = activeModels.map((model) => {

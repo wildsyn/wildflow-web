@@ -175,7 +175,7 @@ describe('WildFlow catalog in the model square', () => {
     assert.deepEqual(models, [])
   })
 
-  test('does not let public pricing inject internal ASR without an entitlement', () => {
+  test('does not let public pricing inject internal ASR without authenticated Runtime availability', () => {
     const models = mergeWildFlowCatalogIntoPricing(
       [
         pricedModel,
@@ -192,7 +192,7 @@ describe('WildFlow catalog in the model square', () => {
     assert.deepEqual(models, [pricedModel])
   })
 
-  test('does not let a stale cache retain internal ASR after entitlement is revoked', () => {
+  test('does not let a stale cache retain internal ASR after Runtime becomes unavailable', () => {
     const models = mergeWildFlowCatalogIntoPricing(
       [
         {
