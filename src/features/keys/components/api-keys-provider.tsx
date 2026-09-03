@@ -145,10 +145,14 @@ export function ApiKeysProvider({ children }: { children: React.ReactNode }) {
 
   const resolveRealKeysBatch = useCallback(
     async (ids: number[]): Promise<Record<number, string>> => {
-      const uncachedIds = ids.filter((id) => !resolvedKeys[id])
+      const uncachedIds = ids.filter(
+        (id) => !resolvedKeys[id] && !keyRetryAfterSeconds[id]
+      )
       if (uncachedIds.length === 0) {
         const result: Record<number, string> = {}
-        for (const id of ids) result[id] = resolvedKeys[id]
+        for (const id of ids) {
+          if (resolvedKeys[id]) result[id] = resolvedKeys[id]
+        }
         return result
       }
 
@@ -200,7 +204,7 @@ export function ApiKeysProvider({ children }: { children: React.ReactNode }) {
         }
       }
     },
-    [resolvedKeys, t]
+    [keyRetryAfterSeconds, resolvedKeys, t]
   )
 
   return (
