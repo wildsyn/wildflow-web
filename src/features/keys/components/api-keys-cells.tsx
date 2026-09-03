@@ -45,12 +45,14 @@ export function ApiKeyCell({ apiKey }: { apiKey: ApiKey }) {
     resolveRealKey,
     resolvedKeys,
     loadingKeys,
+    keyRetryAfterSeconds,
     copiedKeyId,
     markKeyCopied,
   } = useApiKeys()
   const [popoverOpen, setPopoverOpen] = useState(false)
 
   const isLoading = !!loadingKeys[apiKey.id]
+  const retryAfterSeconds = keyRetryAfterSeconds[apiKey.id] || 0
   const resolvedFullKey = resolvedKeys[apiKey.id]
   const isCopied = copiedKeyId === apiKey.id
   const maskedKey = `sk-${apiKey.key}`
@@ -58,11 +60,11 @@ export function ApiKeyCell({ apiKey }: { apiKey: ApiKey }) {
   const handlePopoverOpen = useCallback(
     (open: boolean) => {
       setPopoverOpen(open)
-      if (open && !resolvedFullKey) {
+      if (open && !resolvedFullKey && retryAfterSeconds === 0) {
         resolveRealKey(apiKey.id)
       }
     },
-    [resolvedFullKey, resolveRealKey, apiKey.id]
+    [resolvedFullKey, resolveRealKey, apiKey.id, retryAfterSeconds]
   )
 
   const handleCopy = useCallback(async () => {
@@ -81,6 +83,10 @@ export function ApiKeyCell({ apiKey }: { apiKey: ApiKey }) {
   } else if (isCopied) {
     copyIcon = <Check className='size-3.5 text-green-600' />
     copyTooltip = t('Copied!')
+  } else if (retryAfterSeconds > 0) {
+    copyTooltip = t('Too many requests. Try again in {{seconds}} seconds.', {
+      seconds: retryAfterSeconds,
+    })
   }
 
   return (
@@ -130,7 +136,8 @@ export function ApiKeyCell({ apiKey }: { apiKey: ApiKey }) {
               size='icon'
               className='size-7 shrink-0'
               onClick={handleCopy}
-              disabled={isLoading}
+              disabled={isLoading || retryAfterSeconds > 0}
+              aria-label={copyTooltip}
             />
           }
         >
