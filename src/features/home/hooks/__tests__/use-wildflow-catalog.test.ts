@@ -22,31 +22,28 @@ import assert from 'node:assert/strict'
 import { normalizeWildFlowCatalog } from '../use-wildflow-catalog'
 
 const asrOffering = {
-  id: 'wildflow/internal-vibevoice-faster-whisper-asr-v1',
-  display_name: 'Internal Speech Recognition',
+  id: 'wildflow/dual-asr-v1',
+  display_name: '双引擎语音识别',
   kind: 'asr',
   vendor: 'WildFlow',
-  model_version_ref: 'wildflow/internal-vibevoice-faster-whisper-asr-v1',
+  model_version_ref: 'wildflow/exam-replay-dual-asr-v1',
   description: 'Segment transcript and word timestamps.',
   required_parameters: ['input_artifact_ids'],
   pricing: {
     currency: 'CNY',
-    amount: 0,
-    unit: 'team_trial',
-    display: '团队内测 · 暂不扣零售余额',
+    amount: 0.1,
+    unit: 'audio_minute',
+    display: '¥0.10 / 音频分钟',
   },
   callable: true,
 }
 
 describe('WildFlow catalog normalization', () => {
-  test('accepts the callable neutral internal ASR contract', () => {
+  test('accepts the callable public retail ASR contract', () => {
     const offerings = normalizeWildFlowCatalog([asrOffering])
 
     assert.equal(offerings.length, 1)
-    assert.equal(
-      offerings[0].id,
-      'wildflow/internal-vibevoice-faster-whisper-asr-v1'
-    )
+    assert.equal(offerings[0].id, 'wildflow/dual-asr-v1')
     assert.equal(offerings[0].kind, 'asr')
     assert.equal(offerings[0].status, 'available')
   })
@@ -55,14 +52,14 @@ describe('WildFlow catalog normalization', () => {
     const offerings = normalizeWildFlowCatalog([
       {
         ...asrOffering,
-        pricing: { ...asrOffering.pricing, unit: 'image' },
+        pricing: { ...asrOffering.pricing, amount: 0, unit: 'image' },
       },
     ])
 
     assert.deepEqual(offerings, [])
   })
 
-  test('rejects retired ASR identities even when returned by the API', () => {
+  test('rejects the retired course-specific ASR identity even when returned by the API', () => {
     const offerings = normalizeWildFlowCatalog([
       { ...asrOffering, id: 'wildflow/exam-replay-dual-asr-v1' },
     ])
@@ -70,7 +67,7 @@ describe('WildFlow catalog normalization', () => {
     assert.deepEqual(offerings, [])
   })
 
-  test('hides internal ASR from the anonymous catalog when Runtime is unavailable', () => {
+  test('hides public ASR from the catalog when Runtime is unavailable', () => {
     const offerings = normalizeWildFlowCatalog([
       { ...asrOffering, callable: false },
     ])

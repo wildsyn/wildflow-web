@@ -78,18 +78,18 @@ const offerings: WildFlowOffering[] = [
     status: 'unavailable',
   },
   {
-    id: 'wildflow/internal-vibevoice-faster-whisper-asr-v1',
-    display_name: 'Internal Speech Recognition',
+    id: 'wildflow/dual-asr-v1',
+    display_name: '双引擎语音识别',
     kind: 'asr',
     vendor: 'WildFlow',
-    model_version_ref: 'wildflow/internal-vibevoice-faster-whisper-asr-v1',
+    model_version_ref: 'wildflow/exam-replay-dual-asr-v1',
     description: 'Segment transcript and word timestamps.',
     required_parameters: ['input_artifact_ids'],
     pricing: {
       currency: 'CNY',
-      amount: 0,
-      unit: 'team_trial',
-      display: '团队内测 · 暂不扣零售余额',
+      amount: 0.1,
+      unit: 'audio_minute',
+      display: '¥0.10 / 音频分钟',
     },
     callable: true,
     status: 'available',
@@ -102,11 +102,7 @@ describe('WildFlow catalog in the model square', () => {
 
     assert.deepEqual(
       models.map((model) => model.model_name),
-      [
-        'priced-model',
-        'VoxCPM2',
-        'wildflow/internal-vibevoice-faster-whisper-asr-v1',
-      ]
+      ['priced-model', 'VoxCPM2', 'wildflow/dual-asr-v1']
     )
 
     const catalogModels = models.filter(
@@ -119,26 +115,20 @@ describe('WildFlow catalog in the model square', () => {
     )
     assert.deepEqual(
       catalogModels.map((model) => model.catalog_price_display),
-      ['¥0.8 / 万字符', '团队内测 · 暂不扣零售余额']
+      ['¥0.8 / 万字符', '¥0.10 / 音频分钟']
     )
     assert.deepEqual(
       catalogModels[0].catalog_voices?.map((voice) => voice.id),
       ['shuoshuren', 'dabin', 'tingting', 'default', 'wangliqun']
     )
     assert.deepEqual(
-      catalogModels.find(
-        (model) =>
-          model.model_name ===
-          'wildflow/internal-vibevoice-faster-whisper-asr-v1'
-      )?.input_modalities,
+      catalogModels.find((model) => model.model_name === 'wildflow/dual-asr-v1')
+        ?.input_modalities,
       ['audio']
     )
     assert.deepEqual(
-      catalogModels.find(
-        (model) =>
-          model.model_name ===
-          'wildflow/internal-vibevoice-faster-whisper-asr-v1'
-      )?.supported_endpoint_types,
+      catalogModels.find((model) => model.model_name === 'wildflow/dual-asr-v1')
+        ?.supported_endpoint_types,
       ['wildflow-jobs']
     )
   })
@@ -175,14 +165,14 @@ describe('WildFlow catalog in the model square', () => {
     assert.deepEqual(models, [])
   })
 
-  test('does not let public pricing inject internal ASR without authenticated Runtime availability', () => {
+  test('does not let public pricing inject ASR without Runtime availability', () => {
     const models = mergeWildFlowCatalogIntoPricing(
       [
         pricedModel,
         {
           ...pricedModel,
           id: 103,
-          model_name: 'wildflow/internal-vibevoice-faster-whisper-asr-v1',
+          model_name: 'wildflow/dual-asr-v1',
           supported_endpoint_types: ['wildflow-jobs'],
         },
       ],
@@ -192,12 +182,12 @@ describe('WildFlow catalog in the model square', () => {
     assert.deepEqual(models, [pricedModel])
   })
 
-  test('does not let a stale cache retain internal ASR after Runtime becomes unavailable', () => {
+  test('does not let a stale cache retain ASR after Runtime becomes unavailable', () => {
     const models = mergeWildFlowCatalogIntoPricing(
       [
         {
           ...pricedModel,
-          model_name: 'wildflow/internal-vibevoice-faster-whisper-asr-v1',
+          model_name: 'wildflow/dual-asr-v1',
           supported_endpoint_types: ['wildflow-jobs'],
         },
       ],
@@ -265,7 +255,7 @@ describe('WildFlow catalog in the model square', () => {
       [
         {
           ...pricedModel,
-          model_name: 'wildflow/internal-vibevoice-faster-whisper-asr-v1',
+          model_name: 'wildflow/dual-asr-v1',
           supported_endpoint_types: ['chat-completions'],
         },
       ],

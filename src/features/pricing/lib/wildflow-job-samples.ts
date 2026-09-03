@@ -46,9 +46,7 @@ export function buildWildFlowJobSample(
     model: context.modelName,
     parameters: buildParameters(context.modelName),
   }
-  if (
-    context.modelName === 'wildflow/internal-vibevoice-faster-whisper-asr-v1'
-  ) {
+  if (context.modelName === 'wildflow/dual-asr-v1') {
     body.input_artifact_ids = ['替换为已上传的输入 Artifact ID']
   }
   const bodyJson = JSON.stringify(body, null, 2)

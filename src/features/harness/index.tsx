@@ -22,7 +22,7 @@ export function HarnessOverview() {
           <p className='text-muted-foreground mt-5 text-base leading-7 sm:text-lg'>
             这里是野生流动的 Harness
             生态入口。当前阶段先服务野生智能的内容营销交付， 以 AI
-            视频自动化和考公项目验证可复用的 Skill 与场景包。
+            视频自动化和通用业务验证可复用的 Skill 与场景包。
           </p>
         </div>
 

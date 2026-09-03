@@ -24,7 +24,7 @@ import type { WildFlowCatalogResult, WildFlowOffering } from '../types'
 const OFFERING_IDS = [
   'VoxCPM2',
   'FLUX.2 [klein] 4B',
-  'wildflow/internal-vibevoice-faster-whisper-asr-v1',
+  'wildflow/dual-asr-v1',
 ] as const
 
 function isPricing(value: unknown): boolean {
@@ -41,6 +41,7 @@ function isPricing(value: unknown): boolean {
   const supportedUnit =
     pricing.unit === '10k_characters' ||
     pricing.unit === 'image' ||
+    pricing.unit === 'audio_minute' ||
     pricing.unit === 'team_trial'
   const validAmount =
     pricing.unit === 'team_trial' ? pricing.amount === 0 : pricing.amount > 0

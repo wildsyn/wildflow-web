@@ -117,18 +117,18 @@ const offerings: WildFlowOffering[] = [
     status: 'unavailable',
   },
   {
-    id: 'wildflow/internal-vibevoice-faster-whisper-asr-v1',
-    display_name: 'Internal Speech Recognition',
+    id: 'wildflow/dual-asr-v1',
+    display_name: '双引擎语音识别',
     kind: 'asr',
     vendor: 'WildFlow',
-    model_version_ref: 'wildflow/internal-vibevoice-faster-whisper-asr-v1',
+    model_version_ref: 'wildflow/exam-replay-dual-asr-v1',
     description: 'Segment transcript and word timestamps.',
     required_parameters: ['input_artifact_ids'],
     pricing: {
       currency: 'CNY',
-      amount: 0,
-      unit: 'team_trial',
-      display: '团队内测 · 暂不扣零售余额',
+      amount: 0.1,
+      unit: 'audio_minute',
+      display: '¥0.10 / 音频分钟',
     },
     callable: true,
     status: 'available',
@@ -155,7 +155,7 @@ describe('WildFlow first-party model catalog', () => {
     assert.equal(cards.length, 2)
     assert.deepEqual(
       [...cards].map((card) => card.getAttribute('data-model-offering')),
-      ['VoxCPM2', 'wildflow/internal-vibevoice-faster-whisper-asr-v1']
+      ['VoxCPM2', 'wildflow/dual-asr-v1']
     )
     assert.equal(container.textContent?.match(/openbmb\/VoxCPM2/g)?.length, 1)
     assert.equal(container.textContent?.includes('王立群'), true)
@@ -163,10 +163,7 @@ describe('WildFlow first-party model catalog', () => {
     assert.equal(container.textContent?.includes('¥0.05 / 张'), false)
     assert.equal(container.textContent?.includes('Unavailable'), false)
     assert.equal(container.textContent?.includes('Speech Recognition'), true)
-    assert.equal(
-      container.textContent?.includes('团队内测 · 暂不扣零售余额'),
-      true
-    )
+    assert.equal(container.textContent?.includes('¥0.10 / 音频分钟'), true)
 
     await act(async () => root.unmount())
     container.remove()
