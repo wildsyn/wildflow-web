@@ -49,20 +49,8 @@ WildFlow Web 是野生流动的开源 Web 前端，承载官网、模型目录�
 
 ## 本地启动
 
-准备 Bun 后执行：
-
-```bash
-bun install --frozen-lockfile
-bun run dev
-```
-
-开发服务器默认把 `/api`、`/mj` 和 `/pg` 代理到本地 WildFlow API。需要指定其他本地后端时：
-
-```bash
-VITE_REACT_APP_SERVER_URL=http://127.0.0.1:3000 bun run dev
-```
-
-完整的前后端分离说明见 [DEV.md](DEV.md)。不要把生产密钥、用户数据或 `.env` 文件提交到仓库。
+从 [DEV.md](DEV.md) 开始：准备 Bun，在后端仓启动 API，再在本仓的独立终端启动前端。
+工作目录、安装命令和代理配置统一在该文档维护。不要把生产密钥、用户数据或 `.env` 文件提交到仓库。
 
 ## 验证
 
