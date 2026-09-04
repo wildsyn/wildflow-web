@@ -27,6 +27,8 @@ const MODEL_DOCUMENTATION_PATHS: Record<string, string> = {
   VoxCPM2: '/docs/voxcpm2',
   'FLUX.2 [klein] 4B': '/docs/flux-2-klein-4b',
   'wildflow/dual-asr-v1': '/docs/dual-asr',
+  'wildflow/whisper-asr-v1': '/docs/asr/single-asr',
+  'wildflow/vibevoice-asr-v1': '/docs/asr/single-asr',
 }
 
 function getModelDocumentationUrl(modelName: string): string | null {
