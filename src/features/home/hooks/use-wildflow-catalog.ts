@@ -25,6 +25,8 @@ const OFFERING_IDS = [
   'VoxCPM2',
   'FLUX.2 [klein] 4B',
   'wildflow/dual-asr-v1',
+  'wildflow/whisper-asr-v1',
+  'wildflow/vibevoice-asr-v1',
 ] as const
 
 function isPricing(value: unknown): boolean {

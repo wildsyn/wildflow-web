@@ -24,6 +24,8 @@ const CATALOG_MODEL_IDS: Record<WildFlowOffering['id'], number> = {
   VoxCPM2: -10_001,
   'FLUX.2 [klein] 4B': -10_002,
   'wildflow/dual-asr-v1': -10_003,
+  'wildflow/whisper-asr-v1': -10_004,
+  'wildflow/vibevoice-asr-v1': -10_005,
 }
 
 const RETIRED_ASR_MODEL_IDS = new Set([
@@ -33,6 +35,8 @@ const RETIRED_ASR_MODEL_IDS = new Set([
 
 const RUNTIME_AUTHORITATIVE_MODEL_IDS = new Set<string>([
   'wildflow/dual-asr-v1',
+  'wildflow/whisper-asr-v1',
+  'wildflow/vibevoice-asr-v1',
 ])
 
 function offeringToPricingModel(offering: WildFlowOffering): PricingModel {
