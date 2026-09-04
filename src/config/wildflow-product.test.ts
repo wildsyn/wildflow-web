@@ -19,7 +19,7 @@ import {
 describe('WildFlow 1.0 product shell', () => {
   test('freezes the public brand and M1 route skeleton', () => {
     assert.equal(WILDFLOW_PRODUCT.name, '野生流动')
-    assert.equal(WILDFLOW_PRODUCT.version, '1.0')
+    assert.equal(WILDFLOW_PRODUCT.version, '1.0.0')
     assert.deepEqual(WILDFLOW_ROUTES, {
       home: '/',
       models: '/pricing',
