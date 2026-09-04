@@ -3,7 +3,7 @@ import type { TopNavLink } from '@/components/layout/types'
 export const WILDFLOW_PRODUCT = {
   name: '野生流动',
   englishName: 'WildFlow',
-  version: '1.0',
+  version: '1.0.0',
   docsUrl: 'https://docs.wildflow.cn',
   sourceUrl: 'https://github.com/wildsyn/wildflow-web',
   upstreamUrl: 'https://github.com/QuantumNous/new-api',

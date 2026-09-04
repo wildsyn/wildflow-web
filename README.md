@@ -7,6 +7,10 @@ WildFlow Web 是野生流动的开源 Web 前端，承载官网、模型目录�
 它与 [WildFlow API](https://github.com/wildsyn/wildflow-api) 分离构建和部署，通过同源 `/api/*`
 路由访问公开控制面。
 
+当前产品版本口径为 **野生流动 1.0.0**（日常简称 1.0），前端产品配置同步该版本。
+产品版本独立于 New API 上游基线、内部协议和各次构建/部署标识；本次版本同步不表示已发布
+GitHub Release 或部署到线上。
+
 [野生流动官网](https://wildflow.cn) · [开发者文档](https://docs.wildflow.cn/docs) ·
 [后端源码](https://github.com/wildsyn/wildflow-api)
 
