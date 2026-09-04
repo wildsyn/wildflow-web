@@ -123,6 +123,15 @@ describe('ModelDocumentationLink', () => {
     container.remove()
   })
 
+  test('links both single-engine ASR products to their guide', async () => {
+    for (const model of ['wildflow/whisper-asr-v1', 'wildflow/vibevoice-asr-v1']) {
+      const { container, root } = await renderLink(model)
+      assert.equal(container.querySelector('a')?.getAttribute('href'), 'https://docs.wildflow.cn/docs/asr/single-asr')
+      await act(async () => root.unmount())
+      container.remove()
+    }
+  })
+
   test('does not show a model-specific link for undocumented models', async () => {
     const { container, root } = await renderLink('DeepSeek-V4-Flash@hefei')
 
