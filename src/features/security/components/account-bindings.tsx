@@ -26,7 +26,6 @@ import { IconDiscord } from '@/assets/brand-icons'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { StatusBadge } from '@/components/status-badge'
 import { Button } from '@/components/ui/button'
-import { Separator } from '@/components/ui/separator'
 import { createOAuthFlow } from '@/features/auth/api'
 import {
   OAUTH_BIND_CALLBACK_MESSAGE,
@@ -38,6 +37,8 @@ import {
   markOAuthBindPopup,
 } from '@/features/auth/lib/oauth-callback-mode'
 import type { CustomOAuthProviderInfo } from '@/features/auth/types'
+import { getSelfOAuthBindings, unbindCustomOAuth } from '@/features/profile/api'
+import type { UserProfile, BindingItem } from '@/features/profile/types'
 import { useDialogs } from '@/hooks/use-dialog'
 import { useStatus } from '@/hooks/use-status'
 import { api } from '@/lib/api'
@@ -50,17 +51,15 @@ import {
   type CustomOAuthBinding,
 } from '@/lib/oauth'
 
-import { getSelfOAuthBindings, unbindCustomOAuth } from '../../api'
-import type { UserProfile, BindingItem } from '../../types'
-import { EmailBindDialog } from '../dialogs/email-bind-dialog'
-import { TelegramBindDialog } from '../dialogs/telegram-bind-dialog'
-import { WeChatBindDialog } from '../dialogs/wechat-bind-dialog'
+import { EmailBindDialog } from './dialogs/email-bind-dialog'
+import { TelegramBindDialog } from './dialogs/telegram-bind-dialog'
+import { WeChatBindDialog } from './dialogs/wechat-bind-dialog'
 
 // ============================================================================
 // Account Bindings Tab Component
 // ============================================================================
 
-interface AccountBindingsTabProps {
+interface AccountBindingsProps {
   profile: UserProfile | null
   onUpdate: () => void
 }
@@ -83,10 +82,7 @@ interface OAuthBindingCallback {
   errorDescription?: string
 }
 
-export function AccountBindingsTab({
-  profile,
-  onUpdate,
-}: AccountBindingsTabProps) {
+export function AccountBindings({ profile, onUpdate }: AccountBindingsProps) {
   const { t } = useTranslation()
   const dialogs = useDialogs<DialogKey>()
   const { status, loading } = useStatus()
@@ -419,7 +415,10 @@ export function AccountBindingsTab({
 
   return (
     <>
-      <div className='grid grid-cols-1 gap-2.5 sm:grid-cols-2 sm:gap-3'>
+      <ul
+        aria-label={t('Account Bindings')}
+        className='grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3'
+      >
         {bindings.map((binding) => {
           let actionLabel = t('Bind')
           if (binding.isBound && binding.id === 'email') {
@@ -429,17 +428,22 @@ export function AccountBindingsTab({
           }
 
           return (
-            <div
+            <li
               key={binding.id}
-              className='flex items-center justify-between gap-2.5 rounded-lg border p-2.5 sm:gap-3 sm:p-3'
+              className='flex min-w-0 items-center justify-between gap-2 rounded-lg border px-2.5 py-2'
             >
-              <div className='flex min-w-0 items-center gap-2.5 sm:gap-3'>
-                <div className='bg-muted shrink-0 rounded-md p-1.5 sm:p-2'>
+              <div className='flex min-w-0 items-center gap-2'>
+                <div className='bg-muted shrink-0 rounded-md p-1.5'>
                   <binding.icon className='h-4 w-4' />
                 </div>
                 <div className='min-w-0'>
                   <div className='flex items-center gap-1.5'>
-                    <p className='text-sm font-medium'>{binding.label}</p>
+                    <p
+                      className='truncate text-sm font-medium'
+                      title={binding.label}
+                    >
+                      {binding.label}
+                    </p>
                     {binding.isBound && (
                       <StatusBadge
                         label={t('Bound')}
@@ -462,75 +466,68 @@ export function AccountBindingsTab({
               >
                 {actionLabel}
               </Button>
-            </div>
+            </li>
           )
         })}
-      </div>
-
-      {/* Custom OAuth Bindings */}
-      {customProviders && customProviders.length > 0 && (
-        <>
-          <Separator className='my-4' />
-          <p className='text-muted-foreground mb-3 text-sm font-medium'>
-            {t('Custom OAuth')}
-          </p>
-          <div className='grid grid-cols-1 gap-2.5 sm:grid-cols-2 sm:gap-3'>
-            {customProviders.map((provider) => {
-              const binding = customBindingsByProviderId.get(provider.id)
-              const isBound = !!binding
-              return (
-                <div
-                  key={provider.id}
-                  className='flex items-center justify-between gap-2.5 rounded-lg border p-2.5 sm:gap-3 sm:p-3'
-                >
-                  <div className='flex min-w-0 items-center gap-2.5 sm:gap-3'>
-                    <div className='bg-muted shrink-0 rounded-md p-1.5 sm:p-2'>
-                      <Link2 className='h-4 w-4' />
-                    </div>
-                    <div className='min-w-0'>
-                      <div className='flex items-center gap-1.5'>
-                        <p className='text-sm font-medium'>{provider.name}</p>
-                        {isBound && (
-                          <StatusBadge
-                            label={t('Bound')}
-                            variant='success'
-                            copyable={false}
-                          />
-                        )}
-                      </div>
-                      <p className='text-muted-foreground truncate text-xs'>
-                        {isBound
-                          ? binding?.provider_user_id || t('Bound')
-                          : t('Not bound')}
-                      </p>
-                    </div>
-                  </div>
-                  {isBound ? (
-                    <Button
-                      variant='ghost'
-                      size='sm'
-                      className='text-destructive h-7 shrink-0 px-2.5 text-xs'
-                      onClick={() => setUnbindTarget(binding)}
-                    >
-                      <Unlink className='mr-1 h-3 w-3' />
-                      {t('Unbind')}
-                    </Button>
-                  ) : (
-                    <Button
-                      variant='outline'
-                      size='sm'
-                      className='h-7 shrink-0 px-2.5 text-xs'
-                      onClick={() => handleBindCustomOAuth(provider)}
-                    >
-                      {t('Bind')}
-                    </Button>
-                  )}
+        {customProviders?.map((provider) => {
+          const binding = customBindingsByProviderId.get(provider.id)
+          const isBound = !!binding
+          return (
+            <li
+              key={provider.id}
+              className='flex min-w-0 items-center justify-between gap-2 rounded-lg border px-2.5 py-2'
+            >
+              <div className='flex min-w-0 items-center gap-2'>
+                <div className='bg-muted shrink-0 rounded-md p-1.5'>
+                  <Link2 className='h-4 w-4' />
                 </div>
-              )
-            })}
-          </div>
-        </>
-      )}
+                <div className='min-w-0'>
+                  <div className='flex items-center gap-1.5'>
+                    <p
+                      className='truncate text-sm font-medium'
+                      title={provider.name}
+                    >
+                      {provider.name}
+                    </p>
+                    {isBound && (
+                      <StatusBadge
+                        label={t('Bound')}
+                        variant='success'
+                        copyable={false}
+                      />
+                    )}
+                  </div>
+                  <p className='text-muted-foreground truncate text-xs'>
+                    {isBound
+                      ? binding?.provider_user_id || t('Bound')
+                      : t('Not bound')}
+                  </p>
+                </div>
+              </div>
+              {isBound ? (
+                <Button
+                  variant='ghost'
+                  size='sm'
+                  className='text-destructive h-7 shrink-0 px-2.5 text-xs'
+                  onClick={() => setUnbindTarget(binding)}
+                >
+                  <Unlink className='mr-1 h-3 w-3' />
+                  {t('Unbind')}
+                </Button>
+              ) : (
+                <Button
+                  variant='outline'
+                  size='sm'
+                  className='h-7 shrink-0 px-2.5 text-xs'
+                  onClick={() => handleBindCustomOAuth(provider)}
+                >
+                  {t('Bind')}
+                </Button>
+              )}
+            </li>
+          )
+        })}
+      </ul>
 
       {/* Custom OAuth Unbind Confirmation */}
       <ConfirmDialog
