@@ -1,6 +1,8 @@
-import { describe, test } from 'bun:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
+
+import { describe, test } from 'vitest'
 
 import { getDefaultSidebarModules } from '@/hooks/use-sidebar-config'
 import { mapStatusDataToConfig } from '@/hooks/use-system-config'
@@ -78,11 +80,11 @@ describe('WildFlow 1.0 product shell', () => {
 
   test('does not publish unsupported marketing counts on the public home page', () => {
     const homeSource = readFileSync(
-      new URL('../features/home/index.tsx', import.meta.url),
+      resolve(process.cwd(), 'src/config/../features/home/index.tsx'),
       'utf8'
     )
     const constantsSource = readFileSync(
-      new URL('../features/home/constants.ts', import.meta.url),
+      resolve(process.cwd(), 'src/config/../features/home/constants.ts'),
       'utf8'
     )
 
@@ -92,13 +94,13 @@ describe('WildFlow 1.0 product shell', () => {
 
   test('keeps the default home page limited to evidence-backed content', () => {
     const homeSource = readFileSync(
-      new URL('../features/home/index.tsx', import.meta.url),
+      resolve(process.cwd(), 'src/config/../features/home/index.tsx'),
       'utf8'
     )
     const heroDemoSource = readFileSync(
-      new URL(
-        '../features/home/components/hero-terminal-demo.tsx',
-        import.meta.url
+      resolve(
+        process.cwd(),
+        'src/config/../features/home/components/hero-terminal-demo.tsx'
       ),
       'utf8'
     )
@@ -112,17 +114,23 @@ describe('WildFlow 1.0 product shell', () => {
 
   test('positions the home page for developers and small teams without unverified commercial promises', () => {
     const heroSource = readFileSync(
-      new URL('../features/home/components/sections/hero.tsx', import.meta.url),
+      resolve(
+        process.cwd(),
+        'src/config/../features/home/components/sections/hero.tsx'
+      ),
       'utf8'
     )
     const ctaSource = readFileSync(
-      new URL('../features/home/components/sections/cta.tsx', import.meta.url),
+      resolve(
+        process.cwd(),
+        'src/config/../features/home/components/sections/cta.tsx'
+      ),
       'utf8'
     )
     const modelCatalogSource = readFileSync(
-      new URL(
-        '../features/home/components/sections/model-catalog.tsx',
-        import.meta.url
+      resolve(
+        process.cwd(),
+        'src/config/../features/home/components/sections/model-catalog.tsx'
       ),
       'utf8'
     )
@@ -142,11 +150,14 @@ describe('WildFlow 1.0 product shell', () => {
 
   test('keeps required upstream attribution on About instead of the footer', () => {
     const footerSource = readFileSync(
-      new URL('../components/layout/components/footer.tsx', import.meta.url),
+      resolve(
+        process.cwd(),
+        'src/config/../components/layout/components/footer.tsx'
+      ),
       'utf8'
     )
     const aboutSource = readFileSync(
-      new URL('../features/about/index.tsx', import.meta.url),
+      resolve(process.cwd(), 'src/config/../features/about/index.tsx'),
       'utf8'
     )
 

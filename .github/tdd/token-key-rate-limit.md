@@ -14,7 +14,7 @@ when the server applies an authenticated, action-scoped rate limit.
 ## RED and GREEN evidence
 
 - RED: `bun test src/features/keys/lib/__tests__/rate-limit-error.test.ts
-  src/features/keys/components/__tests__/api-key-rate-limit.test.tsx` failed
+src/features/keys/components/__tests__/api-key-rate-limit.test.tsx` failed
   because no retry parser existed and the copy button exposed no accessible
   retry state. Checkpoint: `cb329634`.
 - GREEN: the same tests passed after parsing the structured body/header,
@@ -27,13 +27,13 @@ when the server applies an authenticated, action-scoped rate limit.
 
 ## Test specification
 
-| Guarantee | Test | Type | Result |
-|---|---|---|---|
-| Structured `retry_after` takes precedence over the HTTP header | `lib/__tests__/rate-limit-error.test.ts` | unit | PASS |
-| `Retry-After` remains a supported fallback and non-429 errors are ignored | same unit test | unit | PASS |
-| Copy is disabled and exposes the countdown as an accessible label | `components/__tests__/api-key-rate-limit.test.tsx` | component | PASS |
-| Repeated single and batch actions do not resend during cooldown | same component test | regression | PASS |
-| Countdown text is available in every supported locale | locale JSON files | i18n contract | PASS |
+| Guarantee                                                                 | Test                                               | Type          | Result |
+| ------------------------------------------------------------------------- | -------------------------------------------------- | ------------- | ------ |
+| Structured `retry_after` takes precedence over the HTTP header            | `lib/__tests__/rate-limit-error.test.ts`           | unit          | PASS   |
+| `Retry-After` remains a supported fallback and non-429 errors are ignored | same unit test                                     | unit          | PASS   |
+| Copy is disabled and exposes the countdown as an accessible label         | `components/__tests__/api-key-rate-limit.test.tsx` | component     | PASS   |
+| Repeated single and batch actions do not resend during cooldown           | same component test                                | regression    | PASS   |
+| Countdown text is available in every supported locale                     | locale JSON files                                  | i18n contract | PASS   |
 
 ## Final verification
 

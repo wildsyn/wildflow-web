@@ -16,10 +16,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import { afterEach, beforeEach, describe, test } from 'bun:test'
 import assert from 'node:assert/strict'
 
 import { Window } from 'happy-dom'
+import { afterEach, beforeEach, describe, test } from 'vitest'
 
 const domWindow = new Window({ url: 'https://wildflow.cn/playground' })
 Object.defineProperty(globalThis, 'window', {

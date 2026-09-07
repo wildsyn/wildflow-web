@@ -16,10 +16,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import { afterAll, describe, test } from 'bun:test'
 import assert from 'node:assert/strict'
 
 import { Window } from 'happy-dom'
+import { afterAll, describe, test } from 'vitest'
 
 const domWindow = new Window()
 for (const key of [
@@ -124,9 +124,15 @@ describe('ModelDocumentationLink', () => {
   })
 
   test('links both single-engine ASR products to their guide', async () => {
-    for (const model of ['wildflow/whisper-asr-v1', 'wildflow/vibevoice-asr-v1']) {
+    for (const model of [
+      'wildflow/whisper-asr-v1',
+      'wildflow/vibevoice-asr-v1',
+    ]) {
       const { container, root } = await renderLink(model)
-      assert.equal(container.querySelector('a')?.getAttribute('href'), 'https://docs.wildflow.cn/docs/asr/single-asr')
+      assert.equal(
+        container.querySelector('a')?.getAttribute('href'),
+        'https://docs.wildflow.cn/docs/asr/single-asr'
+      )
       await act(async () => root.unmount())
       container.remove()
     }

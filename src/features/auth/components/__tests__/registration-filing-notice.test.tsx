@@ -16,10 +16,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import { afterAll, beforeEach, describe, test } from 'bun:test'
 import assert from 'node:assert/strict'
 
 import { Window } from 'happy-dom'
+import { afterAll, beforeEach, describe, test } from 'vitest'
 
 const domWindow = new Window({ url: 'https://www.wildflow.cn/sign-up' })
 const domGlobals = [
@@ -82,7 +82,15 @@ async function unmountNotice(
 }
 
 describe('RegistrationFilingNotice', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
+    i18next.addResourceBundle(
+      'zhCN',
+      'translation',
+      zhCN.translation,
+      true,
+      true
+    )
+    await i18next.changeLanguage('zhCN')
     document.body.replaceChildren()
   })
 

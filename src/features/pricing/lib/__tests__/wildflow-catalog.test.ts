@@ -16,8 +16,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import { describe, test } from 'bun:test'
 import assert from 'node:assert/strict'
+
+import { describe, test } from 'vitest'
 
 import type { WildFlowOffering } from '@/features/home/types'
 
@@ -95,14 +96,38 @@ const offerings: WildFlowOffering[] = [
     status: 'available',
   },
   {
-    id: 'wildflow/whisper-asr-v1', display_name: 'Whisper 语音识别', kind: 'asr', vendor: 'Systran / OpenAI',
-    model_version_ref: 'wildflow/exam-replay-dual-asr-v1', description: 'Whisper only', required_parameters: ['input_artifact_ids'],
-    pricing: { currency: 'CNY', amount: 0.02, unit: 'audio_minute', display: '¥0.02 / 音频分钟' }, callable: true, status: 'available',
+    id: 'wildflow/whisper-asr-v1',
+    display_name: 'Whisper 语音识别',
+    kind: 'asr',
+    vendor: 'Systran / OpenAI',
+    model_version_ref: 'wildflow/exam-replay-dual-asr-v1',
+    description: 'Whisper only',
+    required_parameters: ['input_artifact_ids'],
+    pricing: {
+      currency: 'CNY',
+      amount: 0.02,
+      unit: 'audio_minute',
+      display: '¥0.02 / 音频分钟',
+    },
+    callable: true,
+    status: 'available',
   },
   {
-    id: 'wildflow/vibevoice-asr-v1', display_name: 'VibeVoice 语音识别', kind: 'asr', vendor: 'Microsoft',
-    model_version_ref: 'wildflow/exam-replay-dual-asr-v1', description: 'VibeVoice only', required_parameters: ['input_artifact_ids'],
-    pricing: { currency: 'CNY', amount: 0.04, unit: 'audio_minute', display: '¥0.04 / 音频分钟' }, callable: true, status: 'available',
+    id: 'wildflow/vibevoice-asr-v1',
+    display_name: 'VibeVoice 语音识别',
+    kind: 'asr',
+    vendor: 'Microsoft',
+    model_version_ref: 'wildflow/exam-replay-dual-asr-v1',
+    description: 'VibeVoice only',
+    required_parameters: ['input_artifact_ids'],
+    pricing: {
+      currency: 'CNY',
+      amount: 0.04,
+      unit: 'audio_minute',
+      display: '¥0.04 / 音频分钟',
+    },
+    callable: true,
+    status: 'available',
   },
 ]
 
@@ -112,7 +137,13 @@ describe('WildFlow catalog in the model square', () => {
 
     assert.deepEqual(
       models.map((model) => model.model_name),
-      ['priced-model', 'VoxCPM2', 'wildflow/dual-asr-v1', 'wildflow/whisper-asr-v1', 'wildflow/vibevoice-asr-v1']
+      [
+        'priced-model',
+        'VoxCPM2',
+        'wildflow/dual-asr-v1',
+        'wildflow/whisper-asr-v1',
+        'wildflow/vibevoice-asr-v1',
+      ]
     )
 
     const catalogModels = models.filter(
@@ -125,7 +156,12 @@ describe('WildFlow catalog in the model square', () => {
     )
     assert.deepEqual(
       catalogModels.map((model) => model.catalog_price_display),
-      ['¥0.8 / 万字符', '¥0.05 / 音频分钟', '¥0.02 / 音频分钟', '¥0.04 / 音频分钟']
+      [
+        '¥0.8 / 万字符',
+        '¥0.05 / 音频分钟',
+        '¥0.02 / 音频分钟',
+        '¥0.04 / 音频分钟',
+      ]
     )
     assert.deepEqual(
       catalogModels[0].catalog_voices?.map((voice) => voice.id),

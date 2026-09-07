@@ -17,7 +17,7 @@ grep -q "Frontend design and development by New API contributors" NOTICE || {
 grep -q "AGPL" LICENSE || { echo "LICENSE is not AGPL text"; fail=1; }
 
 echo "[wildflow-web] upstream baseline recorded"
-grep -q "5c3abffe8572aa8a49f15c3916707d2019d66af4" UPSTREAM.md || {
+grep -Fxq -- '- `upstream_baseline`: `0c76e4dae77a279e015329b7478e6f02d6b62edd`' UPSTREAM.md || {
   echo "upstream commit not recorded"; fail=1; }
 
 echo "[wildflow-web] production shell branding"

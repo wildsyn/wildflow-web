@@ -16,14 +16,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import { describe, test } from 'bun:test'
 import assert from 'node:assert/strict'
 import { spawnSync } from 'node:child_process'
 import { existsSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { fileURLToPath } from 'node:url'
 
-const projectRoot = fileURLToPath(new URL('../../', import.meta.url))
+import { describe, test } from 'vitest'
+
+const projectRoot = process.cwd()
 const bunAmbientTypes =
   /(?:^|[/\\])node_modules[/\\](?:bun-types|@types[/\\]bun)(?:[/\\]|$)/
 
@@ -47,7 +47,7 @@ function includesBunAmbientTypes(files: string[]): boolean {
 }
 
 describe('TypeScript ambient type boundaries', () => {
-  test('keeps Bun globals in the test project and out of browser production code', () => {
+  test('keeps Vitest globals in the test project and out of browser production code', () => {
     const appConfig = readFileSync(
       join(projectRoot, 'tsconfig.app.json'),
       'utf8'
@@ -70,7 +70,11 @@ describe('TypeScript ambient type boundaries', () => {
       compilerOptions?: { types?: string[] }
       include?: string[]
     }
-    assert.deepEqual(testConfig.compilerOptions?.types, ['node', 'bun'])
+    assert.deepEqual(testConfig.compilerOptions?.types, [
+      'node',
+      'vitest/globals',
+      '@testing-library/jest-dom',
+    ])
     assert.equal(testConfig.include?.includes('src/**/*.d.ts'), true)
     assert.equal(testConfig.include?.includes('src/**/*.test.ts'), true)
     assert.equal(testConfig.include?.includes('src/**/*.test.tsx'), true)
@@ -103,8 +107,8 @@ describe('TypeScript ambient type boundaries', () => {
     )
   }, 15_000)
 
-  test('loads Bun declarations into the compiled test project', () => {
+  test('keeps Bun declarations out of the Vitest test project', () => {
     const testFiles = listTypeScriptFiles('tsconfig.test.json')
-    assert.equal(includesBunAmbientTypes(testFiles), true)
+    assert.equal(includesBunAmbientTypes(testFiles), false)
   }, 15_000)
 })

@@ -16,9 +16,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import { afterEach, describe, expect, test } from 'bun:test'
-
 import { Window } from 'happy-dom'
+import { afterEach, describe, expect, test } from 'vitest'
 
 const domWindow = new Window()
 const domGlobals = [
