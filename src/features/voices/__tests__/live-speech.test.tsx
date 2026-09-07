@@ -22,6 +22,7 @@ import { afterEach, expect, it, vi } from 'vitest'
 
 import { speechSegments, speechSegmentAudio } from '../api'
 import { LiveSpeech } from '../components/live-speech'
+
 vi.mock('../api', () => ({
   speechSegments: vi.fn(),
   speechSegmentAudio: vi.fn(),
@@ -45,7 +46,7 @@ it('plays a durable segment before completion and stops playback on unmount', as
       connect: vi.fn(),
       start,
       stop,
-      onended: null,
+      addEventListener: vi.fn(),
     })
   }
   vi.stubGlobal('AudioContext', FakeContext)

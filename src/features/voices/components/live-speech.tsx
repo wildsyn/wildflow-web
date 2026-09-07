@@ -41,7 +41,7 @@ export function LiveSpeech({ job, done }: { job: string; done: boolean }) {
     let attempt = ''
     const seen = new Set<string>()
     const sources = new Set<AudioBufferSourceNode>()
-    async function poll() {
+    async function poll(context: AudioContext) {
       try {
         const doneBeforeFetch = finished.current
         const segments = await speechSegments(job)
@@ -57,21 +57,24 @@ export function LiveSpeech({ job, done }: { job: string; done: boolean }) {
           if (seen.has(segment.segment_id)) continue
           const data = await speechSegmentAudio(job, segment.segment_id)
           if (stopped) return
-          const buffer = await context!.decodeAudioData(data)
+          const buffer = await context.decodeAudioData(data)
           if (stopped) return
-          const source = context!.createBufferSource()
+          const source = context.createBufferSource()
           source.buffer = buffer
-          source.connect(context!.destination)
-          nextStart = Math.max(nextStart, context!.currentTime + 0.05)
+          source.connect(context.destination)
+          nextStart = Math.max(nextStart, context.currentTime + 0.05)
           sources.add(source)
-          source.onended = () => sources.delete(source)
+          source.addEventListener('ended', () => sources.delete(source), {
+            once: true,
+          })
           source.start(nextStart)
           nextStart += buffer.duration
           seen.add(segment.segment_id)
           setCount(seen.size)
         }
-        if (!doneBeforeFetch && !stopped)
-          timer = setTimeout(() => void poll(), 500)
+        if (!doneBeforeFetch && !stopped) {
+          timer = setTimeout(() => void poll(context), 500)
+        }
       } catch {
         if (!stopped) {
           setFailed(true)
@@ -79,7 +82,7 @@ export function LiveSpeech({ job, done }: { job: string; done: boolean }) {
         }
       }
     }
-    void poll()
+    void poll(context)
     return () => {
       stopped = true
       clearTimeout(timer)
