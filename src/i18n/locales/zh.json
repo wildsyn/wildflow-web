@@ -6148,7 +6148,7 @@
     "recovery_required": "需要恢复",
     "queued": "排队中",
     "Content account (optional)": "内容账号（可选）",
-    "For example, book reviews or Qingfeng": "例如：图书账号、青蜂",
+    "For example, book reviews or podcasts": "例如：图书账号、播客账号",
     "Save a different default voice for each content account. Leave blank to use your general default.": "为每个内容账号保存不同的默认音色，留空时使用通用默认音色。"
   }
 }

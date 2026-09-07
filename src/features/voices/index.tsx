@@ -173,7 +173,7 @@ export function VoiceStudio() {
                 setContentAccount(event.target.value)
                 form.setValue('voice_id', '')
               }}
-              placeholder={t('For example, book reviews or Qingfeng')}
+              placeholder={t('For example, book reviews or podcasts')}
             />
             <datalist id='voice-content-accounts'>
               {Object.keys(preference.data?.content_accounts ?? {})
