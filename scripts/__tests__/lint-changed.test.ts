@@ -16,7 +16,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import { afterEach, describe, test } from 'bun:test'
 import assert from 'node:assert/strict'
 import { spawnSync, type SpawnSyncReturns } from 'node:child_process'
 import {
@@ -30,9 +29,10 @@ import {
 } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
-import { fileURLToPath } from 'node:url'
 
-const lintScript = fileURLToPath(new URL('../lint-changed.sh', import.meta.url))
+import { afterEach, describe, test } from 'vitest'
+
+const lintScript = join(process.cwd(), 'scripts/lint-changed.sh')
 const temporaryRepos: string[] = []
 
 afterEach(() => {

@@ -61,7 +61,10 @@ export function AnimatedOutlet() {
   // Navigating between params of the same route (e.g. dashboard tabs served by
   // /dashboard/$section) then re-renders in place instead of remounting the
   // route component and discarding its state (such as the selected time range).
-  const routeKey = useRouterState({
+  const routeKey = useRouterState<
+    import('@tanstack/react-router').RegisteredRouter,
+    string
+  >({
     select: (s) => s.matches.at(-1)?.routeId ?? s.location.pathname,
   })
 

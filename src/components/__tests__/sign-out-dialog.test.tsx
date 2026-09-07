@@ -16,10 +16,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import { afterAll, beforeEach, describe, test } from 'bun:test'
 import assert from 'node:assert/strict'
 
 import { Window } from 'happy-dom'
+import { afterAll, beforeEach, describe, test } from 'vitest'
 
 const events: string[] = []
 let logoutResponse: { success: boolean; message: string } = {

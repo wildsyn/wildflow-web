@@ -16,12 +16,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import { describe, test } from 'bun:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
+
+import { describe, test } from 'vitest'
 
 const aboutSource = readFileSync(
-  new URL('../index.tsx', import.meta.url),
+  resolve(process.cwd(), 'src/features/about/__tests__/../index.tsx'),
   'utf8'
 )
 

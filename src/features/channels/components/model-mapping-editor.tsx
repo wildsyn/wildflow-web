@@ -68,6 +68,7 @@ export function ModelMappingEditor(props: ModelMappingEditorProps) {
   const [jsonValue, setJsonValue] = useState(props.value)
   const [jsonError, setJsonError] = useState<string | null>(null)
   const nextRowIdRef = useRef(0)
+  const emittedValueRef = useRef<string | null>(null)
   const duplicateSources = useMemo(() => getDuplicateSources(rows), [rows])
 
   const createRowId = useCallback(() => {
@@ -131,6 +132,10 @@ export function ModelMappingEditor(props: ModelMappingEditorProps) {
 
   // Parse JSON to rows when value changes externally
   useEffect(() => {
+    // A controlled form echoes our serialized value, which omits blank draft rows.
+    // Only external values should replace the current editing rows.
+    if (props.value === emittedValueRef.current) return
+    emittedValueRef.current = null
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setJsonValue(props.value)
     parseJsonToRows(props.value)
@@ -155,6 +160,7 @@ export function ModelMappingEditor(props: ModelMappingEditorProps) {
     if (duplicates.length > 0) {
       setJsonError(t('Duplicate source model mappings are not allowed'))
       setJsonValue(DUPLICATE_MAPPING_SENTINEL)
+      emittedValueRef.current = DUPLICATE_MAPPING_SENTINEL
       props.onChange(DUPLICATE_MAPPING_SENTINEL)
       return
     }
@@ -162,6 +168,7 @@ export function ModelMappingEditor(props: ModelMappingEditorProps) {
     const json = convertRowsToJson(updatedRows)
     setJsonError(null)
     setJsonValue(json)
+    emittedValueRef.current = json
     props.onChange(json)
   }
 
@@ -213,6 +220,7 @@ export function ModelMappingEditor(props: ModelMappingEditorProps) {
       if (duplicates.length === 0) {
         const json = convertRowsToJson(rows)
         setJsonValue(json)
+        emittedValueRef.current = json
         props.onChange(json)
       }
       setMode('json')
