@@ -21,6 +21,7 @@ import {
   CardStaggerContainer,
   CardStaggerItem,
 } from '@/components/page-transition'
+import { VoiceStudio } from '@/features/voices'
 import { useStatus } from '@/hooks/use-status'
 import { useAuthStore } from '@/stores/auth-store'
 
@@ -76,6 +77,9 @@ export function Profile() {
                 {canConfigureSidebar && <SidebarModulesCard />}
               </div>
             </div>
+          </CardStaggerItem>
+          <CardStaggerItem>
+            <VoiceStudio />
           </CardStaggerItem>
         </CardStaggerContainer>
       </div>
