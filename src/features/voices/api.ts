@@ -104,3 +104,27 @@ export async function speechAudio(id: string): Promise<string> {
   )
   return URL.createObjectURL(response.data)
 }
+
+export type SpeechSegment = {
+  segment_id: string
+  attempt_id: string
+  sequence: number
+}
+export async function speechSegments(job: string): Promise<SpeechSegment[]> {
+  return (
+    await api.get<{ data: SpeechSegment[] }>(
+      `/api/user/self/voice-jobs/${encodeURIComponent(job)}/audio-segments`
+    )
+  ).data.data
+}
+export async function speechSegmentAudio(
+  job: string,
+  segment: string
+): Promise<ArrayBuffer> {
+  return (
+    await api.get<ArrayBuffer>(
+      `/api/user/self/voice-jobs/${encodeURIComponent(job)}/audio-segments/${encodeURIComponent(segment)}/content`,
+      { responseType: 'arraybuffer' }
+    )
+  ).data
+}

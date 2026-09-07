@@ -6083,6 +6083,10 @@
     "queued": "queued",
     "Content account (optional)": "Content account (optional)",
     "For example, book reviews or podcasts": "For example, book reviews or podcasts",
-    "Save a different default voice for each content account. Leave blank to use your general default.": "Save a different default voice for each content account. Leave blank to use your general default."
+    "Save a different default voice for each content account. Leave blank to use your general default.": "Save a different default voice for each content account. Leave blank to use your general default.",
+    "Listen while generating": "Listen while generating",
+    "Stop listening": "Stop listening",
+    "Audio segments loaded": "Audio segments loaded",
+    "Live playback failed. You can retry or download the completed WAV.": "Live playback failed. You can retry or download the completed WAV."
   }
 }

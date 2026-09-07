@@ -42,6 +42,7 @@ import {
   voicePreview,
 } from './api'
 import { AdvancedControls } from './components/advanced-controls'
+import { LiveSpeech } from './components/live-speech'
 import { VoiceUpload } from './components/voice-upload'
 import { voiceDefaults, voiceFormSchema, type VoiceForm } from './lib/schema'
 import type { VoiceJob } from './types'
@@ -75,6 +76,7 @@ export function VoiceStudio() {
   const text = form.watch('text')
   const [job, setJob] = useState<VoiceJob | null>(null)
   const [audio, setAudio] = useState('')
+  const [streamJob, setStreamJob] = useState(false)
   const pending = useRef<{ signature: string; key: string } | null>(null)
   const status = useQuery({
     queryKey: ['indextts', 'job', job?.id],
@@ -131,7 +133,8 @@ export function VoiceStudio() {
       }
       return createSpeech(values, pending.current.key)
     },
-    onSuccess: (result) => {
+    onSuccess: (result, values) => {
+      setStreamJob(values.stream)
       setJob(result)
       pending.current = null
       setAudio('')
@@ -291,6 +294,14 @@ export function VoiceStudio() {
               </p>
             </div>
           </div>
+          <label className='flex items-center gap-2'>
+            <input
+              type='checkbox'
+              {...form.register('stream')}
+              disabled={busy}
+            />
+            {t('Listen while generating')}
+          </label>
           <AdvancedControls form={form} voices={voices.data ?? []} />
           {Object.keys(form.formState.errors).length > 0 && (
             <p role='alert'>{t('Check the script and synthesis controls.')}</p>
@@ -314,6 +325,13 @@ export function VoiceStudio() {
             <p>
               {t('Task status')}: {t(current.state)}
             </p>
+            {streamJob && (
+              <LiveSpeech
+                key={current.id}
+                job={current.id}
+                done={completed.has(current.state)}
+              />
+            )}
             <CopyButton value={current.id} aria-label={t('Copy task ID')} />
             {current.state === 'succeeded' && current.artifacts?.[0] && (
               <Button

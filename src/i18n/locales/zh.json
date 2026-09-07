@@ -6149,6 +6149,10 @@
     "queued": "排队中",
     "Content account (optional)": "内容账号（可选）",
     "For example, book reviews or podcasts": "例如：图书账号、播客账号",
-    "Save a different default voice for each content account. Leave blank to use your general default.": "为每个内容账号保存不同的默认音色，留空时使用通用默认音色。"
+    "Save a different default voice for each content account. Leave blank to use your general default.": "为每个内容账号保存不同的默认音色，留空时使用通用默认音色。",
+    "Listen while generating": "边生成边听",
+    "Stop listening": "停止试听",
+    "Audio segments loaded": "已加载音频片段",
+    "Live playback failed. You can retry or download the completed WAV.": "实时播放失败，可重试或下载生成完成的 WAV。"
   }
 }
